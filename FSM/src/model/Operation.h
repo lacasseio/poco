@@ -24,7 +24,7 @@ namespace Poco {
 				virtual ~Operation();
 
 				virtual const string token() const;
-				bool precede(const Operation& op) const;
+				bool precede(const Operation* op) const;
 
 				const bool&	contextuel() const		{ return _contextuel; }
 				const Operator&		op() const		{ return _operator; }
