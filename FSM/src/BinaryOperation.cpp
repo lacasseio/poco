@@ -15,30 +15,35 @@ const string BinaryOperation::display() const
 {
     if (_asstring.empty())
     {
-        _asstring += _left->display();
-        switch (_operator)
+		if (!(op() == SELECTOR || op() == ACCESSOR))
+			_asstring += '(';
+		_asstring += _left->display();
+		switch (op())
         {
-        case equal:
-            _asstring += "==";
-            break;
-        case notequal:
-            _asstring += "!=";
-            break;
-        case and:
-            _asstring += "&&";
-            break;
-        case or:
-            _asstring += "||";
-            break;
-        case xor:
-            _asstring += '^';
-            break;
-        default:
+		case ADD:
+		case SUB:
+		case MULT:
+		case DIV:
+		case POW:
+		case EQUAL:
+		case NOTEQUAL:
+        case AND:
+        case OR:
+		case BITXOR:
+			_asstring += " " + string(glyphes[op()]) + " ";
+			break;
+		case SELECTOR:
+		case ACCESSOR:
+			_asstring += string(glyphes[op()]);
+			break;
+		default:
             _asstring += "???";
             break;
         }
-        _asstring += _right->display();
-    }
+		_asstring += _right->display();
+		if (!(op() == SELECTOR || op() == ACCESSOR))
+			_asstring += ')';
+	}
     return _asstring;
 }
 }
