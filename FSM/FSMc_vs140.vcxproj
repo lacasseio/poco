@@ -66,6 +66,7 @@
     <ClCompile Include="src\MapForCpp.cpp" />
     <ClCompile Include="src\Number.cpp" />
     <ClCompile Include="src\Operation.cpp" />
+    <ClCompile Include="src\Glyphe.cpp" />
     <ClCompile Include="src\Operator.cpp" />
     <ClCompile Include="src\Parameter.cpp" />
     <ClCompile Include="src\ParameterForCpp.cpp" />
@@ -124,6 +125,7 @@
     <ClInclude Include="src\model\Literal.h" />
     <ClInclude Include="src\model\Map.h" />
     <ClInclude Include="src\model\Operation.h" />
+    <ClInclude Include="src\model\Operator.h" />
     <ClInclude Include="src\model\Parameter.h" />
     <ClInclude Include="src\model\Print.h" />
     <ClInclude Include="src\model\Reference.h" />
@@ -138,7 +140,7 @@
     <ClInclude Include="src\parser\IndentStream.h" />
     <ClInclude Include="src\parser\Keyword.h" />
     <ClInclude Include="src\parser\Number.h" />
-    <ClInclude Include="src\parser\Operator.h" />
+    <ClInclude Include="src\parser\Glyphe.h" />
     <ClInclude Include="src\parser\Parser.h" />
     <ClInclude Include="src\parser\String.h" />
     <ClInclude Include="src\parser\Token.h" />

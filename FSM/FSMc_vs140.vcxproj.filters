@@ -56,7 +56,6 @@
     <ClCompile Include="src\MapForCpp.cpp" />
     <ClCompile Include="src\Number.cpp" />
     <ClCompile Include="src\Operation.cpp" />
-    <ClCompile Include="src\Operator.cpp" />
     <ClCompile Include="src\Parameter.cpp" />
     <ClCompile Include="src\ParameterForCpp.cpp" />
     <ClCompile Include="src\Parser.cpp" />
@@ -74,6 +73,8 @@
     <ClCompile Include="src\UnaryOperationForCpp.cpp" />
     <ClCompile Include="src\Variable.cpp" />
     <ClCompile Include="src\VariableForCpp.cpp" />
+    <ClCompile Include="src\Glyphe.cpp" />
+    <ClCompile Include="src\Operator.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\model\Action.h">
@@ -169,9 +170,6 @@
     <ClInclude Include="src\parser\Number.h">
       <Filter>parser</Filter>
     </ClInclude>
-    <ClInclude Include="src\parser\Operator.h">
-      <Filter>parser</Filter>
-    </ClInclude>
     <ClInclude Include="src\parser\Parser.h">
       <Filter>parser</Filter>
     </ClInclude>
@@ -246,6 +244,12 @@
     </ClInclude>
     <ClInclude Include="include\Poco\FSM\statemap.h">
       <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="src\model\Operator.h">
+      <Filter>model</Filter>
+    </ClInclude>
+    <ClInclude Include="src\parser\Glyphe.h">
+      <Filter>parser</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>
