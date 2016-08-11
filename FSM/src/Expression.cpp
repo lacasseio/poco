@@ -15,7 +15,6 @@ namespace MODEL
 	}
 	Expression::~Expression() {
 	}
-
 }
 }
 }

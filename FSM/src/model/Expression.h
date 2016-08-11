@@ -17,21 +17,21 @@ namespace Poco {
 				Expression();
 				virtual ~Expression();
 
-				GuardPtr&		guard()				{ return _guard; }
-				const GuardPtr	guard() const 		{ return _guard; }
-
 				virtual const string display() const = 0;
 				virtual const string token() const = 0;
-				OperationPtr&		operation()			{ return _operation;  }
-				const OperationPtr&	operation() const	{ return _operation;  }
+
+				GuardPtr&			guard()				{ return _guard; }
+				const GuardPtr&		guard() const 		{ return _guard; }
+
+				OperationPtr&		operation()			{ return _operation; }
+				const OperationPtr&	operation() const	{ return _operation; }
 
 			protected:
 				OperationPtr	_operation;
 				mutable string	_asstring;
 				GuardPtr		_guard;
-
+				bool			_contextuel;
 			};
-
 		}
 	}
 }
