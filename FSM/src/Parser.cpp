@@ -7,7 +7,6 @@
 #include <sstream>
 #include <cassert>
 #include <typeinfo>
-#include <string.h>
 
 #include "Poco/Bugcheck.h"
 #include "Poco/NumberFormatter.h"
@@ -15,7 +14,6 @@
 #include "Poco/Path.h"
 #include "Poco/File.h"
 #include "Poco/Ascii.h"
-
 #include "Poco/String.h"
 
 using Poco::Bugcheck;
@@ -35,7 +33,7 @@ using Poco::Ascii;
 #include "parser/Keyword.h"
 #include "parser/Comment.h"
 #include "parser/Character.h"
-#include "parser/Operator.h"
+#include "parser/Glyphe.h"
 #include "parser/String.h"
 
 #include "model/Action.h"
@@ -55,6 +53,7 @@ using Poco::Ascii;
 #include "model/Literal.h"
 #include "model/Reference.h"
 #include "model/Argument.h"
+#include "model/Operation.h"
 #include "model/UnaryOperation.h"
 #include "model/BinaryOperation.h"
 
@@ -82,6 +81,8 @@ using Poco::FSM::MODEL::VariablePtr;
 using Poco::FSM::MODEL::LiteralPtr;
 using Poco::FSM::MODEL::ExpressionPtr;
 using Poco::FSM::MODEL::ArgumentPtr;
+using Poco::FSM::MODEL::Arity;
+using Poco::FSM::MODEL::Operation;
 using Poco::FSM::MODEL::UnaryOperation;
 using Poco::FSM::MODEL::BinaryOperation;
 
@@ -121,7 +122,7 @@ FSMPtr Parser::parse(const Path& out)
     try
     {
         fsm = factory.newFSM(this);
-        const Poco::Token* next = nextToken();
+        const Token* next = nextToken();
         next = parseFile(next, out);
         if (next && !isEOF(next))
             syntaxError("Additional tokens behind supposed EOF");
@@ -137,43 +138,43 @@ FSMPtr Parser::parse(const Path& out)
     }
     return fsm;
 }
-inline bool Parser::isString(const Poco::Token* token)
+inline bool Parser::isString(const Token* token)
 {
     return token->is(Token::STRING_LITERAL_TOKEN);
 }
-inline bool Parser::isCharacter(const Poco::Token* token)
+inline bool Parser::isCharacter(const Token* token)
 {
     return token->is(Token::CHAR_LITERAL_TOKEN);
 }
-inline bool Parser::isNumber(const Poco::Token* token)
+inline bool Parser::isNumber(const Token* token)
 {
     return token->is(Token::INTEGER_LITERAL_TOKEN) || token->is(Token::LONG_INTEGER_LITERAL_TOKEN);
 }
 
-inline bool Parser::isIdentifier(const Poco::Token* token)
+inline bool Parser::isIdentifier(const Token* token)
 {
-    return token->is(Token::IDENTIFIER_TOKEN) || isOperator(token, Operator::DBL_COLON);
+    return token->is(Token::IDENTIFIER_TOKEN) || isOperator(token, Glyphe::DBL_COLON);
 }
 
 
-inline bool Parser::isOperator(const Poco::Token* token)
+inline bool Parser::isOperator(const Token* token)
 {
     return token->is(Token::OPERATOR_TOKEN);
 }
 
-inline bool Parser::isOperator(const Poco::Token* token, int kind)
+inline bool Parser::isOperator(const Token* token, int kind)
 {
     return token->is(Token::OPERATOR_TOKEN) && token->asInteger() == kind;
 }
 
 
-inline bool Parser::isKeyword(const Poco::Token* token, int kind)
+inline bool Parser::isKeyword(const Token* token, int kind)
 {
     return token->is(Token::KEYWORD_TOKEN) && token->asInteger() == kind;
 }
 
 
-inline bool Parser::isEOF(const Poco::Token* token)
+inline bool Parser::isEOF(const Token* token)
 {
     return token->is(Token::EOF_TOKEN);
 }
@@ -206,7 +207,7 @@ const char* classToString(Token::Class klass)
     case Token::SPECIAL_COMMENT_TOKEN:
         return "SPECIAL_COMMENT";
     case Token::PREPROCESSOR_TOKEN:
-        return "PREPROCESSOR";
+        return "PREPROCESOR";
     case Token::WHITESPACE_TOKEN:
         return "WHITESPACE";
     case Token::EOF_TOKEN:
@@ -219,7 +220,7 @@ const char* classToString(Token::Class klass)
     return "???";
 }
 
-const Poco::Token* Parser::parseFile(const Poco::Token* next, const Path& out)
+const Token* Parser::parseFile(const Token* next, const Path& out)
 {
     while (next->is(Token::KEYWORD_TOKEN) || next->is(Token::OPERATOR_TOKEN))
     {
@@ -235,8 +236,8 @@ const Poco::Token* Parser::parseFile(const Poco::Token* next, const Path& out)
             case Keyword::FSMFILE: 	// %fsmfile
                 next = parseFSMFile(next);
                 break;
-            case Keyword::FFSMLASS: 	// %fsmclass
-                next = parseFFSMlass(next);
+            case Keyword::FSMCLASS: 	// %fsmclass
+                next = parseFSMClass(next);
                 break;
             case Keyword::HEADER:	// %header
                 next = parseHeader(next);
@@ -281,7 +282,7 @@ const Poco::Token* Parser::parseFile(const Poco::Token* next, const Path& out)
         else if (next->is(Token::OPERATOR_TOKEN))
             switch (next->asInteger())
             {
-            case Operator::OPENCODE:	// %{
+            case Glyphe::OPENCODE:	// %{
                 next = parseRawCode(next);
                 break;
             default:
@@ -290,11 +291,11 @@ const Poco::Token* Parser::parseFile(const Poco::Token* next, const Path& out)
     }
     return next;
 }
-const Poco::Token* Parser::parseSource(const Poco::Token* next)
+const Token* Parser::parseSource(const Token* next)
 {
     return next;
 }
-const Poco::Token* Parser::parseReturn(const Poco::Token* next)
+const Token* Parser::parseReturn(const Token* next)
 {
     poco_assert(isKeyword(next, Keyword::RETURN));
     const string rcclass = next->tokenString();
@@ -307,7 +308,7 @@ const Poco::Token* Parser::parseReturn(const Poco::Token* next)
     }
     return next;
 }
-const Poco::Token* Parser::parseStart(const Poco::Token* next)
+const Token* Parser::parseStart(const Token* next)
 {
     poco_assert(isKeyword(next, Keyword::START));
     const string keyword = next->tokenString();
@@ -317,7 +318,7 @@ const Poco::Token* Parser::parseStart(const Poco::Token* next)
     {
         string startstate = next->tokenString();
         next = nextToken();
-        if (isOperator(next, Operator::DBL_COLON))
+        if (isOperator(next, Glyphe::DBL_COLON))
         {
             startstate += next->tokenString();
             next = nextToken();
@@ -332,7 +333,7 @@ const Poco::Token* Parser::parseStart(const Poco::Token* next)
     }
     return next;
 }
-const Poco::Token* Parser::parseClass(const Poco::Token* next)
+const Token* Parser::parseClass(const Token* next)
 {
     poco_assert(isKeyword(next, Keyword::CLASS));
     const string pcclass = next->tokenString();
@@ -345,7 +346,7 @@ const Poco::Token* Parser::parseClass(const Poco::Token* next)
     }
     return next;
 }
-const Poco::Token* Parser::parseFSMFile(const Poco::Token* next)
+const Token* Parser::parseFSMFile(const Token* next)
 {
     poco_assert(isKeyword(next, Keyword::FSMFILE));
     next = nextToken();
@@ -357,9 +358,9 @@ const Poco::Token* Parser::parseFSMFile(const Poco::Token* next)
     }
     return next;
 }
-const Poco::Token* Parser::parseFFSMlass(const Poco::Token* next)
+const Token* Parser::parseFSMClass(const Token* next)
 {
-    poco_assert(isKeyword(next, Keyword::FFSMLASS));
+    poco_assert(isKeyword(next, Keyword::FSMCLASS));
     next = nextToken();
     if (next->is(Token::IDENTIFIER_TOKEN))
     {
@@ -369,7 +370,7 @@ const Poco::Token* Parser::parseFFSMlass(const Poco::Token* next)
     }
     return next;
 }
-const Poco::Token* Parser::parseHeader(const Poco::Token* next)
+const Token* Parser::parseHeader(const Token* next)
 {
     poco_assert(isKeyword(next, Keyword::HEADER));
     const string pcheader = next->tokenString();
@@ -384,21 +385,21 @@ const Poco::Token* Parser::parseHeader(const Poco::Token* next)
     fsm->header() = file;
     return next;
 }
-const Poco::Token* Parser::parseIncludes(const Poco::Token* next)
+const Token* Parser::parseIncludes(const Token* next)
 {
     poco_assert(isKeyword(next, Keyword::INCLUDE));
     next = nextToken();
     for (;;)
     {
         next = parseInclude(next);
-        if (isOperator(next, Operator::COMMA))
+        if (isOperator(next, Glyphe::COMMA))
             next = nextToken();
         else
             break;
     }
     return next;
 }
-const Poco::Token* Parser::parseInclude(const Poco::Token* next)
+const Token* Parser::parseInclude(const Token* next)
 {
     if (next->is(Token::STRING_LITERAL_TOKEN))
     {
@@ -411,7 +412,7 @@ const Poco::Token* Parser::parseInclude(const Poco::Token* next)
     {
         string file = next->tokenString();
         next = nextToken();
-        if (isOperator(next, Operator::PERIOD))
+        if (isOperator(next, Glyphe::PERIOD))
         {
             file += '.';
             next = nextToken();
@@ -425,7 +426,7 @@ const Poco::Token* Parser::parseInclude(const Poco::Token* next)
     }
     return next;
 }
-const Poco::Token* Parser::parsePackage(const Poco::Token* next)
+const Token* Parser::parsePackage(const Token* next)
 {
     poco_assert(isKeyword(next, Keyword::PACKAGE));
     const string pcpackage = next->tokenString();
@@ -439,7 +440,7 @@ const Poco::Token* Parser::parsePackage(const Poco::Token* next)
             fsm->addPackage(package);
             packages += package;
             next = nextToken();
-            if (isOperator(next, Operator::DBL_COLON))
+            if (isOperator(next, Glyphe::DBL_COLON))
             {
                 packages += next->tokenString();
                 next = nextToken();
@@ -449,7 +450,7 @@ const Poco::Token* Parser::parsePackage(const Poco::Token* next)
     while (!next->is(Token::KEYWORD_TOKEN));
     return next;
 }
-const Poco::Token* Parser::parseImport(const Poco::Token* next)
+const Token* Parser::parseImport(const Token* next)
 {
     poco_assert(isKeyword(next, Keyword::IMPORT));
     const string pcimport = next->tokenString();
@@ -461,7 +462,7 @@ const Poco::Token* Parser::parseImport(const Poco::Token* next)
     }
     return next;
 }
-const Poco::Token* Parser::parseDeclare(const Poco::Token* next)
+const Token* Parser::parseDeclare(const Token* next)
 {
     poco_assert(isKeyword(next, Keyword::DECLARE));
     const string pcdeclare = next->tokenString();
@@ -473,10 +474,10 @@ const Poco::Token* Parser::parseDeclare(const Poco::Token* next)
     }
     return next;
 }
-const Poco::Token* Parser::parseAccess(const Poco::Token* next)
+const Token* Parser::parseAccess(const Token* next)
 {
     poco_assert(isKeyword(next, Keyword::ACCESS));
-    const Poco::Token* token = next;
+    const Token* token = next;
     next = nextToken();
     if (next->is(Token::IDENTIFIER_TOKEN))
     {
@@ -485,7 +486,7 @@ const Poco::Token* Parser::parseAccess(const Poco::Token* next)
     }
     return next;
 }
-const Poco::Token* Parser::parseMap(const Poco::Token* next)
+const Token* Parser::parseMap(const Token* next)
 {
     poco_assert(isKeyword(next, Keyword::MAP));
     next = nextToken();
@@ -500,10 +501,10 @@ const Poco::Token* Parser::parseMap(const Poco::Token* next)
     }
     return next;
 }
-const Poco::Token* Parser::parseStates(const Poco::Token* next)
+const Token* Parser::parseStates(const Token* next)
 {
-    poco_assert(isOperator(next, Operator::FSM));
-    const Poco::Token* token = next;
+    poco_assert(isOperator(next, Glyphe::FSM));
+    const Token* token = next;
 // OPEN { 	// Transport connection is open
 // 		WAIT										CLOSING				{}
 // 		TDISreq(tsdu: TPDU::DR&)	[P7()]			CLOSING				{DR(tsdu);}
@@ -513,11 +514,11 @@ const Poco::Token* Parser::parseStates(const Poco::Token* next)
     {
         next = parseState(next);
     }
-    while (!isOperator(next, Operator::FSM));
+    while (!isOperator(next, Glyphe::FSM));
     next = nextToken();
     return next;
 }
-const Poco::Token* Parser::parseState(const Poco::Token* next)
+const Token* Parser::parseState(const Token* next)
 {
     poco_assert(isIdentifier(next));
     state = map->lookfor(next->tokenString());
@@ -536,10 +537,10 @@ const Poco::Token* Parser::parseState(const Poco::Token* next)
     next = nextToken();
     return next;
 }
-const Poco::Token* Parser::parseEntry(const Poco::Token* next)
+const Token* Parser::parseEntry(const Token* next)
 {
     entry = NULL;
-    if (isOperator(next, Operator::OPENBRACE))
+    if (isOperator(next, Glyphe::OPENBRACE))
         return next;
     poco_assert(next->tokenString() == "Entry");
     entry = factory.newEntry("Entry");
@@ -547,10 +548,10 @@ const Poco::Token* Parser::parseEntry(const Poco::Token* next)
     next = parseActions(next, entry->actions());
     return next;
 }
-const Poco::Token* Parser::parseExit(const Poco::Token* next)
+const Token* Parser::parseExit(const Token* next)
 {
 	exit = NULL;
-	if (isOperator(next, Operator::OPENBRACE))
+	if (isOperator(next, Glyphe::OPENBRACE))
         return next;
     poco_assert(next->tokenString() == "Exit");
     exit = factory.newExit("Exit");
@@ -558,17 +559,17 @@ const Poco::Token* Parser::parseExit(const Poco::Token* next)
     next = parseActions(next, exit->actions());
     return next;
 }
-const Poco::Token* Parser::parseTransitions(const Poco::Token* next)
+const Token* Parser::parseTransitions(const Token* next)
 {
-    poco_assert(isOperator(next, Operator::OPENBRACE));
+    poco_assert(isOperator(next, Glyphe::OPENBRACE));
     next = nextToken();
-    while (!isOperator(next, Operator::CLOSBRACE))
+    while (!isOperator(next, Glyphe::CLOSBRACE))
     {
         next = parseTransition(next);
     }
     return next;
 }
-const Poco::Token* Parser::parseTransition(const Poco::Token* next)
+const Token* Parser::parseTransition(const Token* next)
 {
     poco_assert(isIdentifier(next));
     string name = next->tokenString();
@@ -594,219 +595,256 @@ const Poco::Token* Parser::parseTransition(const Poco::Token* next)
 //	_dump(transition, guard);
     return next;
 }
-const Poco::Token* Parser::parseTransitionArgs(const Poco::Token* next)
+const Token* Parser::parseTransitionArgs(const Token* next)
 {
     next = nextToken();
     return next;
 }
-const Poco::Token* Parser::parseGuard(const Poco::Token* next)
+const Token* Parser::parseGuard(const Token* next)
 {
     guard = factory.newGuard("");
-    if (isOperator(next, Operator::OPENBRACKET))
+    if (isOperator(next, Glyphe::OPENBRACKET))
     {
         do
         {
             next = nextToken();
             next = parseExpression(next, guard->condition());
         }
-        while (!isOperator(next, Operator::CLOSBRACKET));
+        while (!isOperator(next, Glyphe::CLOSBRACKET));
         guard->condition()->guard() = guard;
         next = nextToken();
     }
     return next;
 }
-const Poco::Token* Parser::parseTerminal(const Poco::Token* next, ReferencePtr& reference)
+const Token* Parser::parseTerminal(const Token* next, ReferencePtr& reference)
 {
-    poco_assert(isIdentifier(next));
-    for(;;) {
-		if (isIdentifier(next))
+    poco_assert(isIdentifier(next) || isNumber(next) || isString(next));
+	if (isIdentifier(next))
+	{
+		const Token* identifier = next; // true/false not supported
+		next = nextToken();
+		if (isOperator(next, Glyphe::OPENPARENT))
 		{
-		    const Poco::Token* identifier = next; // true/false not supported
-		    next = nextToken();
-		    if (isOperator(next, Operator::OPENPARENT))
-		    {
-		        FunctionPtr function = factory.newFunction(identifier->tokenString());
-		        next = parseArguments(next, function->arguments());
-		        reference = factory.newReference(function);
-		    }
-			else
-			{
-			    VariablePtr variable = factory.newVariable(identifier->tokenString());
-			    reference = factory.newReference(variable);
-			}
-		    reference->guard() = guard;
+		    FunctionPtr function = factory.newFunction(identifier->tokenString());
+		    next = parseArguments(next, function->arguments());
+		    reference = factory.newReference(function);
 		}
-		if (isOperator(next, Operator::PERIOD)) {
-			next = nextToken();
-		} else
-			break;
+		else
+		{
+			VariablePtr variable = factory.newVariable(identifier->tokenString());
+			reference = factory.newReference(variable);
+		}
+		reference->guard() = guard;
+	} else {
+		LiteralPtr literal = factory.newLiteral(next->tokenString());
+		reference = factory.newReference(literal);
 	}
     return next;
 }
-void Parser::reduce()
+
+bool precede(const ExpressionPtr left, const ExpressionPtr right)
 {
-    ExpressionPtr top;
-    ExpressionPtr right;
-    BinaryOperationPtr binop;
-    ExpressionPtr left;
-    ReferencePtr  ref;
-
-    right = _stack.top();
-    _stack.pop();
-    poco_check_ptr(right);
-    top = _stack.top();
-    if (top == NULL)
-    {
-        _stack.pop();
-        _stack.push(right);
-    }
-    else
-    {
-        binop = dynamic_cast<BinaryOperation*>(top);
-        _stack.pop();
-        left = _stack.top();
-        _stack.pop();
-        poco_check_ptr(left);
-        binop->left() = left;
-        left->operation() = binop;
-        binop->right() = right;
-        right->operation() = binop;
-        if (_stack.size() > 1)
-            if (_stack.top() == NULL)
-                _stack.pop();
-
-        _stack.push(binop);
-    }
+	//
+	// operator's precedence.
+	/*
+	1 	()   []   ->   .   :: 										Function call, scope, array/member access
+	2 	 !   ~   -   +   *   &   sizeof   type cast   ++   --   	(most) unary operators, sizeof AND type casts (right to left)
+	3 	*   /   % MOD 												Multiplication, division, modulo
+	4 	+   - 														Addition AND subtraction
+	5 	<<   >> 													Bitwise shift left AND right
+	6 	<   <=   >   >= 											Comparisons: less-than, ...
+	7 	==   != 													Comparisons: EQUAL AND not EQUAL
+	8 	& 															Bitwise	AND
+	9 	^ 															Bitwise exclusive OR (XOR)
+	10 	| 															Bitwise inclusive (normal) OR
+	11 	&& 															Logical AND
+	12 	||															Logical OR
+	13 	 ? : 														Conditional expression (ternary)
+	14 	=   +=   -=   *=   /=   %=   &=   |=   ^=   <<=   >>= 		Assignment operators (right to left)
+	15 	, 															Comma operator
+	*/
+	//
+	return true;
 }
-const Poco::Token* Parser::parseExpression(const Poco::Token* next, ExpressionPtr& expression)
+bool Parser::isOperator(ExpressionPtr expression, Operator op)
 {
-    poco_assert(isIdentifier(next) || isOperator(next, Operator::NOT) || isOperator(next, Operator::OPENPARENT));
-    poco_assert(_stack.size() == 0);
+	const Operation* ope = dynamic_cast<const Operation*>(expression);
+	if (ope)
+		return ope->op() == op;
+	return false;
+}
+const Token* Parser::parseExpression(const Token* next, ExpressionPtr& expression)
+{
+    poco_assert(isIdentifier(next) || isNumber(next) || isOperator(next, Glyphe::NOT) || isOperator(next, Glyphe::OPENPARENT));
+	List<ExpressionPtr> postfix;
+	Stack<ExpressionPtr> stack;
 
-    for (;;)
-    {
-        if (isOperator(next, Operator::CLOSBRACKET))
-            break;
+/*
+P Postfix order list, Q Infix order list
+Start with an empty stack.  We scan Q from left to right. 
 
-        if (isIdentifier(next))
-        {
-            ReferencePtr reference;
-            next = parseTerminal(next, reference);
-            expression = reference;
-            if (_stack.size() > 0)
-            {
-                ExpressionPtr top = _stack.top();
-                if (top != NULL)
-                {
-                    //
-                    // TODO: to be improved using true operator's precedence.
-                    /*
-                    1 	()   []   ->   .   :: 										Function call, scope, array/member access
-                    2 	 !   ~   -   +   *   &   sizeof   type cast   ++   --   	(most) unary operators, sizeof and type casts (right to left)
-                    3 	*   /   % MOD 												Multiplication, division, modulo
-                    4 	+   - 														Addition and subtraction
-                    5 	<<   >> 													Bitwise shift left and right
-                    6 	<   <=   >   >= 											Comparisons: less-than, ...
-                    7 	==   != 													Comparisons: equal and not equal
-                    8 	& 															Bitwise	AND
-                    9 	^ 															Bitwise exclusive OR (XOR)
-                    10 	| 															Bitwise inclusive (normal) OR
-                    11 	&& 															Logical AND
-                    12 	||															Logical OR
-                    13 	 ? : 														Conditional expression (ternary)
-                    14 	=   +=   -=   *=   /=   %=   &=   |=   ^=   <<=   >>= 		Assignment operators (right to left)
-                    15 	, 															Comma operator
-                    */
-                    //
-                    UnaryOperation* monop = dynamic_cast<UnaryOperation*>(top);
-                    BinaryOperation* binop = dynamic_cast<BinaryOperation*>(top);
-                    if (monop)
-                    {
-                        monop->operand() = reference;
-                        reference->operation() = monop;
-                        expression = monop;
-                        _stack.pop();
-                    }
-                    else if (binop && (binop->op() == FSM::MODEL::equal || binop->op() == FSM::MODEL::notequal))
-                    {
-                        _stack.pop();
-                        binop->right() = reference;
-                        reference->operation() = binop;
-                        binop->left() = _stack.top();
-                        _stack.top()->operation() = binop;
-                        expression = binop;
-                        _stack.pop();
-                    }
-                }
-            }
-            _stack.push(expression);
-        }
-        else if (isOperator(next, Operator::OPENPARENT))
-        {
-            _stack.push(NULL);
-            next = nextToken();
-        }
-        else if (isOperator(next, Operator::CLOSPARENT))
-        {
-            reduce();
-            next = nextToken();
-        }
-        else if (isOperator(next))
-        {
-            switch (next->asInteger())
-            {
-            case Operator::NE:
-            case Operator::EQ:
-            case Operator::AND:
-            case Operator::OR:
-            case Operator::XOR:
-            {
-                FSM::MODEL::Operator op = FSM::MODEL::none;
-                switch (next->asInteger())
-                {
-                case Operator::NE:
-                    op = FSM::MODEL::notequal;
-                    break;
-                case Operator::EQ:
-                    op = FSM::MODEL::equal;
-                    break;
-                case Operator::AND:
-                    op = FSM::MODEL::and;
-                    break;
-                case Operator::OR:
-                    op = FSM::MODEL::or;
-                    break;
-                case Operator::XOR:
-                    op = FSM::MODEL::xor;
-                    break;
-                default:
-                    poco_assert(false);
-                }
-                BinaryOperation* binop = factory.newBinaryOperation(op);
-                _stack.push(binop);
-                next = nextToken();
-            }
-            break;
-            case Operator::NOT:
-            {
-                UnaryOperation* not = factory.newUnaryOperation(FSM::MODEL::not);
-                _stack.push(not);
-                next = nextToken();
-            }
-            break;
-            default:
-                poco_assert(false);
-                break;
-            }
-        }
-    }
-    while (_stack.size() > 1)
-        reduce();
-    expression = _stack.top();
-    _stack.pop();
+While (we have not reached the end of Q)
+    If (an operand is found)
+        Add it to P
+    End-If
+    If (a left parenthesis is found) 
+        Push it onto the stack
+    End-If
+    If (a right parenthesis is found) 
+        While (the stack is not empty AND the top item is not a left parenthesis)
+            Pop the stack and add the popped value to P
+        End-While
+        Pop the left parenthesis from the stack and discard it 
+    End-If
+    If (an operator is found)
+        If (the stack is empty or if the top element is a left parenthesis)
+            Push the operator onto the stack
+        Else  
+            While (the stack is not empty AND the top of the stack 
+                    is not a left parenthesis AND precedence of the                  
+                    operator <= precedence of the top of the stack)
+                Pop the stack and add the top value to P
+            End-While
+            Push the latest operator onto the stack     
+        End-If  
+    End-If
+End-While
+While (the stack is not empty)
+    Pop the stack and add the popped value to P
+*/
+	for(;;) {
+		if (isOperator(next, Glyphe::SEMICOLON) || isOperator(next, Glyphe::CLOSBRACKET))
+			break;
+
+		if (isIdentifier(next) || isNumber(next) || isString(next) ) {
+			ReferencePtr reference;
+			next = parseTerminal(next, reference);
+			postfix.push_back(reference); 
+		} else
+		if (isOperator(next, Glyphe::OPENPARENT)) {
+			Operation* op = factory.newUnaryOperation(FSM::MODEL::OPENPAR);
+			stack.push(op);  
+			next = nextToken();
+		} else
+		if (isOperator(next, Glyphe::CLOSPARENT)) {
+			while(stack.size() && !isOperator(stack.top(), FSM::MODEL::OPENPAR)) {
+				postfix.push_back(stack.top());stack.pop();
+			}
+			stack.pop();
+			next = nextToken();
+		} else
+		if (isOperator(next)) {
+			Operation* ope = nullptr;
+			switch (next->asInteger())
+			{
+			case Glyphe::NE:
+				ope = factory.newBinaryOperation(FSM::MODEL::NOTEQUAL);
+				break;
+			case Glyphe::EQ:
+				ope = factory.newBinaryOperation(FSM::MODEL::EQUAL);
+				break;
+			case Glyphe::AND:
+				ope = factory.newBinaryOperation(FSM::MODEL::AND);
+				break;
+			case Glyphe::PLUS:
+				ope = factory.newBinaryOperation(FSM::MODEL::ADD);
+				break;
+			case Glyphe::MINUS:
+				ope = factory.newBinaryOperation(FSM::MODEL::SUB);
+				break;
+			case Glyphe::STAR:
+				ope = factory.newBinaryOperation(FSM::MODEL::MULT);
+				break;
+			case Glyphe::SLASH:
+				ope = factory.newBinaryOperation(FSM::MODEL::DIV);
+				break;
+			case Glyphe::STARSTAR:
+				ope = factory.newBinaryOperation(FSM::MODEL::POW);
+				break;
+			case Glyphe::OR:
+				ope = factory.newBinaryOperation(FSM::MODEL::OR);
+				break;
+			case Glyphe::XOR:
+				ope = factory.newBinaryOperation(FSM::MODEL::BITXOR);
+				break;
+			case Glyphe::ARROW:
+				ope = factory.newBinaryOperation(FSM::MODEL::ACCESSOR);
+				break;
+			case Glyphe::PERIOD:
+				ope = factory.newBinaryOperation(FSM::MODEL::SELECTOR);
+				break;
+			case Glyphe::NOT:
+				ope = factory.newUnaryOperation(FSM::MODEL::NOT);
+				break;
+			case Glyphe::OPENPARENT:
+				ope = factory.newUnaryOperation(FSM::MODEL::OPENPAR);
+				break;
+			case Glyphe::CLOSPARENT:
+				ope = factory.newUnaryOperation(FSM::MODEL::CLOSPAR);
+				break;
+			default:
+				poco_assert(false);
+				break;
+			}
+			if (stack.empty() || isOperator(stack.top(), FSM::MODEL::OPENPAR))
+				stack.push(ope);
+			else {
+				while(stack.size() && !isOperator(stack.top(), FSM::MODEL::OPENPAR) && precede(ope, stack.top())) {
+					postfix.push_back(stack.top());stack.pop();
+				}
+				stack.push(ope);
+			}
+			next = nextToken();
+		}
+	}
+	while(stack.size()) {
+		postfix.push_back(stack.top()); stack.pop();
+	}
+
+
+/*
+Start with an empty stack.  We scan P from left to right.
+
+While (we have not reached the end of P)
+	If an operand is found
+		push it onto the stack
+	End-If
+	If an operator is found
+		Pop the stack and call the value A
+		Pop the stack and call the value B
+		Evaluate B op A using the operator just found.
+		Push the resulting value onto the stack
+	End-If
+End-While
+Pop the stack (this is the final value)
+*/
+	List<ExpressionPtr>::const_iterator ci;
+	for(ci = postfix.begin(); ci != postfix.end(); ++ci) {
+		ReferencePtr operand = dynamic_cast<ReferencePtr>(*ci);
+		OperationPtr operation = dynamic_cast<OperationPtr>(*ci);
+		if (operand) {
+			stack.push(operand);
+		}
+		if (operation) {
+			if (operation->arity() == Arity::Unary) {
+				UnaryOperation* monop = static_cast<UnaryOperation*>(operation);
+				monop->operand() = stack.top();stack.pop();
+				stack.push(monop);
+			} else
+			if (operation->arity() == Arity::Binary) {
+				BinaryOperation* binop = static_cast<BinaryOperation*>(operation);
+				binop->right() = stack.top();stack.pop();
+				binop->left() = stack.top();stack.pop();
+				stack.push(binop);
+			}
+		}
+	}
+	poco_assert(stack.size() == 1);
+	expression = stack.top();
+	stack.pop();
     return next;
 }
-const Poco::Token* Parser::parseNext(const Poco::Token* next)
+const Token* Parser::parseNext(const Token* next)
 {
     poco_assert(isIdentifier(next));
 
@@ -820,10 +858,10 @@ const Poco::Token* Parser::parseNext(const Poco::Token* next)
     next = nextToken();
     return next;
 }
-const Poco::Token* Parser::parseParameters(const Poco::Token* next)
+const Token* Parser::parseParameters(const Token* next)
 {
     parameters.clear();
-    if (isOperator(next, Operator::OPENPARENT))
+    if (isOperator(next, Glyphe::OPENPARENT))
     {
         do
         {
@@ -831,24 +869,24 @@ const Poco::Token* Parser::parseParameters(const Poco::Token* next)
             next = parseParameter(next);
             parameters.push_back(parameter);
         }
-        while (!isOperator(next, Operator::CLOSPARENT));
+        while (!isOperator(next, Glyphe::CLOSPARENT));
         next = nextToken();
     }
     return next;
 }
-const Poco::Token* Parser::parseParameter(const Poco::Token* next)
+const Token* Parser::parseParameter(const Token* next)
 {
     poco_assert(isIdentifier(next));
     parameter = factory.newParameter(next->tokenString());
     do
     {
         next = nextToken();
-        poco_assert(isOperator(next, Operator::COLON));
+        poco_assert(isOperator(next, Glyphe::COLON));
         string type;
         for (;;)
         {
             next = nextToken();
-            if (isOperator(next, Operator::CLOSPARENT) || isOperator(next, Operator::COMMA))
+            if (isOperator(next, Glyphe::CLOSPARENT) || isOperator(next, Glyphe::COMMA))
                 break;
             string token = next->tokenString();
             if (token == "const" || token == "unsigned" || token == "long")
@@ -857,32 +895,32 @@ const Poco::Token* Parser::parseParameter(const Poco::Token* next)
         }
         parameter->type()= type;
     }
-    while (!(isOperator(next, Operator::CLOSPARENT) || isOperator(next, Operator::COMMA)));
+    while (!(isOperator(next, Glyphe::CLOSPARENT) || isOperator(next, Glyphe::COMMA)));
     return next;
 }
-const Poco::Token* Parser::parsePushTransition(const Poco::Token* next)
+const Token* Parser::parsePushTransition(const Token* next)
 {
     next = nextToken();
     return next;
 }
-const Poco::Token* Parser::parsePopTransition(const Poco::Token* next)
+const Token* Parser::parsePopTransition(const Token* next)
 {
     next = nextToken();
     return next;
 }
-const Poco::Token* Parser::parsePopArguments(const Poco::Token* next)
+const Token* Parser::parsePopArguments(const Token* next)
 {
     next = nextToken();
     return next;
 }
-const Poco::Token* Parser::parseActions(const Poco::Token* next, List<ActionPtr>& actions)
+const Token* Parser::parseActions(const Token* next, List<ActionPtr>& actions)
 {
-    poco_assert(isOperator(next, Operator::OPENBRACE));
-    const Poco::Token* token = next;
+    poco_assert(isOperator(next, Glyphe::OPENBRACE));
+    const Token* token = next;
     next = nextToken();
     for (;;)
     {
-        if (isOperator(next, Operator::CLOSBRACE))
+        if (isOperator(next, Glyphe::CLOSBRACE))
             break;
         action = NULL;
         next = parseAction(next);
@@ -891,48 +929,48 @@ const Poco::Token* Parser::parseActions(const Poco::Token* next, List<ActionPtr>
     next = nextToken();
     return next;
 }
-const Poco::Token* Parser::parseAction(const Poco::Token* next)
+const Token* Parser::parseAction(const Token* next)
 {
     poco_assert(isIdentifier(next));
     action = factory.newAction(next->tokenString());
     next = nextToken();
     next = parseArguments(next, action->arguments());
-    poco_assert(isOperator(next, Operator::SEMICOLON));
+    poco_assert(isOperator(next, Glyphe::SEMICOLON));
     next = nextToken();
     return next;
 }
-const Poco::Token* Parser::parseArguments(const Poco::Token* next, List<ArgumentPtr>& arguments)
+const Token* Parser::parseArguments(const Token* next, List<ArgumentPtr>& arguments)
 {
-    poco_assert(isOperator(next, Operator::OPENPARENT));
+    poco_assert(isOperator(next, Glyphe::OPENPARENT));
     next = nextToken();
     for (;;)
     {
-        if (isOperator(next, Operator::CLOSPARENT))
+        if (isOperator(next, Glyphe::CLOSPARENT))
             break;
-        if (isOperator(next, Operator::COMMA))
+        if (isOperator(next, Glyphe::COMMA))
             next = nextToken();
         next = parseArgument(next, arguments);
     }
-    poco_assert(isOperator(next, Operator::CLOSPARENT));
+    poco_assert(isOperator(next, Glyphe::CLOSPARENT));
     next = nextToken();
     return next;
 }
-const Poco::Token* Parser::parseArgument(const Poco::Token* next, List<ArgumentPtr>& arguments)
+const Token* Parser::parseArgument(const Token* next, List<ArgumentPtr>& arguments)
 {
 	string msg = next->asString() + ':';
 	poco_assert_msg(isIdentifier(next) || isNumber(next) || isString(next) || isCharacter(next) ||
-					 isOperator(next, Operator::STAR) || isOperator(next, Operator::BITAND), msg.c_str());
+					 isOperator(next, Glyphe::STAR) || isOperator(next, Glyphe::BITAND), msg.c_str());
     string code;
     int count = 0;
     for (;;)
     {
-        if (isOperator(next, Operator::COMMA))
+        if (isOperator(next, Glyphe::COMMA))
             break;
-        if (isOperator(next, Operator::CLOSPARENT) && count-- == 0)
+        if (isOperator(next, Glyphe::CLOSPARENT) && count-- == 0)
         {
             break;
         }
-        if (isOperator(next, Operator::OPENPARENT))
+        if (isOperator(next, Glyphe::OPENPARENT))
             count += 1;
 		code += next->tokenString();
 		code += ' ';
@@ -942,96 +980,29 @@ const Poco::Token* Parser::parseArgument(const Poco::Token* next, List<ArgumentP
     arguments.push_back(argument);
     return next;
 }
-const Poco::Token* Parser::parseRawCode(const Poco::Token* next)
+const Token* Parser::parseRawCode(const Token* next)
 {
     do
     {
         next = nextToken();
     }
-    while (!isOperator(next, Operator::CLOSCODE));
+    while (!isOperator(next, Glyphe::CLOSCODE));
     next = nextToken();
     return next;
 }
-const Poco::Token* Parser::nextToken()
+const Token* Parser::nextToken()
 {
-    const Poco::Token* next = nextPreprocessed();
-    while (!_inFile && !isEOF(next))
-        next = nextPreprocessed();
-    return next;
-}
-const Poco::Token* Parser::nextPreprocessed()
-{
-    const Poco::Token* next = nextParserToken();
-    while (next->is(Token::PREPROCESSOR_TOKEN))
-    {
-        istringstream pps(next->tokenString());
-        pps.get();
-        Tokenizer ppt(pps);
-        const Poco::Token* pPPT = ppt.nextToken();
-        if (pPPT->tokenString() == "line" || pPPT->is(Token::INTEGER_LITERAL_TOKEN))
-        {
-            if (!pPPT->is(Token::INTEGER_LITERAL_TOKEN))
-                pPPT = ppt.nextToken();
-            int line = pPPT->asInteger();
-            _istr.setCurrentLineNumber(line);
-            pPPT = ppt.nextToken();
-            if (pPPT->is(Token::STRING_LITERAL_TOKEN))
-            {
-                string path = pPPT->asString();
-                Path p(path);
-                p.makeAbsolute();
-                _currentPath = p.toString();
-                _inFile = (Poco::icompare(_path.toString(), _currentPath) == 0);
-            }
-        }
-        next = nextParserToken();
-    }
-    return next;
+    return nextParserToken();
 }
 
-
-const Poco::Token* Parser::nextParserToken()
+const Token* Parser::nextParserToken()
 {
     const Poco::Token* next = _tokenizer.nextToken();
     while (next->is(Token::COMMENT_TOKEN) || next->is(Token::SPECIAL_COMMENT_TOKEN))
     {
-        if (next->is(Token::SPECIAL_COMMENT_TOKEN))
-        {
-#if 0
-            if (_pCurrentSymbol)
-            {
-                _pCurrentSymbol->addDocumentation(next->asString());
-                _doc.clear();
-            }
-            else
-#endif
-                if (_inFile)
-                {
-                    if (!_doc.empty()) _doc += "\n";
-                    _doc += next->asString();
-                }
-        }
-        else if (next->is(Token::COMMENT_TOKEN) && _inFile)
-        {
-            const string& comment = next->tokenString();
-            if (comment.compare(0, 3, "//@") == 0)
-            {
-                _attrs.append(comment.substr(3));
-            }
-            else if (comment.compare(0, 11, "// Package:") == 0)
-            {
-                _package = comment.substr(11);
-                Poco::trimInPlace(_package);
-            }
-            else if (comment.compare(0, 11, "// Library:") == 0)
-            {
-                _library = comment.substr(11);
-                Poco::trimInPlace(_library);
-            }
-        }
         next = _tokenizer.nextToken();
     }
-    return next;
+    return static_cast<const Token*>(next);;
 }
 void Parser::syntaxError(const string& msg)
 {
