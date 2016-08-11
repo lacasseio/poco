@@ -24,7 +24,7 @@ void ReferenceForCpp::generateInclude(ostream& inc, bool debug) const
 void ReferenceForCpp::generateCode(ostream& cpp, bool debug) const
 {
 }
-const string ReferenceForCpp::display(const string& prefix) const
+const string ReferenceForCpp::display(const char* prefix) const
 {
 	LiteralForCpp* lfc;
 	VariableForCpp* vfc;
@@ -34,20 +34,17 @@ const string ReferenceForCpp::display(const string& prefix) const
 	vfc = dynamic_cast<VariableForCpp*>(reference());
 	ffc = dynamic_cast<FunctionForCpp*>(reference());
 
-	if (isParameter() || (operation() && !operation()->contextuel()))
-    {
-        if (operation())
-            operation()->setNoContextuel();
-        if (vfc)
-            return vfc->Variable::display();
-        else
+	if (isParameter()) {
+		if (vfc)
+			return vfc->Variable::display();
+		else
 		if (ffc)
-            return ffc->Function::display();
+			return ffc->Function::display();
 		else
 		if (lfc)
 			return lfc->Literal::display();
 		else
-            poco_assert(false);
+			poco_assert(false);
     }
     else
     {
