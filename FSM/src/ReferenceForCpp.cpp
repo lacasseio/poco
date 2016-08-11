@@ -5,6 +5,7 @@
 
 #include "cpp/ReferenceForCpp.h"
 #include "cpp/VariableForCpp.h"
+#include "cpp/LiteralForCpp.h"
 #include "cpp/FunctionForCpp.h"
 
 using namespace Poco::FSM::MODEL;
@@ -25,19 +26,27 @@ void ReferenceForCpp::generateCode(ostream& cpp, bool debug) const
 }
 const string ReferenceForCpp::display(const string& prefix) const
 {
-    VariableForCpp* vfc;
-    FunctionForCpp* ffc;
-    vfc = dynamic_cast<VariableForCpp*>(reference());
-    ffc = dynamic_cast<FunctionForCpp*>(reference());
-    if (isParameter() || (operation() && !operation()->contextuel()))
+	LiteralForCpp* lfc;
+	VariableForCpp* vfc;
+	FunctionForCpp* ffc;
+	
+	lfc = dynamic_cast<LiteralForCpp*>(reference());
+	vfc = dynamic_cast<VariableForCpp*>(reference());
+	ffc = dynamic_cast<FunctionForCpp*>(reference());
+
+	if (isParameter() || (operation() && !operation()->contextuel()))
     {
         if (operation())
             operation()->setNoContextuel();
         if (vfc)
             return vfc->Variable::display();
-        else if (ffc)
-            return ffc->Function::display();
         else
+		if (ffc)
+            return ffc->Function::display();
+		else
+		if (lfc)
+			return lfc->Literal::display();
+		else
             poco_assert(false);
     }
     else
