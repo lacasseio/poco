@@ -6,7 +6,6 @@
 #include "Poco/Ascii.h"
 #include "Poco/StreamTokenizer.h"
 using Poco::StreamTokenizer;
-using Poco::Token;
 using Poco::InvalidToken;
 using Poco::EOFToken;
 using Poco::WhitespaceToken;
