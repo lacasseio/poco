@@ -46,7 +46,7 @@ void FSM::print(Print& print) const
 {
     print(format("%s\t%s", string(Keyword::asString(Keyword::START)), startState()));
     print(format("%s\t%s", string(Keyword::asString(Keyword::FSMFILE)), fsmfile()));
-    print(format("%s\t%s", string(Keyword::asString(Keyword::FFSMLASS)), fsmclass()));
+    print(format("%s\t%s", string(Keyword::asString(Keyword::FSMCLASS)), fsmclass()));
     print(format("%s\t%s", string(Keyword::asString(Keyword::CLASS)), klass()));
 //				print(format("%s\t%s", string(Keyword::asString(Keyword::DECLARE)), declare()));
 //				print(format("%s\t%s", string(Keyword::asString(Keyword::ACCESS)), access()));

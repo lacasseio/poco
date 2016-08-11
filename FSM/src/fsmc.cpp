@@ -129,10 +129,10 @@ protected:
     void displayHelp()
     {
         HelpFormatter helpFormatter(options());
-        helpFormatter.setCommand(commandName());
-        helpFormatter.setUsage("<options> <fsm>.sm");
-        helpFormatter.setHeader("A FiniteStateMachine compiler for the ISODE++ stack.");
-        helpFormatter.format(std::cout);
+		helpFormatter.setCommand(commandName());
+		helpFormatter.setUsage("<options> <fsm>.sm");
+		helpFormatter.setHeader("A FiniteStateMachine compiler for the ISODE++ stack.");
+		helpFormatter.format(std::cout);
     }
 
     int main(const std::vector<std::string>& args)

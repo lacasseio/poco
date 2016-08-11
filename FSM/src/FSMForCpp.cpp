@@ -104,8 +104,8 @@ bool FSMForCpp::updated(const Path& out)
         Timestamp incFilets = incFile.getLastModified();
         Timestamp fsmfilets = parser()->file().getLastModified();
         if (incFilets > fsmfilets)
-            return true;
-    }
+			return false;//true;
+	}
 
     return false;
 }

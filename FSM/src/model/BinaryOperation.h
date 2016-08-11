@@ -14,12 +14,8 @@ namespace Poco {
 		namespace MODEL {
 
 			class BinaryOperation : public Operation {
-			private:
-				ExpressionPtr		_left;
-				ExpressionPtr		_right;
-
 			public:
-				BinaryOperation(Operator op) : Operation(op) {
+				BinaryOperation(Operator op) : Operation(op, Binary), _left(NULL), _right(NULL) {
 				}
 				virtual ~BinaryOperation() {
 				}
@@ -28,6 +24,11 @@ namespace Poco {
 				const ExpressionPtr	left() const	{ return _left; }
 				const ExpressionPtr	right()const	{ return _right; }
 				virtual const string display() const;
+
+			private:
+				ExpressionPtr		_left;
+				ExpressionPtr		_right;
+
 			};
 
 		}
@@ -38,23 +39,23 @@ namespace Poco {
 
 #if 0
 conditional-expression:
-    logical-or-expression
-    logical-or-expression ? expression : conditional-expression
-logical-or-expression:
-    logical-and-expression
-    logical-or-expression   ||   logical-and-expression
-logical-and-expression:
-    inclusive-or-expression
-    logical-and-expression   &&   inclusive-or-expression
-inclusive-or-expression:
-    exclusive-or-expression
-    inclusive-or-expression | exclusive-or-expression
-exclusive-or-expression:
-    and-expression
-    exclusive-or-expression ^ and-expression
-and-expression:
+    logical-OR-expression
+    logical-OR-expression ? expression : conditional-expression
+logical-OR-expression:
+    logical-AND-expression
+    logical-OR-expression   ||   logical-AND-expression
+logical-AND-expression:
+    inclusive-OR-expression
+    logical-AND-expression   &&   inclusive-OR-expression
+inclusive-OR-expression:
+    exclusive-OR-expression
+    inclusive-OR-expression | exclusive-OR-expression
+exclusive-OR-expression:
+    AND-expression
+    exclusive-OR-expression ^ AND-expression
+AND-expression:
     equality-expression
-    and-expression & equality-expression
+    AND-expression & equality-expression
 equality-expression:
     relational-expression
     equality-expression == relational-expression

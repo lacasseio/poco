@@ -3,208 +3,83 @@
 // and Contributors.
 //
 
-#include "Poco/Ascii.h"
-
-#include "Poco/StreamTokenizer.h"
-using Poco::StreamTokenizer;
-using Poco::Token;
-using Poco::InvalidToken;
-using Poco::EOFToken;
-using Poco::WhitespaceToken;
-using Poco::Ascii;
-
-#include "parser/Operator.h"
+#include "model/Operator.h"
 
 namespace Poco
 {
 namespace FSM
 {
-namespace PARSER
+namespace MODEL
 {
-Operator::Operator()
-{
-    _opMap["["] = OPENBRACKET;
-    _opMap["]"] = CLOSBRACKET;
-    _opMap["("] = OPENPARENT;
-    _opMap[")"] = CLOSPARENT;
-    _opMap["{"] = OPENBRACE;
-    _opMap["}"] = CLOSBRACE;
-    _opMap["<"] = LT;
-    _opMap["<="] = LE;
-    _opMap["<<"] = SHL;
-    _opMap["<<="] = SHL_ASSIGN;
-    _opMap[">"] = GT;
-    _opMap[">="] = GE;
-    _opMap[">>"] = SHR;
-    _opMap[">>="] = SHR_ASSIGN;
-    _opMap["="] = ASSIGN;
-    _opMap["=="] = EQ;
-    _opMap["!"] = NOT;
-    _opMap["!="] = NE;
-    _opMap["&"] = BITAND;
-    _opMap["&="] = BITAND_ASSIGN;
-    _opMap["&&"] = AND;
-    _opMap["|"] = BITOR;
-    _opMap["|="] = BITOR_ASSIGN;
-    _opMap["||"] = OR;
-    _opMap["^"] = XOR;
-    _opMap["^="] = XOR_ASSIGN;
-    _opMap["~"] = COMPL;
-    _opMap["*"] = STAR;
-    _opMap["*="] = STAR_ASSIGN;
-    _opMap["/"] = SLASH;
-    _opMap["/="] = SLASH_ASSIGN;
-    _opMap["+"] = PLUS;
-    _opMap["+="] = PLUS_ASSIGN;
-    _opMap["++"] = INCR;
-    _opMap["-"] = MINUS;
-    _opMap["-="] = MINUS_ASSIGN;
-    _opMap["--"] = DECR;
-    _opMap["->"] = ARROW;
-    _opMap["%"] = MOD;
-    _opMap["%="] = MOD_ASSIGN;
-    _opMap[","] = COMMA;
-    _opMap["."] = PERIOD;
-    _opMap["..."] = ELLIPSIS;
-    _opMap[":"] = COLON;
-    _opMap["::"] = DBL_COLON;
-    _opMap[";"] = SEMICOLON;
-    _opMap["?"] = QUESTION;
-    _opMap["%{"] = OPENCODE;
-    _opMap["%}"] = CLOSCODE;
-    _opMap["%%"] = FSM;
-}
 
-
-Operator::~Operator()
-{
-}
-
-
-Token::Class Operator::tokenClass() const
-{
-    return Token::OPERATOR_TOKEN;
-}
-
-
-bool Operator::start(char c, std::istream& istr)
-{
-    _value = c;
-    char next = (char) istr.peek();
-    switch (_value[0])
-    {
-    case '[':
-    case ']':
-    case '(':
-    case ')':
-    case '{':
-    case '}':
-    case '<':
-    case '>':
-    case '=':
-    case '!':
-    case '&':
-    case '|':
-    case '*':
-    case '+':
-    case '-':
-    case '^':
-    case '~':
-    case ',':
-    case ':':
-    case ';':
-    case '%':
-    case '?':
-        return true;
-    case '.':
-        return !(next >= '0' && next <= '9');
-    case '/':
-        return !(next == '/' || next == '*');
-    default:
-        return false;
-    }
-}
-
-
-void Operator::finish(std::istream& istr)
-{
-    int next = (char) istr.peek();
-    switch (_value[0])
-    {
-    case '(':
-    case ')':
-    case '{':
-    case '}':
-    case '[':
-    case ']':
-    case ';':
-    case '?':
-    case '~':
-    case ',':
-        break;
-    case '.':
-        if (next == '.')
-        {
-            _value += (char) istr.get();
-            if (istr.peek() != '.')  syntaxError(".", std::string(1, (char)istr.peek()));
-            _value += (char) istr.get();
-        }
-        break;
-    case ':':
-        if (next == ':') _value += (char) istr.get();
-        break;
-    case '<':
-        if (next == '<')
-        {
-            _value += (char) istr.get();
-            next = (char) istr.peek();
-        }
-        if (next == '=') _value += (char) istr.get();
-        break;
-    case '>':
-        if (next == '>')
-        {
-            _value += (char) istr.get();
-            next = (char) istr.peek();
-        }
-        if (next == '=') _value += (char) istr.get();
-        break;
-    case '&':
-        if (next == '&' || next == '=') _value += (char) istr.get();
-        break;
-    case '|':
-        if (next == '|' || next == '=') _value += (char) istr.get();
-        break;
-    case '+':
-        if (next == '+' || next == '=') _value += (char) istr.get();
-        break;
-    case '-':
-        if (next == '-' || next == '=' || next == '>') _value += (char) istr.get();
-        break;
-    case '=':
-    case '!':
-    case '*':
-    case '/':
-    case '^':
-    case '%':
-        if (next == '=' || next == '{' || next == '}' || next == '%') _value += (char) istr.get();
-        break;
-    default:
-        poco_bugcheck();
-    }
-}
-
-
-int Operator::asInteger() const
-{
-    OpMap::const_iterator it = _opMap.find(_value);
-    if (it != _opMap.end())
-        return it->second;
-    else
-        return 0;
-}
-
-
+const char* const glyphes[] = {
+	"",		//	NONE
+	"+",	//	ADD,			// +
+	"-",	//	SUB,			// -
+	"*",	 //	MULT,			// *
+	"/",	 //	DIV,			// /
+	"**",	//	POW,			// **
+	"^",	//	BITXOR,			// ^
+	"&",	//	BITAND,			// &
+	"|",	 //	BITOR,			// |
+	"&&",	//	AND,			// &&
+	"||",	//	OR,				// ||
+	"!",	//	NOT,			// !
+	"==",	//	EQUAL,			// ==
+	"!=",	//	NOTEQUAL,		// !=
+	"<",	//	LESS,			// <
+	"<=",	//	LESSOREQ,		// <=
+	">",	//	GREATER,		// >
+	">=",	//	GREATEROREQ,	// >=
+	".",	//	SELECTOR,		// .
+	"->",	//	ACCESSOR,		// ->
+	"(",	//	OPENPAR,		// (
+	")",	//	CLOSPAR			// )
+};
+//
+// operator's precedence.
+/*
+1 	()   []   ->   .   :: 										Function call, scope, array/member access
+2 	 !   ~   -   +   *   &   sizeof   type cast   ++   --   	(most) unary operators, sizeof AND type casts (right to left)
+3 	*   /   % MOD 												Multiplication, division, modulo
+4 	+   - 														Addition AND subtraction
+5 	<<   >> 													Bitwise shift left AND right
+6 	<   <=   >   >= 											Comparisons: less-than, ...
+7 	==   != 													Comparisons: EQUAL AND not EQUAL
+8 	& 															Bitwise	AND
+9 	^ 															Bitwise exclusive OR (XOR)
+10 	| 															Bitwise inclusive (normal) OR
+11 	&& 															Logical AND
+12 	||															Logical OR
+13 	 ? : 														Conditional expression (ternary)
+14 	=   +=   -=   *=   /=   %=   &=   |=   ^=   <<=   >>= 		Assignment operators (right to left)
+15 	, 															Comma operator
+*/
+//
+const int const precedences[] = {
+	0,	//	NONE
+	4,	//	ADD,			// +
+	4,	//	SUB,			// -
+	3,	//	MULT,			// *
+	3,	//	DIV,			// /
+	3,	//	POW,			// **
+	9,	//	BITXOR,			// ^
+	8,	//	BITAND,			// &
+	10,	//	BITOR,			// |
+	11,	//	AND,			// &&
+	12,	//	OR,				// ||
+	2,	//	NOT,			// !
+	7,	//	EQUAL,			// ==
+	7,	//	NOTEQUAL,		// !=
+	6,	//	LESS,			// <
+	6,	//	LESSOREQ,		// <=
+	6,	//	GREATER,		// >
+	6,	//	GREATEROREQ,	// >=
+	1,	//	SELECTOR,		// .
+	1,	//	ACCESSOR,		// ->
+	1,	//	OPENPAR,		// (
+	1,	//	CLOSPAR			// )
+};
 }
 }
 }
