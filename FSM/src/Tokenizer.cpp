@@ -11,7 +11,7 @@ using Poco::WhitespaceToken;
 #include "parser/Keyword.h"
 #include "parser/Comment.h"
 #include "parser/Character.h"
-#include "parser/Operator.h"
+#include "parser/Glyphe.h"
 #include "parser/String.h"
 
 
@@ -29,7 +29,7 @@ Tokenizer::Tokenizer(std::istream& istr):
     addToken(new Identifier());
     addToken(new Number());
     addToken(new Keyword());
-    addToken(new Operator());
+    addToken(new Glyphe());
     addToken(new Character());
     addToken(new String());
 
