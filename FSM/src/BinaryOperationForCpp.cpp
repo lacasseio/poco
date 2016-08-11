@@ -14,12 +14,12 @@ namespace PARSER
 {
 namespace CPP
 {
-const string BinaryOperationForCpp::display(const string& prefix) const
+const string BinaryOperationForCpp::display(const char* prefix) const
 {
     string value;
-	value += '(';
+	if (!(op() == Poco::FSM::MODEL::SELECTOR || op() == Poco::FSM::MODEL::ACCESSOR))
+		value += '(';
     value += dynamic_cast<ExpressionForCpp*>(left())->display(prefix);
-	value += ' ';
 	switch (op())
     {
 	case Poco::FSM::MODEL::ADD:
@@ -42,9 +42,14 @@ const string BinaryOperationForCpp::display(const string& prefix) const
         value += "???";
         break;
     }
-	value += ' ';
-    value += dynamic_cast<ExpressionForCpp*>(right())->display(prefix);
-	value += ')';
+	if (op() == Poco::FSM::MODEL::SELECTOR || op() == Poco::FSM::MODEL::ACCESSOR) {
+		ExpressionForCpp* efc = dynamic_cast<ExpressionForCpp*>(right());
+		value += efc->display();
+	} else {
+		value += dynamic_cast<ExpressionForCpp*>(right())->display(prefix);
+	}
+	if (!(op() == Poco::FSM::MODEL::SELECTOR || op() == Poco::FSM::MODEL::ACCESSOR))
+		value += ')';
 	return value;
 }
 
