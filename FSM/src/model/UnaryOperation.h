@@ -6,8 +6,8 @@
 #ifndef POCO_FSM_MODEL_UNARY_OPERATION_H_
 #define POCO_FSM_MODEL_UNARY_OPERATION_H_
 
-#include "Operation.h"
-#include "Expression.h"
+#include "model/Operation.h"
+#include "model/Expression.h"
 
 namespace Poco {
 	namespace FSM {
@@ -18,7 +18,7 @@ namespace Poco {
 				ExpressionPtr		_operand;
 
 			public:
-				UnaryOperation(Operator op) : Operation(op) {
+				UnaryOperation(Operator op) : Operation(op, Unary), _operand(NULL) {
 				}
 				virtual ~UnaryOperation() {
 				}

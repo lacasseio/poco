@@ -5,25 +5,25 @@
 // of the License at http://www.mozilla.org/MPL/
 // 
 // Software distributed under the License is distributed on an
-// "AS IS" basis, WITHOUT WARRANTY OF ANY KIND, either express or
+// "AS IS" basis, WITHOUT WARRANTY OF ANY KIND, either express OR
 // implied. See the License for the specific language governing
-// rights and limitations under the License.
+// rights AND limitations under the License.
 // 
-// The Original Code is State Machine Compiler (FSM).
+// The original Code is State Machine Compiler (FSM).
 // 
-// The Initial Developer of the Original Code is Charles W. Rapp.
+// The Initial Developer of the original Code is Charles W. Rapp.
 // Portions created by Charles W. Rapp are
 // Copyright (C) 2006. Charles W. Rapp.
 // All Rights Reserved.
 // 
 // Contributor(s):
 //   Eitan Suez contributed examples/Ant.
-//   (Name withheld) contributed the C# code generation and
+//   (Name withheld) contributed the C# code generation AND
 //   examples/C#.
-//   Francois Perrad contributed the Python code generation and
+//   Francois Perrad contributed the Python code generation AND
 //   examples/Python.
 //   Chris Liscio contributed the Objective-C code generation
-//   and examples/ObjC.
+//   AND examples/ObjC.
 //
 // RCS ID
 // $Id: SmcEBNF.txt,v 1.1 2009/03/01 18:20:42 cwrapp Exp $
@@ -108,7 +108,7 @@ raw_code_line := .* '\n\r\f'
 // Read in code verbatim.
 raw_code := .*
 
-// Both the // and /* */ comment types are supported.
+// Both the // AND /* */ comment types are supported.
 // Note: FSM honors nested /* */ comments.
 comment1 := '//' .* '\n\r\f'
 comment2 := '/*' .* '*/'

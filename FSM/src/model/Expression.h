@@ -21,6 +21,7 @@ namespace Poco {
 				const GuardPtr	guard() const 		{ return _guard; }
 
 				virtual const string display() const = 0;
+				virtual const string token() const = 0;
 				OperationPtr&		operation()			{ return _operation;  }
 				const OperationPtr&	operation() const	{ return _operation;  }
 

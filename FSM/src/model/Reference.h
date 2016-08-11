@@ -28,20 +28,12 @@ private:
 	};
 
 public:
-	Reference(const VariablePtr variable, int lineno = 0) : 
-		Element(lineno), 
-		_variable(variable)  {
-	}
-	Reference(const FunctionPtr function, int lineno = 0) :
-		Element(lineno),
-		_function(function)  {
-	}
-	Reference(const LiteralPtr literal, int lineno = 0) :
-		Element(lineno),
-		_literal(literal)  {
-	}
-	virtual ~Reference() {
-	}
+	Reference(const VariablePtr variable, int lineno = 0);
+	Reference(const FunctionPtr function, int lineno = 0);
+	Reference(const LiteralPtr literal, int lineno = 0);
+	virtual ~Reference();
+
+	virtual const string token() const;
 	virtual const string display() const;
 	ElementPtr			reference()			{ return _variable;  }
 	const ElementPtr	reference() const	{ return _variable;  }

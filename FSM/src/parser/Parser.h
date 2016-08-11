@@ -12,16 +12,16 @@ using std::stack;
 #include "Poco/Path.h"
 #include "Poco/File.h"
 #include "Poco/Logger.h"
-#include "Poco/Token.h"
 #include "Poco/CountingStream.h"
 using Poco::Logger;
-using Poco::Token;
 using Poco::Path;
 using Poco::File;
 using Poco::CountingInputStream;
 
 #include "Tokenizer.h"
 #include "model/SMC.h"
+#include "parser/Token.h"
+#include "model/Operator.h"
 
 using Poco::FSM::MODEL::StatePtr;
 using Poco::FSM::MODEL::EntryPtr;
@@ -35,6 +35,7 @@ using Poco::FSM::MODEL::FSMPtr;
 using Poco::FSM::MODEL::ExpressionPtr;
 using Poco::FSM::MODEL::ArgumentPtr;
 using Poco::FSM::MODEL::ReferencePtr;
+using Poco::FSM::MODEL::Operator;
 
 namespace Poco {
 	namespace FSM {
@@ -47,60 +48,61 @@ namespace Poco {
 				FSMPtr parse(const Path& out);
 
 			protected:
-				const Poco::Token* parseAccess(const Poco::Token* next);
-				const Poco::Token* parseAction(const Poco::Token* next);
-				const Poco::Token* parseActions(const Poco::Token* next, List<ActionPtr>& actions);
-				const Poco::Token* parseArgument(const Poco::Token* next, List<ArgumentPtr>& list);
-				const Poco::Token* parseArguments(const Poco::Token* next, List<ArgumentPtr>& list);
-				const Poco::Token* parseClass(const Poco::Token* next);
-				const Poco::Token* parseDeclare(const Poco::Token* next);
-				const Poco::Token* parseEntry(const Poco::Token* next);
-				const Poco::Token* parseExit(const Poco::Token* next);
-				const Poco::Token* parseExpression(const Poco::Token* next, ExpressionPtr& expression);
-				const Poco::Token* parseFSM(const Poco::Token* next);
-				const Poco::Token* parseFFSMlass(const Poco::Token* next);
-				const Poco::Token* parseFSMFile(const Poco::Token* next);
-				const Poco::Token* parseFile(const Poco::Token* next, const Path& out);
-				const Poco::Token* parseGuard(const Poco::Token* next);
-				const Poco::Token* parseHeader(const Poco::Token* next);
-				const Poco::Token* parseImport(const Poco::Token* next);
-				const Poco::Token* parseInclude(const Poco::Token* next);
-				const Poco::Token* parseIncludes(const Poco::Token* next);
-				const Poco::Token* parseMap(const Poco::Token* next);
-				const Poco::Token* parseNext(const Poco::Token* next);
-				const Poco::Token* parsePackage(const Poco::Token* next);
-				const Poco::Token* parseParameter(const Poco::Token* next);
-				const Poco::Token* parseParameters(const Poco::Token* next);
-				const Poco::Token* parsePopArguments(const Poco::Token* next);
-				const Poco::Token* parsePopTransition(const Poco::Token* next);
-				const Poco::Token* parsePushTransition(const Poco::Token* next);
-				const Poco::Token* parseRawCode(const Poco::Token* next);
-				const Poco::Token* parseReturn(const Poco::Token* next);
-				const Poco::Token* parseSource(const Poco::Token* next);
-				const Poco::Token* parseStart(const Poco::Token* next);
-				const Poco::Token* parseState(const Poco::Token* next);
-				const Poco::Token* parseStates(const Poco::Token* next);
-				const Poco::Token* parseTransition(const Poco::Token* next);
-				const Poco::Token* parseTransitionArgs(const Poco::Token* next);
-				const Poco::Token* parseTransitions(const Poco::Token* next);
-				const Poco::Token* parseTerminal(const Poco::Token* next, ReferencePtr& reference);
+				const Token* parseAccess(const Token* next);
+				const Token* parseAction(const Token* next);
+				const Token* parseActions(const Token* next, List<ActionPtr>& actions);
+				const Token* parseArgument(const Token* next, List<ArgumentPtr>& list);
+				const Token* parseArguments(const Token* next, List<ArgumentPtr>& list);
+				const Token* parseClass(const Token* next);
+				const Token* parseDeclare(const Token* next);
+				const Token* parseEntry(const Token* next);
+				const Token* parseExit(const Token* next);
+				const Token* parseExpression(const Token* next, ExpressionPtr& expression);
+				const Token* parseFSM(const Token* next);
+				const Token* parseFSMClass(const Token* next);
+				const Token* parseFSMFile(const Token* next);
+				const Token* parseFile(const Token* next, const Path& out);
+				const Token* parseGuard(const Token* next);
+				const Token* parseHeader(const Token* next);
+				const Token* parseImport(const Token* next);
+				const Token* parseInclude(const Token* next);
+				const Token* parseIncludes(const Token* next);
+				const Token* parseMap(const Token* next);
+				const Token* parseNext(const Token* next);
+				const Token* parsePackage(const Token* next);
+				const Token* parseParameter(const Token* next);
+				const Token* parseParameters(const Token* next);
+				const Token* parsePopArguments(const Token* next);
+				const Token* parsePopTransition(const Token* next);
+				const Token* parsePushTransition(const Token* next);
+				const Token* parseRawCode(const Token* next);
+				const Token* parseReturn(const Token* next);
+				const Token* parseSource(const Token* next);
+				const Token* parseStart(const Token* next);
+				const Token* parseState(const Token* next);
+				const Token* parseStates(const Token* next);
+				const Token* parseTransition(const Token* next);
+				const Token* parseTransitionArgs(const Token* next);
+				const Token* parseTransitions(const Token* next);
+				const Token* parseTerminal(const Token* next, ReferencePtr& reference);
 
-				static bool isString(const Poco::Token* token);
-				static bool isCharacter(const Poco::Token* token);
-				static bool isNumber(const Poco::Token* token);
-				static bool isIdentifier(const Poco::Token* token);
-				static bool isOperator(const Poco::Token* token);
-				static bool isOperator(const Poco::Token* token, int kind);
-				static bool isKeyword(const Poco::Token* token, int kind);
-				static bool isEOF(const Poco::Token* token);
-				static void expectOperator(const Poco::Token* token, int kind, const string& msg);
+				static bool isString(const Token* token);
+				static bool isCharacter(const Token* token);
+				static bool isNumber(const Token* token);
+				static bool isIdentifier(const Token* token);
+				static bool isOperator(const Token* token);
+				static bool isOperator(const Token* token, int kind);
+				static bool isKeyword(const Token* token, int kind);
+				static bool isEOF(const Token* token);
+//				static void expectOperator(const Token* token, int kind, const string& msg);
 				static void syntaxError(const string& msg);
-				static void append(string& decl, const string& token);
-				static void append(string& decl, const Poco::Token* token);
+//				static void append(string& decl, const string& token);
+//				static void append(string& decl, const Token* token);
+				static bool isOperator(ExpressionPtr expression, Operator op);
 
-				const Poco::Token* nextToken();
-				const Poco::Token* nextPreprocessed();
-				const Poco::Token* nextParserToken();
+
+				const Token* nextToken();
+				const Token* nextParserToken();
 				void reduce();
 
 			public:
@@ -109,28 +111,27 @@ namespace Poco {
 			private:
 				CountingInputStream _istr;
 				Tokenizer			_tokenizer;
-				File		_file;
-				Path		_path;
-				string		_currentPath;
-				bool		_inFile;
-				string		_package;
-				string		_library;
-				string		_doc;
-				string		_attrs;
+				File				_file;
+				Path				_path;
+				string				_currentPath;
+				bool				_inFile;
+				string				_package;
+				string				_library;
+				string				_doc;
+				string				_attrs;
 
-				FSMPtr			fsm;
-				StatePtr		state;
-				GuardPtr		guard;
-				MapPtr			map;
-				ActionPtr		action;
-				TransitionPtr	transition;
-				ParameterPtr	parameter;
-				List<ParameterPtr> parameters;
-				EntryPtr		entry;
-				ExitPtr			exit;
+				FSMPtr				fsm;
+				StatePtr			state;
+				GuardPtr			guard;
+				MapPtr				map;
+				ActionPtr			action;
+				TransitionPtr		transition;
+				ParameterPtr		parameter;
+				List<ParameterPtr>	 parameters;
+				EntryPtr			entry;
+				ExitPtr				exit;
 
 				Logger&					_logger;
-				stack<ExpressionPtr>	_stack;
 			};
 
 		}

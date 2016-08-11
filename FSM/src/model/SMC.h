@@ -9,14 +9,20 @@
 #include <cstddef>
 #include <string>
 #include <vector>
+#include <stack>
 using std::string;
 using std::vector;
+using std::stack;
 
 #ifdef POCO_ENABLE_CPP11 
 	template<typename T>
 	using List = vector<T>;
+
+	template<typename T>
+	using Stack = stack<T>;
 #else
 	#define List vector
+	#define Stack stack
 #endif
 
 namespace Poco {
