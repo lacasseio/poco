@@ -15,9 +15,12 @@ namespace PARSER
 {
 namespace CPP
 {
-const string VariableForCpp::display(const string& prefix) const
+const string VariableForCpp::display(const char* prefix) const
 {
-    return prefix + name();
+    if (prefix)
+		return prefix + name();
+	else
+		return name();
 }
 }
 }

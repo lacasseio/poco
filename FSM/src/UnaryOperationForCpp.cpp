@@ -13,7 +13,7 @@ namespace PARSER
 {
 namespace CPP
 {
-const string UnaryOperationForCpp::display(const string& prefix) const
+const string UnaryOperationForCpp::display(const char* prefix) const
 {
     string value;
     switch (op())

@@ -22,7 +22,7 @@ namespace Poco {
 					}
 					virtual ~BinaryOperationForCpp() {
 					}
-					const string display(const string& prefix) const;
+					virtual const string display(const char* prefix) const;
 				};
 			}
 		}
