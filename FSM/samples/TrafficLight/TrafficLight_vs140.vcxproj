@@ -116,6 +116,7 @@
     <OutDir>bin\</OutDir>
     <IntDir>obj\TrafficLight\$(Configuration)\</IntDir>
     <LinkIncremental>false</LinkIncremental>
+    <CustomBuildBeforeTargets>ClCompile</CustomBuildBeforeTargets>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='debug_static_mt|Win32'">
     <OutDir>bin\static_mt\</OutDir>
@@ -166,7 +167,7 @@
       <TargetMachine>MachineX86</TargetMachine>
     </Link>
     <CustomBuildStep>
-      <Command>..\..\bin\FSMcd /v src/TrafficLight.sm</Command>
+      <Command>PATH=..\..\..\bin\;%PATH% &amp;&amp; ..\..\bin\FSMcd /v src/TrafficLight.sm</Command>
     </CustomBuildStep>
     <CustomBuildStep>
       <Outputs>src\Stoplight_sm.cpp</Outputs>
@@ -202,6 +203,9 @@
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <TargetMachine>MachineX86</TargetMachine>
     </Link>
+    <CustomBuildStep>
+      <Command>PATH=..\..\..\bin\;%PATH% &amp;&amp; ..\..\bin\FSMc /v src/TrafficLight.sm</Command>
+    </CustomBuildStep>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='debug_static_mt|Win32'">
     <ClCompile>
