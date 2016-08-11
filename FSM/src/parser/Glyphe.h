@@ -3,18 +3,18 @@
 // and Contributors.
 //
 
-#ifndef POCO_FSM_PARSER_OPERATOR_H_
-#define POCO_FSM_PARSER_OPERATOR_H_
+#ifndef POCO_FSM_PARSER_GLYPHE_H_
+#define POCO_FSM_PARSER_GLYPHE_H_
 
 #include <map>
 using std::map;
-#include "Token.h"
+#include "parser/Token.h"
 
 namespace Poco {
 	namespace FSM {
 		namespace PARSER {
 
-			class Operator : public Token {
+			class Glyphe : public Token {
 			public:
 				enum OP	{
 					OPENBRACKET = 1,// [
@@ -45,6 +45,7 @@ namespace Poco {
 					XOR_ASSIGN,     // ^=
 					COMPL,          // ~
 					STAR,		    // *
+					STARSTAR,	    // **
 					STAR_ASSIGN,	// *=
 					SLASH,          // /
 					SLASH_ASSIGN,   // /=
@@ -69,8 +70,8 @@ namespace Poco {
 					FSM				// %%
 				};
 
-				Operator();
-				~Operator();
+				Glyphe();
+				~Glyphe();
 				Poco::Token::Class tokenClass() const;
 				bool start(char c, std::istream& istr);
 				void finish(std::istream& istr);
