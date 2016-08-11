@@ -22,9 +22,9 @@ Keyword::Keyword()
 {
     _opMap["%start"]	= START;		// %start
     _opMap["%class"]	= CLASS;		// %class
-    _opMap["%fsmclass"]	= FFSMLASS,		// %fsmclass
-                          _opMap["%fsmfile"]	= FSMFILE,		// %fsmfile
-                                  _opMap["%header"]	= HEADER;		// %header
+    _opMap["%fsmclass"]	= FSMCLASS,		// %fsmclass
+	_opMap["%fsmfile"]	= FSMFILE,		// %fsmfile
+	_opMap["%header"]	= HEADER;		// %header
     _opMap["%include"]	= INCLUDE;		// %include
     _opMap["%package"]	= PACKAGE;		// %package
     _opMap["%import"]	= IMPORT;		// %import
@@ -83,7 +83,7 @@ const char* Keyword::asString(int kwno)
         return "%class";
     case FSMFILE:
         return "%fsmfile";
-    case FFSMLASS:
+    case FSMCLASS:
         return "%fsmclass";
     case HEADER:
         return "%header";
