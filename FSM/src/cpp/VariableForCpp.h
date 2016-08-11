@@ -3,8 +3,8 @@
 // and Contributors.
 //
 
-#ifndef VARIABLEFORCPP_H_
-#define VARIABLEFORCPP_H_
+#ifndef VARIABLE_FOR_CPP_H_
+#define VARIABLE_FOR_CPP_H_
 
 #include "model/Variable.h"
 
