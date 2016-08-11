@@ -16,9 +16,9 @@ namespace CPP
 const string UnaryOperationForCpp::display(const string& prefix) const
 {
     string value;
-    switch (_operator)
+    switch (op())
     {
-    case Poco::FSM::MODEL::not:
+    case Poco::FSM::MODEL::NOT:
         value += "!";
         break;
     default:
