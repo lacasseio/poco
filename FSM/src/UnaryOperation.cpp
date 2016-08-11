@@ -15,12 +15,14 @@ const string UnaryOperation::display() const
 {
     if (_asstring.empty())
     {
-        switch (_operator)
+        switch (op())
         {
-        case not:
+        case NOT:
             _asstring += '!';
+			break;
         }
-        _asstring += _operand->display();
+        if (_operand)
+			_asstring += _operand->display();
     }
     return _asstring;
 }
