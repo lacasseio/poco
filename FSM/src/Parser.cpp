@@ -611,8 +611,8 @@ const Token* Parser::parseGuard(const Token* next)
             next = parseExpression(next, guard->condition());
         }
         while (!isOperator(next, Glyphe::CLOSBRACKET));
-        guard->condition()->guard() = guard;
-        next = nextToken();
+		guard->condition()->guard() = guard;
+		next = nextToken();
     }
     return next;
 }
@@ -638,6 +638,7 @@ const Token* Parser::parseTerminal(const Token* next, ReferencePtr& reference)
 	} else {
 		LiteralPtr literal = factory.newLiteral(next->tokenString());
 		reference = factory.newReference(literal);
+		next = nextToken();
 	}
     return next;
 }
