@@ -9,7 +9,6 @@
 
 using Poco::StreamTokenizer;
 using Poco::SyntaxException;
-using Poco::Token;
 using Poco::InvalidToken;
 using Poco::EOFToken;
 using Poco::WhitespaceToken;
