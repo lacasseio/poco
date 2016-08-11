@@ -51,12 +51,14 @@ const string ReferenceForCpp::display(const string& prefix) const
     }
     else
     {
-        if (vfc)
-            return vfc->display(prefix);
-        else if (ffc)
-            return ffc->display(prefix);
-        else
-            poco_assert(false);
+		if (vfc)
+			return vfc->display(prefix);
+		else if (ffc)
+			return ffc->display(prefix);
+		else if (lfc)
+			return lfc->Literal::display();
+		else
+			poco_assert(false);
     }
 }
 }
