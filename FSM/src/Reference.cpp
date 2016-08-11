@@ -30,11 +30,12 @@ Reference::~Reference() {
 bool Reference::isParameter() const
 {
     GuardPtr g = guard();
-    TransitionPtr transition = guard()->transition();
-    if (transition->hasParameter(reference()->Element::name()))
-        return true;
-    else
-        return false;
+	if (guard()) {
+		TransitionPtr transition = guard()->transition();
+		if (transition->hasParameter(reference()->Element::name()))
+			return true;
+	}
+	return false;
 }
 const string Reference::token() const
 {
