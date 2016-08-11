@@ -105,7 +105,7 @@ Exit
 	Close									FIN_WAIT_1				{ doSend(TcpSegment::FIN, NULL, 0, 0, NULL); }
 	AckTimeout								CLOSED					{ doSend(TcpSegment::RST, NULL, 0, 0, NULL);closeSocket(); }
 }
-
+ 
 // A application-created client starts life in this state.
 SYN_SENT
 Entry
@@ -370,7 +370,7 @@ Exit
 			deleteSegment(segment);
 		}
 }
-
+ 
 TIME_WAIT
 Entry
 {
