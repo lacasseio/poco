@@ -611,7 +611,6 @@ const Token* Parser::parseGuard(const Token* next)
             next = parseExpression(next, guard->condition());
         }
         while (!isOperator(next, Glyphe::CLOSBRACKET));
-		guard->condition()->guard() = guard;
 		next = nextToken();
     }
     return next;
@@ -643,30 +642,6 @@ const Token* Parser::parseTerminal(const Token* next, ReferencePtr& reference)
     return next;
 }
 
-bool precede(const ExpressionPtr left, const ExpressionPtr right)
-{
-	//
-	// operator's precedence.
-	/*
-	1 	()   []   ->   .   :: 										Function call, scope, array/member access
-	2 	 !   ~   -   +   *   &   sizeof   type cast   ++   --   	(most) unary operators, sizeof AND type casts (right to left)
-	3 	*   /   % MOD 												Multiplication, division, modulo
-	4 	+   - 														Addition AND subtraction
-	5 	<<   >> 													Bitwise shift left AND right
-	6 	<   <=   >   >= 											Comparisons: less-than, ...
-	7 	==   != 													Comparisons: EQUAL AND not EQUAL
-	8 	& 															Bitwise	AND
-	9 	^ 															Bitwise exclusive OR (XOR)
-	10 	| 															Bitwise inclusive (normal) OR
-	11 	&& 															Logical AND
-	12 	||															Logical OR
-	13 	 ? : 														Conditional expression (ternary)
-	14 	=   +=   -=   *=   /=   %=   &=   |=   ^=   <<=   >>= 		Assignment operators (right to left)
-	15 	, 															Comma operator
-	*/
-	//
-	return true;
-}
 bool Parser::isOperator(ExpressionPtr expression, Operator op)
 {
 	const Operation* ope = dynamic_cast<const Operation*>(expression);
@@ -790,7 +765,7 @@ While (the stack is not empty)
 			if (stack.empty() || isOperator(stack.top(), FSM::MODEL::OPENPAR))
 				stack.push(ope);
 			else {
-				while(stack.size() && !isOperator(stack.top(), FSM::MODEL::OPENPAR) && precede(ope, stack.top())) {
+				while(stack.size() && !isOperator(stack.top(), FSM::MODEL::OPENPAR) && ope->precede(dynamic_cast<const OperationPtr>(stack.top()))) {
 					postfix.push_back(stack.top());stack.pop();
 				}
 				stack.push(ope);
@@ -821,6 +796,10 @@ Pop the stack (this is the final value)
 */
 	List<ExpressionPtr>::const_iterator ci;
 	for(ci = postfix.begin(); ci != postfix.end(); ++ci) {
+		clog << (*ci)->token() << ' ';
+	}
+	clog << endl;
+	for(ci = postfix.begin(); ci != postfix.end(); ++ci) {
 		ReferencePtr operand = dynamic_cast<ReferencePtr>(*ci);
 		OperationPtr operation = dynamic_cast<OperationPtr>(*ci);
 		if (operand) {
@@ -829,13 +808,20 @@ Pop the stack (this is the final value)
 		if (operation) {
 			if (operation->arity() == Arity::Unary) {
 				UnaryOperation* monop = static_cast<UnaryOperation*>(operation);
-				monop->operand() = stack.top();stack.pop();
+				monop->operand() = stack.top();
+				monop->operand()->operation() = monop;
+				stack.pop();
 				stack.push(monop);
 			} else
 			if (operation->arity() == Arity::Binary) {
 				BinaryOperation* binop = static_cast<BinaryOperation*>(operation);
-				binop->right() = stack.top();stack.pop();
-				binop->left() = stack.top();stack.pop();
+				binop->right() = stack.top();
+				binop->right()->operation() = binop;
+				stack.pop();
+				
+				binop->left() = stack.top();
+				binop->left()->operation() = binop;
+				stack.pop();
 				stack.push(binop);
 			}
 		}
