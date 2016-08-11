@@ -19,7 +19,7 @@ public:
 		START = 1,	// %start
 		CLASS,		// %class
 		FSMFILE,	// %fsmfile
-		FFSMLASS,	// %fsmclass
+		FSMCLASS,	// %fsmclass
 		HEADER,		// %header
 		INCLUDE,	// %include
 		PACKAGE,	// %package
