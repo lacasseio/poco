@@ -41,9 +41,10 @@
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <ProjectName>TrafficLight</ProjectName>
-    <ProjectGuid>{A89F0F92-17FD-4F64-B95D-CBEE7349DB2C}</ProjectGuid>
+    <ProjectGuid>{B39C05E2-A509-4326-B5C3-2B4367B43D27}</ProjectGuid>
     <RootNamespace>TrafficLight</RootNamespace>
     <Keyword>Win32Proj</Keyword>
+    <WindowsTargetPlatformVersion>8.1</WindowsTargetPlatformVersion>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='release_static_md|Win32'" Label="Configuration">
@@ -98,25 +99,23 @@
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup>
-    <_ProjectFileVersion>12.0.30501.0</_ProjectFileVersion>
-    <TargetName Condition="'$(Configuration)|$(Platform)'=='debug_shared|Win32'">TrafficLightd</TargetName>
-    <TargetName Condition="'$(Configuration)|$(Platform)'=='debug_static_md|Win32'">TrafficLightd</TargetName>
-    <TargetName Condition="'$(Configuration)|$(Platform)'=='debug_static_mt|Win32'">TrafficLightd</TargetName>
-    <TargetName Condition="'$(Configuration)|$(Platform)'=='release_shared|Win32'">TrafficLight</TargetName>
-    <TargetName Condition="'$(Configuration)|$(Platform)'=='release_static_md|Win32'">TrafficLight</TargetName>
-    <TargetName Condition="'$(Configuration)|$(Platform)'=='release_static_mt|Win32'">TrafficLight</TargetName>
+    <_ProjectFileVersion>14.0.23107.0</_ProjectFileVersion>
+    <TargetName Condition="'$(Configuration)|$(Platform)'=='debug_shared|Win32'">$(ProjectName)d</TargetName>
+    <TargetName Condition="'$(Configuration)|$(Platform)'=='debug_static_md|Win32'">$(ProjectName)d</TargetName>
+    <TargetName Condition="'$(Configuration)|$(Platform)'=='debug_static_mt|Win32'">$(ProjectName)d</TargetName>
+    <TargetName Condition="'$(Configuration)|$(Platform)'=='release_shared|Win32'">$(ProjectName)</TargetName>
+    <TargetName Condition="'$(Configuration)|$(Platform)'=='release_static_md|Win32'">$(ProjectName)</TargetName>
+    <TargetName Condition="'$(Configuration)|$(Platform)'=='release_static_mt|Win32'">$(ProjectName)</TargetName>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='debug_shared|Win32'">
     <OutDir>bin\</OutDir>
     <IntDir>obj\TrafficLight\$(Configuration)\</IntDir>
     <LinkIncremental>true</LinkIncremental>
-    <CustomBuildBeforeTargets>ClCompile</CustomBuildBeforeTargets>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='release_shared|Win32'">
     <OutDir>bin\</OutDir>
     <IntDir>obj\TrafficLight\$(Configuration)\</IntDir>
     <LinkIncremental>false</LinkIncremental>
-    <CustomBuildBeforeTargets>ClCompile</CustomBuildBeforeTargets>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='debug_static_mt|Win32'">
     <OutDir>bin\static_mt\</OutDir>
@@ -166,12 +165,6 @@
       <SubSystem>Console</SubSystem>
       <TargetMachine>MachineX86</TargetMachine>
     </Link>
-    <CustomBuildStep>
-      <Command>PATH=..\..\..\bin\;%PATH% &amp;&amp; ..\..\bin\FSMcd /v src/TrafficLight.sm</Command>
-    </CustomBuildStep>
-    <CustomBuildStep>
-      <Outputs>src\Stoplight_sm.cpp</Outputs>
-    </CustomBuildStep>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='release_shared|Win32'">
     <ClCompile>
@@ -203,9 +196,6 @@
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <TargetMachine>MachineX86</TargetMachine>
     </Link>
-    <CustomBuildStep>
-      <Command>PATH=..\..\..\bin\;%PATH% &amp;&amp; ..\..\bin\FSMc /v src/TrafficLight.sm</Command>
-    </CustomBuildStep>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='debug_static_mt|Win32'">
     <ClCompile>

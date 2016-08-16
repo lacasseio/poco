@@ -148,7 +148,7 @@
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <ProjectName>FSMc</ProjectName>
-    <ProjectGuid>{E12E5C71-79A4-495A-848F-F1710111E610}</ProjectGuid>
+    <ProjectGuid>{41511563-A88B-4699-BE51-A96934357610}</ProjectGuid>
     <RootNamespace>FSMc</RootNamespace>
     <Keyword>Win32Proj</Keyword>
   </PropertyGroup>
