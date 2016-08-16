@@ -47,8 +47,8 @@ enum Operator {
 	OPENPAR,		// (
 	CLOSPAR			// )
 };
-extern const char* const glyphes[];
-extern const int precedences[];
+extern const char* /*const*/ glyphes[];
+extern const int /*const*/ precedences[];
 }
 }
 }
