@@ -19,7 +19,7 @@ public:
 	}
 	virtual ~ExpressionForCpp() {
 	}
-	virtual const string display(const char* prefix = nullptr) const = 0;
+	virtual const string display(const char* prefix = NULL) const = 0;
 };
 
 }
