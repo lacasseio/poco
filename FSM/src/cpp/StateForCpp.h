@@ -21,12 +21,12 @@ namespace Poco {
 					}
 					virtual ~StateForCpp() {
 					}
-					virtual void generateInclude(ostream& inc, bool debug) const;
-					virtual void generateCode(ostream& cpp, bool debug) const;
+					virtual void generateInclude(ostream& inc,bool debug = false) const;
+					virtual void generateCode(ostream& cpp, bool debug = false) const;
 
-					void generateForwarDeclaration(ostream& inc, bool debug) const;
-					void generateVirtualTransitions(ostream& inc, bool debug) const;
-					void generateDefinition(ostream& inc, bool debug) const;
+					void generateForwarDeclaration(ostream& inc, bool debug = false) const;
+					void generateVirtualTransitions(ostream& inc, bool debug = false) const;
+					void generateDefinition(ostream& inc,  bool defaut = false, bool debug = false) const;
 					void generateDeclaration(ostream& cpp, int no) const;
 					
 				private:

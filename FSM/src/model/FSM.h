@@ -69,6 +69,7 @@ namespace Poco {
 
 				virtual bool updated(const Path& out) = 0;
 
+				string klassState() const				{ return klass() + "State"; }
 			protected:
 				Parser*		_parser;
 

@@ -27,7 +27,7 @@ namespace CPP
 
 string MapForCpp::defaultStateName() const
 {
-    return name() + '_' + defaultState()->name();
+    return name() + '_' +"Default";// defaultState()->name();
 }
 
 string MapForCpp::startStateName() const
@@ -64,7 +64,7 @@ void MapForCpp::generateInclude(ostream& inc, bool debug) const
         comment = "// Class State.";
         comment.resize(LL, '-');
         inc << comment << endl;
-        inc << "class " << fsm()->klass() << "State : public statemap::State {" << endl;
+        inc << "class " << fsm()->klassState() << " : public statemap::State {" << endl;
         inc << "public:" << endl << tab;
 
         inc << fsm()->klass() << "State(const char *name, int no) : statemap::State(name, no) {};" << endl;
@@ -98,15 +98,20 @@ void MapForCpp::generateInclude(ostream& inc, bool debug) const
     }
 
     {
-        comment = "// FSM map default state class.";
-        comment.resize(LL, '-');
-        inc << comment << endl;
-        inc << "class " << defaultStateName() << " : public " << fsm()->klass() << "State {" << endl;
-        inc << "public:" << endl << tab;
-        inc << defaultStateName() << " (const char *name, int stateId) : " << fsm()->klass() << "State(name, stateId)	{}" << endl;
-        inc << back << "};";
-        inc << endl;
-        inc << endl;
+ 		comment = "// FSM map default state class.";
+		comment.resize(LL, '-');
+		inc << comment << endl;
+		if (!defaultState()) {
+			inc << "class " << defaultStateName() << " : public " << fsm()->klass() << "State {" << endl;
+			inc << "public:" << endl << tab;
+			inc << defaultStateName() << " (const char *name, int stateId) : " << fsm()->klass() << "State(name, stateId)	{}" << endl;
+			inc << back << "};";
+			inc << endl;
+			inc << endl;
+		} else {
+			StateForCpp* sfc = dynamic_cast<StateForCpp*>(defaultState());
+			sfc->generateDefinition(inc, true, debug);
+		}
 
         comment = "// FSM map states class.";
         comment.resize(LL, '-');
@@ -115,7 +120,7 @@ void MapForCpp::generateInclude(ostream& inc, bool debug) const
 		for (state = states().begin(); state != states().end(); ++state)
 		{
             StateForCpp* sfc = dynamic_cast<StateForCpp*>(state->second);
-            sfc->generateDefinition(inc, debug);
+            sfc->generateDefinition(inc, false, debug);
         }
     }
 
@@ -239,11 +244,18 @@ void MapForCpp::generateCode(ostream& cpp, bool debug) const
             cpp << "}" << endl;
         }
 
-    cpp << "void " << fsm()->klass() << "State::Default(" << fsm()->context() << "& context) {" << endl;
+	comment = "// FSM map default state class.";
+	comment.resize(LL, '-');
+	cpp << comment << endl;
+	cpp << "void " << fsm()->klass() << "State::Default(" << fsm()->context() << "& context) {" << endl;
     cpp << "    throw TransitionUndefinedException(context.getState().getName(), context.getTransition());" << endl;
     cpp << "    return;" << endl;
     cpp << "}" << endl;
 
+	if (defaultState()) {
+		StateForCpp* sfc = dynamic_cast<StateForCpp*>(defaultState());
+		sfc->generateCode(cpp, debug);
+	}
 
 	for (state = states().begin(); state != states().end(); ++state)
 	{

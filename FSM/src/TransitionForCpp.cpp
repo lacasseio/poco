@@ -62,7 +62,7 @@ void TransitionForCpp::generateVirtualTransitions(ostream& inc, bool debug) cons
 }
 void TransitionForCpp::generateDefinition(ostream& inc, bool debug) const
 {
-    inc << "void " << name() << "(" << begstate()->map()->fsm()->context() << "& context";
+    inc << "virtual void " << name() << "(" << begstate()->map()->fsm()->context() << "& context";
     if (!_parameters.empty())
     {
         inc << ", ";
@@ -93,48 +93,13 @@ void TransitionForCpp::generateCode(ostream& cpp, bool debug) const
     cpp << endl;
 
 
-	List<GuardPtr>::const_iterator guard;
+	List<GuardPtr>::const_iterator guard;bool oneGuardWithNullCondition = false;
 	for (guard = guards().begin(); guard != guards().end(); ++guard)
     {
-        if ((*guard) != NULL)
+		poco_assert(*guard);
+ #if 0
+		if ((*guard)->endstate() == NULL)
         {
-            if ((*guard)->endstate() == NULL)
-            {
-				List<MODEL::ActionPtr>::const_iterator action;
-				for (action = (*guard)->actions().begin(); action != (*guard)->actions().end(); ++action)
-                    if (*action != NULL)
-                    {
-                        ActionForCpp* afc = static_cast<ActionForCpp*>(*action);
-                        cpp << "ctxt." << (*action)->display() << endl;
-                    }
-                continue;
-            }
-
-            if ((*guard)->condition())
-            {
-                ExpressionForCpp* efc = dynamic_cast<ExpressionForCpp*>((*guard)->condition());
-                cpp << "if (" << efc->display("ctxt.") << ") {" << endl << tab;
-            }
-            cpp << "(context.getState()).Exit(context);" << endl;
-
-            if ((*guard)->actions().size() > 0)
-            {
-                if (RAPP)
-                {
-                    cpp << "context.clearState();" << endl;
-                }
-                if (RAPP)
-                {
-                    cpp << "try {" << endl << tab;
-                }
-            }
-
-            cpp << "context.setState(context." << (*guard)->endstate()->name() << ");" << endl;
-            if (!RAPP)
-            {
-                cpp << "(context.getState()).Entry(context);" << endl;
-            }
-
 			List<MODEL::ActionPtr>::const_iterator action;
 			for (action = (*guard)->actions().begin(); action != (*guard)->actions().end(); ++action)
                 if (*action != NULL)
@@ -142,35 +107,76 @@ void TransitionForCpp::generateCode(ostream& cpp, bool debug) const
                     ActionForCpp* afc = static_cast<ActionForCpp*>(*action);
                     cpp << "ctxt." << (*action)->display() << endl;
                 }
-
-            if ((*guard)->actions().size() > 0)
-            {
-                if (RAPP)
-                {
-                    cpp << back << "} catch (...) {" << endl << tab;
-                    cpp << "context.setState(context." << (*guard)->endstate()->name() << ");" << endl;
-                    cpp << "throw;" << endl << back;
-                    cpp << "}" << endl;
-                }
-            }
-            if (RAPP)
-            {
-                cpp << "(context.getState()).Entry(context);" << endl;
-            }
-            if ((*guard)->condition())
-                cpp << back << "} else " << endl;
+            continue;
         }
-    }
-    if (_guards[0]->condition())
+#endif
+        if ((*guard)->condition())
+        {
+            ExpressionForCpp* efc = dynamic_cast<ExpressionForCpp*>((*guard)->condition());
+            cpp << "if (" << efc->display("ctxt.") << ") {" << endl << tab;
+		}
+		else
+		{
+			oneGuardWithNullCondition = true;
+			cpp << "if (true) {" << endl << tab;
+		}
+        cpp << "(context.getState()).Exit(context);" << endl;
+
+		if (RAPP)
+		{
+			if ((*guard)->actions().size() > 0)
+		    {
+                cpp << "context.clearState();" << endl;
+				cpp << "try {" << endl << tab;
+            }
+        }
+
+		if ((*guard)->endstate())
+			cpp << "context.setState(context." << (*guard)->endstate()->name() << ");" << endl;
+
+		if (!RAPP)
+        {
+            cpp << "(context.getState()).Entry(context);" << endl;
+        }
+
+		List<MODEL::ActionPtr>::const_iterator action;
+		for (action = (*guard)->actions().begin(); action != (*guard)->actions().end(); ++action)
+            if (*action != NULL)
+            {
+                ActionForCpp* afc = static_cast<ActionForCpp*>(*action);
+                cpp << "ctxt." << (*action)->display() << endl;
+            }
+
+		if (RAPP)
+		{
+			if ((*guard)->actions().size() > 0)
+			{
+                cpp << back << "} catch (...) {" << endl << tab;
+				if ((*guard)->endstate())
+					cpp << "context.setState(context." << (*guard)->endstate()->name() << ");" << endl;
+                cpp << "throw;" << endl << back;
+                cpp << "}" << endl;
+            }
+			cpp << "(context.getState()).Entry(context);" << endl;
+        }
+		if (*guards().rbegin() == *guard && oneGuardWithNullCondition)
+			cpp << back << "} " << endl;
+		else
+			cpp << back << "} else " << endl;
+	}
+	if (!oneGuardWithNullCondition)
     {
         Parameter context("context");
-        cpp << "{" << endl;
         MapForCpp* mfcpp = dynamic_cast<MapForCpp*>(_begstate->map());
-        cpp << "     " << mfcpp->defaultStateName() << "::" << call("context") << ";" << endl;
-        cpp << "}" << endl;
-    }
-    cpp << "return;" << back << endl;
-    cpp << "};" << endl;
+		cpp << "if (true) {" << endl << tab;
+		if (_begstate->map()->defaultState() != _begstate) {
+			cpp << mfcpp->defaultStateName() << "::" << call("context") << ";" << endl;
+		} else {
+			cpp << "Default" << "::" << call("context") << ";" << endl;
+		}
+		cpp  << back << "}" << endl;
+	}
+	cpp << back << "}" << endl;
 }
 }
 }

@@ -43,12 +43,21 @@ void StateForCpp::generateVirtualTransitions(ostream& inc, bool debug) const
             tfc->generateVirtualTransitions(inc, debug);
     }
 }
-void StateForCpp::generateDefinition(ostream& inc, bool debug) const
+void StateForCpp::generateDefinition(ostream& inc,  bool defaut, bool debug) const
 {
     inc << "// --------------------------------------------------" << endl;
-    inc << "class " << statename() << ":  public " << map()->name() <<"_Default { " << endl;
+    inc << "class " << statename() << ":  public " ;
+	if (defaut)
+		inc <<  map()->fsm()->klassState() << " { " << endl;
+	else
+		inc << map()->name() << "_Default { " << endl;
+
     inc << "public:" << endl << tab;
-    inc << statename() << "(const char* name, int no) : " << map()->name() << "_Default(name, no) {}" << endl;
+    inc << statename() << "(const char* name, int no)" ;
+	if (defaut)
+		inc << " : " << map()->fsm()->klassState() << "(name, no) {}" << endl;
+	else
+		inc << " : " << map()->name() << "_Default" << "(name, no) {}" << endl;
 
     inc << endl;
     if (entry())

@@ -496,19 +496,19 @@ const Token* Parser::parseMap(const Token* next)
         fsm->add(map);
         next = nextToken();
         next = parseStates(next);
-        if (map->defaultState() == NULL)
+#if 0
+		if (map->defaultState() == NULL) {
             map->defaultState() = factory.newState("Default");
-    }
+			map->defaultState()->map() = map;
+		}
+#endif
+	}
     return next;
 }
 const Token* Parser::parseStates(const Token* next)
 {
     poco_assert(isOperator(next, Glyphe::FSM));
     const Token* token = next;
-// OPEN { 	// Transport connection is open
-// 		WAIT										CLOSING				{}
-// 		TDISreq(tsdu: TPDU::DR&)	[P7()]			CLOSING				{DR(tsdu);}
-// }
     next = nextToken();
     do
     {
@@ -525,10 +525,10 @@ const Token* Parser::parseState(const Token* next)
     if (state == NULL)
     {
         state = factory.newState(next->tokenString());
-        map->add(state);
-    }
-    map->add(state);
-    next = nextToken();
+	}
+	map->add(state);
+
+	next = nextToken();
     next = parseEntry(next);
     state->entry() = entry;
     next = parseExit(next);
@@ -571,7 +571,6 @@ const Token* Parser::parseTransitions(const Token* next)
 }
 const Token* Parser::parseTransition(const Token* next)
 {
-    poco_assert(isIdentifier(next));
     string name = next->tokenString();
     next = nextToken();
     next = parseParameters(next);
