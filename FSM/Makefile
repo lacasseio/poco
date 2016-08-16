@@ -36,6 +36,7 @@ fsmc \
 FSMForCpp \
 Function \
 FunctionForCpp \
+Glyphe \
 Guard \
 GuardForCpp \
 Identifier \
