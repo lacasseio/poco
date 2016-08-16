@@ -82,6 +82,8 @@ using Poco::FSM::MODEL::LiteralPtr;
 using Poco::FSM::MODEL::ExpressionPtr;
 using Poco::FSM::MODEL::ArgumentPtr;
 using Poco::FSM::MODEL::Arity;
+using Poco::FSM::MODEL::Unary;
+using Poco::FSM::MODEL::Binary;
 using Poco::FSM::MODEL::Operation;
 using Poco::FSM::MODEL::UnaryOperation;
 using Poco::FSM::MODEL::BinaryOperation;
@@ -805,14 +807,14 @@ Pop the stack (this is the final value)
 			stack.push(operand);
 		}
 		if (operation) {
-			if (operation->arity() == Arity::Unary) {
+			if (operation->arity() == Unary) {
 				UnaryOperation* monop = static_cast<UnaryOperation*>(operation);
 				monop->operand() = stack.top();
 				monop->operand()->operation() = monop;
 				stack.pop();
 				stack.push(monop);
 			} else
-			if (operation->arity() == Arity::Binary) {
+			if (operation->arity() == Binary) {
 				BinaryOperation* binop = static_cast<BinaryOperation*>(operation);
 				binop->right() = stack.top();
 				binop->right()->operation() = binop;
