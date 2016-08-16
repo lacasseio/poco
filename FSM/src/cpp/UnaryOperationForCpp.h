@@ -21,7 +21,7 @@ namespace Poco {
 					}
 					virtual ~UnaryOperationForCpp() {
 					}
-					virtual const string display(const char* prefix = nullptr) const;
+					virtual const string display(const char* prefix = NULL) const;
 				};
 
 			}

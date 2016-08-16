@@ -41,7 +41,7 @@ namespace Poco {
 					}
 					virtual void generateInclude(ostream& inc, bool debug) const;
 					virtual void generateCode(ostream& cpp, bool debug) const;
-					virtual const string display(const char* prefix = nullptr) const;
+					virtual const string display(const char* prefix = NULL) const;
 				};
 
 			}

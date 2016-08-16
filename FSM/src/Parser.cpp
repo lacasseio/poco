@@ -709,7 +709,7 @@ While (the stack is not empty)
 			next = nextToken();
 		} else
 		if (isOperator(next)) {
-			Operation* ope = nullptr;
+			Operation* ope = NULL;
 			switch (next->asInteger())
 			{
 			case Glyphe::NE:
