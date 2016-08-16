@@ -12,7 +12,7 @@ namespace FSM
 namespace MODEL
 {
 
-const char* const glyphes[] = {
+const char* /*const*/ glyphes[] = {
 	"",		//	NONE
 	"+",	//	ADD,			// +
 	"-",	//	SUB,			// -
@@ -56,7 +56,7 @@ const char* const glyphes[] = {
 15 	, 															Comma operator
 */
 //
-const int const precedences[] = {
+const int /*const*/ precedences[] = {
 	0,	//	NONE
 	4,	//	ADD,			// +
 	4,	//	SUB,			// -
