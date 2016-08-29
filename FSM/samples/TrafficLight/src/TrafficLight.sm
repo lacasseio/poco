@@ -23,7 +23,7 @@
 //
 // State Machine
 //	Stoplight
-//
+// 
 // Description
 //  This state machine implements a US traffic light.
 //

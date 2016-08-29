@@ -111,6 +111,7 @@
     <OutDir>bin\</OutDir>
     <IntDir>obj\TrafficLight\$(Configuration)\</IntDir>
     <LinkIncremental>true</LinkIncremental>
+    <CustomBuildBeforeTargets>ClCompile</CustomBuildBeforeTargets>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='release_shared|Win32'">
     <OutDir>bin\</OutDir>
@@ -165,6 +166,12 @@
       <SubSystem>Console</SubSystem>
       <TargetMachine>MachineX86</TargetMachine>
     </Link>
+    <CustomBuildStep>
+      <Command>PATH=..\..\..\bin\;%PATH% &amp;&amp; ..\..\bin\FSMcd /v src/TrafficLight.sm</Command>
+    </CustomBuildStep>
+    <CustomBuildStep>
+      <Outputs>src/Stoplight_sm.cpp</Outputs>
+    </CustomBuildStep>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='release_shared|Win32'">
     <ClCompile>

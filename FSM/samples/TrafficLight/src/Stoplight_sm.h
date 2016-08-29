@@ -27,51 +27,53 @@ namespace cpp_ex4 {
 		virtual void Default(StoplightContext<Stoplight>& context);
 	};
 	
-	// FSM map default state class.-------------------
-	class StopMap_Default : public StoplightState {
+	// ------------------------------------------------
+	class StopMap_Default:  public StopMap_Default { 
 	public:
-		StopMap_Default (const char *name, int stateId) : StoplightState(name, stateId)	{}
+		StopMap_Default(const char* name, int no) : StopMap_Default(name, no) {}
+		
+		
 	};
 	
 	// FSM map states class.--------------------------
-	// --------------------------------------------------
+	// ------------------------------------------------
 	class StopMap_EastWestGreen:  public StopMap_Default { 
 	public:
 		StopMap_EastWestGreen(const char* name, int no) : StopMap_Default(name, no) {}
 		
 		void Entry(StoplightContext<Stoplight>& context);
 		
-		void Timeout(StoplightContext<Stoplight>& context);
+		virtual void Timeout(StoplightContext<Stoplight>& context);
 	};
 	
-	// --------------------------------------------------
+	// ------------------------------------------------
 	class StopMap_EastWestYellow:  public StopMap_Default { 
 	public:
 		StopMap_EastWestYellow(const char* name, int no) : StopMap_Default(name, no) {}
 		
 		void Entry(StoplightContext<Stoplight>& context);
 		
-		void Timeout(StoplightContext<Stoplight>& context);
+		virtual void Timeout(StoplightContext<Stoplight>& context);
 	};
 	
-	// --------------------------------------------------
+	// ------------------------------------------------
 	class StopMap_NorthSouthGreen:  public StopMap_Default { 
 	public:
 		StopMap_NorthSouthGreen(const char* name, int no) : StopMap_Default(name, no) {}
 		
 		void Entry(StoplightContext<Stoplight>& context);
 		
-		void Timeout(StoplightContext<Stoplight>& context);
+		virtual void Timeout(StoplightContext<Stoplight>& context);
 	};
 	
-	// --------------------------------------------------
+	// ------------------------------------------------
 	class StopMap_NorthSouthYellow:  public StopMap_Default { 
 	public:
 		StopMap_NorthSouthYellow(const char* name, int no) : StopMap_Default(name, no) {}
 		
 		void Entry(StoplightContext<Stoplight>& context);
 		
-		void Timeout(StoplightContext<Stoplight>& context);
+		virtual void Timeout(StoplightContext<Stoplight>& context);
 	};
 	
 	// FSM map class.---------------------------------
