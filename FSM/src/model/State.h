@@ -19,7 +19,9 @@ namespace Poco {
 	namespace FSM {
 		namespace MODEL {
 
-			class State : public Element {
+		const int LL = 50;		// LineLength for comment
+		
+		class State : public Element {
 			public:
 				State(const string& name, int lineno = 0) ;
 				virtual ~State();
@@ -30,6 +32,8 @@ namespace Poco {
 				const MapPtr&	map()	const 						{ return _map; }
 				const EntryPtr& entry()	const 						{ return _entry; }
 				const ExitPtr&	exit()	const 						{ return _exit; }
+				bool&			isDefault()							{ return _default; }
+				const bool&		isDefault() const					{ return _default; }
 				const List<TransitionPtr>&	transitions() const		{ return _transitions; }
 
 				TransitionPtr add(TransitionPtr transition);
@@ -44,6 +48,7 @@ namespace Poco {
 				string				_instanceName;
 				EntryPtr			_entry;
 				ExitPtr				_exit;
+				bool				_default;
 				List<TransitionPtr>	_transitions;
 
 			private:

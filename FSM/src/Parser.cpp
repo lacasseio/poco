@@ -498,12 +498,10 @@ const Token* Parser::parseMap(const Token* next)
         fsm->add(map);
         next = nextToken();
         next = parseStates(next);
-#if 0
 		if (map->defaultState() == NULL) {
-            map->defaultState() = factory.newState("Default");
-			map->defaultState()->map() = map;
+            StatePtr state = factory.newState("Default");
+			map->add(state);
 		}
-#endif
 	}
     return next;
 }

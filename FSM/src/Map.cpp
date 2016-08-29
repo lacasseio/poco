@@ -26,8 +26,10 @@ void Map::add(TransitionPtr transition)
 
 void Map::add(StatePtr state)
 {
-	if (state->name() == "Default")
+	if (state->name() == "Default") {
 		defaultState() = state;
+		state->isDefault() = true;
+	}
 	_states[state->name()] = state;
     state->map() = this;
 }

@@ -35,7 +35,7 @@ string MapForCpp::startStateName() const
     return fsm()->startState();
 }
 
-static const int LL = 50;
+const int LL = 50;
 
 void MapForCpp::generateInclude(ostream& inc, bool debug) const
 {
@@ -97,30 +97,22 @@ void MapForCpp::generateInclude(ostream& inc, bool debug) const
         inc << endl;
     }
 
-    {
- 		comment = "// FSM map default state class.";
-		comment.resize(LL, '-');
-		inc << comment << endl;
-		if (!defaultState()) {
-			inc << "class " << defaultStateName() << " : public " << fsm()->klass() << "State {" << endl;
-			inc << "public:" << endl << tab;
-			inc << defaultStateName() << " (const char *name, int stateId) : " << fsm()->klass() << "State(name, stateId)	{}" << endl;
-			inc << back << "};";
-			inc << endl;
-			inc << endl;
-		} else {
-			StateForCpp* sfc = dynamic_cast<StateForCpp*>(defaultState());
-			sfc->generateDefinition(inc, true, debug);
-		}
+	{
+		StateForCpp* sfc = dynamic_cast<StateForCpp*>(defaultState());
+		sfc->generateDefinition(inc, debug);
+	}
 
+    {
         comment = "// FSM map states class.";
         comment.resize(LL, '-');
         inc << comment << endl;
 		map<string, StatePtr>::const_iterator state;
 		for (state = states().begin(); state != states().end(); ++state)
 		{
-            StateForCpp* sfc = dynamic_cast<StateForCpp*>(state->second);
-            sfc->generateDefinition(inc, false, debug);
+            if (state->second == defaultState())
+				continue;
+			StateForCpp* sfc = dynamic_cast<StateForCpp*>(state->second);
+            sfc->generateDefinition(inc, debug);
         }
     }
 
@@ -251,11 +243,6 @@ void MapForCpp::generateCode(ostream& cpp, bool debug) const
     cpp << "    throw TransitionUndefinedException(context.getState().getName(), context.getTransition());" << endl;
     cpp << "    return;" << endl;
     cpp << "}" << endl;
-
-	if (defaultState()) {
-		StateForCpp* sfc = dynamic_cast<StateForCpp*>(defaultState());
-		sfc->generateCode(cpp, debug);
-	}
 
 	for (state = states().begin(); state != states().end(); ++state)
 	{

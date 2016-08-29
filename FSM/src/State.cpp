@@ -21,7 +21,7 @@ namespace MODEL
 {
 State::State(const string& name, int lineno) : 
 	Element(name, lineno),
-	_map(NULL), _entry(NULL), _exit(NULL) {
+	_map(NULL), _entry(NULL), _exit(NULL),_default(false) {
 }
 State::~State() {
 }
