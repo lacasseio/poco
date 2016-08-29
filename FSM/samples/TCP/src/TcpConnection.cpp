@@ -1024,7 +1024,7 @@ void TcpConnection::doSend(unsigned short flags,
 // startTimer(const char*, long) (Public)
 // Start the named timer running.
 //
-void TcpConnection::startTimer(const char *name, long duration)
+void TcpConnection::startTimer(const char *name, time_t duration)
 {
 #if defined(FSM_DEBUG)
     cout << "**** Starting timer "
