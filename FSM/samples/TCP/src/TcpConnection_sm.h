@@ -63,27 +63,27 @@ protected:
 // FSM map default state class.-------------------
 class TCP_Default:  public TcpConnectionState { 
 public:
-	TCP_Default(const char* name, int no) : TCP_Default(name, no) {}
-
-
-	void PassiveOpen(TcpConnectionContext<TcpConnection>& context, unsigned short port);
-	void ActiveOpen(TcpConnectionContext<TcpConnection>& context, const sockaddr_in* address);
-	void Transmit(TcpConnectionContext<TcpConnection>& context, const char* data, int offset, int size);
-	void FIN(TcpConnectionContext<TcpConnection>& context, const TcpSegment& segment);
-	void SYN(TcpConnectionContext<TcpConnection>& context, const TcpSegment& segment);
-	void PSH(TcpConnectionContext<TcpConnection>& context, const TcpSegment& segment);
-	void ACK(TcpConnectionContext<TcpConnection>& context, const TcpSegment& segment);
-	void URG(TcpConnectionContext<TcpConnection>& context, const TcpSegment& segment);
-	void FIN_ACK(TcpConnectionContext<TcpConnection>& context, const TcpSegment& segment);
-	void SYN_ACK(TcpConnectionContext<TcpConnection>& context, const TcpSegment& segment);
-	void PSH_ACK(TcpConnectionContext<TcpConnection>& context, const TcpSegment& segment);
-	void UNDEF(TcpConnectionContext<TcpConnection>& context, const TcpSegment& segment);
-	void RST(TcpConnectionContext<TcpConnection>& context, const TcpSegment& segment);
-	void RST_ACK(TcpConnectionContext<TcpConnection>& context, const TcpSegment& segment);
-	void ConnAckTimeout(TcpConnectionContext<TcpConnection>& context);
-	void TransAckTimeout(TcpConnectionContext<TcpConnection>& context);
-	void CloseAckTimeout(TcpConnectionContext<TcpConnection>& context);
-	void CloseTimeout(TcpConnectionContext<TcpConnection>& context);
+	TCP_Default(const char* name, int no) : TcpConnectionState(name, no) {}
+	
+	
+	virtual void PassiveOpen(TcpConnectionContext<TcpConnection>& context, unsigned short port);
+	virtual void ActiveOpen(TcpConnectionContext<TcpConnection>& context, const sockaddr_in* address);
+	virtual void Transmit(TcpConnectionContext<TcpConnection>& context, const char* data, int offset, int size);
+	virtual void FIN(TcpConnectionContext<TcpConnection>& context, const TcpSegment& segment);
+	virtual void SYN(TcpConnectionContext<TcpConnection>& context, const TcpSegment& segment);
+	virtual void PSH(TcpConnectionContext<TcpConnection>& context, const TcpSegment& segment);
+	virtual void ACK(TcpConnectionContext<TcpConnection>& context, const TcpSegment& segment);
+	virtual void URG(TcpConnectionContext<TcpConnection>& context, const TcpSegment& segment);
+	virtual void FIN_ACK(TcpConnectionContext<TcpConnection>& context, const TcpSegment& segment);
+	virtual void SYN_ACK(TcpConnectionContext<TcpConnection>& context, const TcpSegment& segment);
+	virtual void PSH_ACK(TcpConnectionContext<TcpConnection>& context, const TcpSegment& segment);
+	virtual void UNDEF(TcpConnectionContext<TcpConnection>& context, const TcpSegment& segment);
+	virtual void RST(TcpConnectionContext<TcpConnection>& context, const TcpSegment& segment);
+	virtual void RST_ACK(TcpConnectionContext<TcpConnection>& context, const TcpSegment& segment);
+	virtual void ConnAckTimeout(TcpConnectionContext<TcpConnection>& context);
+	virtual void TransAckTimeout(TcpConnectionContext<TcpConnection>& context);
+	virtual void CloseAckTimeout(TcpConnectionContext<TcpConnection>& context);
+	virtual void CloseTimeout(TcpConnectionContext<TcpConnection>& context);
 };
 
 // FSM map states class.--------------------------
@@ -93,10 +93,10 @@ public:
 	TCP_CLOSED(const char* name, int no) : TCP_Default(name, no) {}
 	
 	
-	void PassiveOpen(TcpConnectionContext<TcpConnection>& context, unsigned short port);
-	void ActiveOpen(TcpConnectionContext<TcpConnection>& context, const sockaddr_in* address);
-	void AcceptOpen(TcpConnectionContext<TcpConnection>& context, const TcpSegment& segment);
-	void Close(TcpConnectionContext<TcpConnection>& context);
+	virtual void PassiveOpen(TcpConnectionContext<TcpConnection>& context, unsigned short port);
+	virtual void ActiveOpen(TcpConnectionContext<TcpConnection>& context, const sockaddr_in* address);
+	virtual void AcceptOpen(TcpConnectionContext<TcpConnection>& context, const TcpSegment& segment);
+	virtual void Close(TcpConnectionContext<TcpConnection>& context);
 };
 
 // --------------------------------------------------
@@ -105,7 +105,7 @@ public:
 	TCP_CLOSE_WAIT(const char* name, int no) : TCP_Default(name, no) {}
 	
 	
-	void Close(TcpConnectionContext<TcpConnection>& context);
+	virtual void Close(TcpConnectionContext<TcpConnection>& context);
 };
 
 // --------------------------------------------------
@@ -116,9 +116,9 @@ public:
 	void Entry(TcpConnectionContext<TcpConnection>& context);
 	void Exit(TcpConnectionContext<TcpConnection>& context);
 	
-	void ACK(TcpConnectionContext<TcpConnection>& context, const TcpSegment& segment);
-	void CloseAckTimeout(TcpConnectionContext<TcpConnection>& context);
-	void UNDEF(TcpConnectionContext<TcpConnection>& context, const TcpSegment& segment);
+	virtual void ACK(TcpConnectionContext<TcpConnection>& context, const TcpSegment& segment);
+	virtual void CloseAckTimeout(TcpConnectionContext<TcpConnection>& context);
+	virtual void UNDEF(TcpConnectionContext<TcpConnection>& context, const TcpSegment& segment);
 };
 
 // --------------------------------------------------
@@ -127,11 +127,9 @@ public:
 	TCP_ClientOpening(const char* name, int no) : TCP_Default(name, no) {}
 	
 	
-	void ClientOpened(TcpConnectionContext<TcpConnection>& context, const sockaddr_in* address);
-	void OpenFailed(TcpConnectionContext<TcpConnection>& context, const char* reason);
+	virtual void ClientOpened(TcpConnectionContext<TcpConnection>& context, const sockaddr_in* address);
+	virtual void OpenFailed(TcpConnectionContext<TcpConnection>& context, const char* reason);
 };
-
-// --------------------------------------------------
 
 // --------------------------------------------------
 class TCP_ESTABLISHED:  public TCP_Default { 
@@ -139,10 +137,10 @@ public:
 	TCP_ESTABLISHED(const char* name, int no) : TCP_Default(name, no) {}
 	
 	
-	void FIN(TcpConnectionContext<TcpConnection>& context, const TcpSegment& segment);
-	void PSH(TcpConnectionContext<TcpConnection>& context, const TcpSegment& segment);
-	void Transmit(TcpConnectionContext<TcpConnection>& context, const char* data, int offset, int size);
-	void Close(TcpConnectionContext<TcpConnection>& context);
+	virtual void FIN(TcpConnectionContext<TcpConnection>& context, const TcpSegment& segment);
+	virtual void PSH(TcpConnectionContext<TcpConnection>& context, const TcpSegment& segment);
+	virtual void Transmit(TcpConnectionContext<TcpConnection>& context, const char* data, int offset, int size);
+	virtual void Close(TcpConnectionContext<TcpConnection>& context);
 };
 
 // --------------------------------------------------
@@ -153,10 +151,10 @@ public:
 	void Entry(TcpConnectionContext<TcpConnection>& context);
 	void Exit(TcpConnectionContext<TcpConnection>& context);
 	
-	void ACK(TcpConnectionContext<TcpConnection>& context, const TcpSegment& segment);
-	void FIN(TcpConnectionContext<TcpConnection>& context, const TcpSegment& segment);
-	void FIN_ACK(TcpConnectionContext<TcpConnection>& context, const TcpSegment& segment);
-	void CloseAckTimeout(TcpConnectionContext<TcpConnection>& context);
+	virtual void ACK(TcpConnectionContext<TcpConnection>& context, const TcpSegment& segment);
+	virtual void FIN(TcpConnectionContext<TcpConnection>& context, const TcpSegment& segment);
+	virtual void FIN_ACK(TcpConnectionContext<TcpConnection>& context, const TcpSegment& segment);
+	virtual void CloseAckTimeout(TcpConnectionContext<TcpConnection>& context);
 };
 
 // --------------------------------------------------
@@ -167,9 +165,9 @@ public:
 	void Entry(TcpConnectionContext<TcpConnection>& context);
 	void Exit(TcpConnectionContext<TcpConnection>& context);
 	
-	void FIN(TcpConnectionContext<TcpConnection>& context, const TcpSegment& segment);
-	void CloseAckTimeout(TcpConnectionContext<TcpConnection>& context);
-	void UNDEF(TcpConnectionContext<TcpConnection>& context, const TcpSegment& segment);
+	virtual void FIN(TcpConnectionContext<TcpConnection>& context, const TcpSegment& segment);
+	virtual void CloseAckTimeout(TcpConnectionContext<TcpConnection>& context);
+	virtual void UNDEF(TcpConnectionContext<TcpConnection>& context, const TcpSegment& segment);
 };
 
 // --------------------------------------------------
@@ -180,8 +178,8 @@ public:
 	void Entry(TcpConnectionContext<TcpConnection>& context);
 	void Exit(TcpConnectionContext<TcpConnection>& context);
 	
-	void ACK(TcpConnectionContext<TcpConnection>& context, const TcpSegment& segment);
-	void CloseAckTimeout(TcpConnectionContext<TcpConnection>& context);
+	virtual void ACK(TcpConnectionContext<TcpConnection>& context, const TcpSegment& segment);
+	virtual void CloseAckTimeout(TcpConnectionContext<TcpConnection>& context);
 };
 
 // --------------------------------------------------
@@ -190,10 +188,10 @@ public:
 	TCP_LISTEN(const char* name, int no) : TCP_Default(name, no) {}
 	
 	
-	void SYN(TcpConnectionContext<TcpConnection>& context, const TcpSegment& segment);
-	void Close(TcpConnectionContext<TcpConnection>& context);
-	void RST(TcpConnectionContext<TcpConnection>& context, const TcpSegment& segment);
-	void UNDEF(TcpConnectionContext<TcpConnection>& context, const TcpSegment& segment);
+	virtual void SYN(TcpConnectionContext<TcpConnection>& context, const TcpSegment& segment);
+	virtual void Close(TcpConnectionContext<TcpConnection>& context);
+	virtual void RST(TcpConnectionContext<TcpConnection>& context, const TcpSegment& segment);
+	virtual void UNDEF(TcpConnectionContext<TcpConnection>& context, const TcpSegment& segment);
 };
 
 // --------------------------------------------------
@@ -204,10 +202,10 @@ public:
 	void Entry(TcpConnectionContext<TcpConnection>& context);
 	void Exit(TcpConnectionContext<TcpConnection>& context);
 	
-	void RST(TcpConnectionContext<TcpConnection>& context, const TcpSegment& segment);
-	void ACK(TcpConnectionContext<TcpConnection>& context, const TcpSegment& segment);
-	void Close(TcpConnectionContext<TcpConnection>& context);
-	void AckTimeout(TcpConnectionContext<TcpConnection>& context);
+	virtual void RST(TcpConnectionContext<TcpConnection>& context, const TcpSegment& segment);
+	virtual void ACK(TcpConnectionContext<TcpConnection>& context, const TcpSegment& segment);
+	virtual void Close(TcpConnectionContext<TcpConnection>& context);
+	virtual void AckTimeout(TcpConnectionContext<TcpConnection>& context);
 };
 
 // --------------------------------------------------
@@ -218,9 +216,9 @@ public:
 	void Entry(TcpConnectionContext<TcpConnection>& context);
 	void Exit(TcpConnectionContext<TcpConnection>& context);
 	
-	void SYN_ACK(TcpConnectionContext<TcpConnection>& context, const TcpSegment& segment);
-	void Close(TcpConnectionContext<TcpConnection>& context);
-	void ConnAckTimeout(TcpConnectionContext<TcpConnection>& context);
+	virtual void SYN_ACK(TcpConnectionContext<TcpConnection>& context, const TcpSegment& segment);
+	virtual void Close(TcpConnectionContext<TcpConnection>& context);
+	virtual void ConnAckTimeout(TcpConnectionContext<TcpConnection>& context);
 };
 
 // --------------------------------------------------
@@ -229,8 +227,8 @@ public:
 	TCP_ServiceOpening(const char* name, int no) : TCP_Default(name, no) {}
 	
 	
-	void ServerOpened(TcpConnectionContext<TcpConnection>& context);
-	void OpenFailed(TcpConnectionContext<TcpConnection>& context, const char* reason);
+	virtual void ServerOpened(TcpConnectionContext<TcpConnection>& context);
+	virtual void OpenFailed(TcpConnectionContext<TcpConnection>& context, const char* reason);
 };
 
 // --------------------------------------------------
@@ -241,9 +239,9 @@ public:
 	void Entry(TcpConnectionContext<TcpConnection>& context);
 	void Exit(TcpConnectionContext<TcpConnection>& context);
 	
-	void FIN_ACK(TcpConnectionContext<TcpConnection>& context, const TcpSegment& segment);
-	void CloseTimeout(TcpConnectionContext<TcpConnection>& context);
-	void UNDEF(TcpConnectionContext<TcpConnection>& context, const TcpSegment& segment);
+	virtual void FIN_ACK(TcpConnectionContext<TcpConnection>& context, const TcpSegment& segment);
+	virtual void CloseTimeout(TcpConnectionContext<TcpConnection>& context);
+	virtual void UNDEF(TcpConnectionContext<TcpConnection>& context, const TcpSegment& segment);
 };
 
 // --------------------------------------------------
@@ -254,12 +252,12 @@ public:
 	void Entry(TcpConnectionContext<TcpConnection>& context);
 	void Exit(TcpConnectionContext<TcpConnection>& context);
 	
-	void ACK(TcpConnectionContext<TcpConnection>& context, const TcpSegment& segment);
-	void PSH_ACK(TcpConnectionContext<TcpConnection>& context, const TcpSegment& segment);
-	void PSH(TcpConnectionContext<TcpConnection>& context, const TcpSegment& segment);
-	void FIN(TcpConnectionContext<TcpConnection>& context, const TcpSegment& segment);
-	void Close(TcpConnectionContext<TcpConnection>& context);
-	void TransAckTimeout(TcpConnectionContext<TcpConnection>& context);
+	virtual void ACK(TcpConnectionContext<TcpConnection>& context, const TcpSegment& segment);
+	virtual void PSH_ACK(TcpConnectionContext<TcpConnection>& context, const TcpSegment& segment);
+	virtual void PSH(TcpConnectionContext<TcpConnection>& context, const TcpSegment& segment);
+	virtual void FIN(TcpConnectionContext<TcpConnection>& context, const TcpSegment& segment);
+	virtual void Close(TcpConnectionContext<TcpConnection>& context);
+	virtual void TransAckTimeout(TcpConnectionContext<TcpConnection>& context);
 };
 
 // FSM map class.---------------------------------

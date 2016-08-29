@@ -94,6 +94,7 @@ void TcpConnectionState::UNDEF(TcpConnectionContext<TcpConnection>& context, con
 void TcpConnectionState::URG(TcpConnectionContext<TcpConnection>& context, const TcpSegment& segment) {
      Default(context);
 }
+// FSM map default state class.-------------------
 void TcpConnectionState::Default(TcpConnectionContext<TcpConnection>& context) {
     throw TransitionUndefinedException(context.getState().getName(), context.getTransition());
     return;
@@ -103,53 +104,60 @@ void TcpConnectionState::Default(TcpConnectionContext<TcpConnection>& context) {
 void TCP_CLOSED::PassiveOpen(TcpConnectionContext<TcpConnection>& context, unsigned short port) {
 	TcpConnection& ctxt = context.getOwner();
 	
-	(context.getState()).Exit(context);
-	context.setState(context.ServiceOpening);
-	(context.getState()).Entry(context);
-	ctxt.openServerSocket(port );
-	return;
-};
+	if (true) {
+		(context.getState()).Exit(context);
+		context.setState(context.ServiceOpening);
+		(context.getState()).Entry(context);
+		ctxt.openServerSocket(port );
+	} 
+}
 
 // ----------------------------------------------------
 void TCP_CLOSED::ActiveOpen(TcpConnectionContext<TcpConnection>& context, const sockaddr_in* address) {
 	TcpConnection& ctxt = context.getOwner();
 	
-	(context.getState()).Exit(context);
-	context.setState(context.ClientOpening);
-	(context.getState()).Entry(context);
-	ctxt.openClientSocket(address );
-	return;
-};
+	if (true) {
+		(context.getState()).Exit(context);
+		context.setState(context.ClientOpening);
+		(context.getState()).Entry(context);
+		ctxt.openClientSocket(address );
+	} 
+}
 
 // ----------------------------------------------------
 void TCP_CLOSED::AcceptOpen(TcpConnectionContext<TcpConnection>& context, const TcpSegment& segment) {
 	TcpConnection& ctxt = context.getOwner();
 	
-	(context.getState()).Exit(context);
-	context.setState(context.SYN_RCVD);
-	(context.getState()).Entry(context);
-	ctxt.sendSynAck(segment );
-	ctxt.setNearAddress();
-	return;
-};
+	if (true) {
+		(context.getState()).Exit(context);
+		context.setState(context.SYN_RCVD);
+		(context.getState()).Entry(context);
+		ctxt.sendSynAck(segment );
+		ctxt.setNearAddress();
+	} 
+}
 
 // ----------------------------------------------------
 void TCP_CLOSED::Close(TcpConnectionContext<TcpConnection>& context) {
 	TcpConnection& ctxt = context.getOwner();
 	
-	return;
-};
+	if (true) {
+		(context.getState()).Exit(context);
+		(context.getState()).Entry(context);
+	} 
+}
 
 // ----------------------------------------------------
 void TCP_CLOSE_WAIT::Close(TcpConnectionContext<TcpConnection>& context) {
 	TcpConnection& ctxt = context.getOwner();
 	
-	(context.getState()).Exit(context);
-	context.setState(context.LAST_ACK);
-	(context.getState()).Entry(context);
-	ctxt.doSend(TcpSegment :: FIN , NULL , 0 , 0 , NULL );
-	return;
-};
+	if (true) {
+		(context.getState()).Exit(context);
+		context.setState(context.LAST_ACK);
+		(context.getState()).Entry(context);
+		ctxt.doSend(TcpSegment :: FIN , NULL , 0 , 0 , NULL );
+	} 
+}
 void TCP_CLOSING::Entry(TcpConnectionContext<TcpConnection>& context) {
     TcpConnection& ctxt = context.getOwner();
 	ctxt.startTimer("CLOSE_ACK_TIMER" , TcpConnection :: ACK_TIMEOUT );
@@ -163,310 +171,358 @@ void TCP_CLOSING::Exit(TcpConnectionContext<TcpConnection>& context) {
 void TCP_CLOSING::ACK(TcpConnectionContext<TcpConnection>& context, const TcpSegment& segment) {
 	TcpConnection& ctxt = context.getOwner();
 	
-	if (ctxt.getSrcAddress()==ctxt.getFarAddress()&&ctxt.getSrcPort()==ctxt.getFarPort()&&ctxt.getAcknowledgeNumber()==ctxt.getSequenceNumber()) {
+	if ((((segment.getSrcAddress() == ctxt.getFarAddress()) && (segment.getSrcPort() == ctxt.getFarPort())) && (segment.getAcknowledgeNumber() == ctxt.getSequenceNumber()))) {
 		(context.getState()).Exit(context);
 		context.setState(context.TIME_WAIT);
 		(context.getState()).Entry(context);
 		ctxt.deleteSegment(segment );
 	} else 
-	{
-	     TCP_Default::ACK(context, segment);
+	if (true) {
+		TCP_Default::ACK(context, segment);
 	}
-	return;
-};
+}
 
 // ----------------------------------------------------
 void TCP_CLOSING::CloseAckTimeout(TcpConnectionContext<TcpConnection>& context) {
 	TcpConnection& ctxt = context.getOwner();
 	
-	(context.getState()).Exit(context);
-	context.setState(context.TIME_WAIT);
-	(context.getState()).Entry(context);
-	ctxt.closeSocket();
-	ctxt.closed("" );
-	return;
-};
+	if (true) {
+		(context.getState()).Exit(context);
+		context.setState(context.TIME_WAIT);
+		(context.getState()).Entry(context);
+		ctxt.closeSocket();
+		ctxt.closed("" );
+	} 
+}
 
 // ----------------------------------------------------
 void TCP_CLOSING::UNDEF(TcpConnectionContext<TcpConnection>& context, const TcpSegment& segment) {
 	TcpConnection& ctxt = context.getOwner();
 	
-	ctxt.deleteSegment(segment );
-	return;
-};
+	if (true) {
+		(context.getState()).Exit(context);
+		(context.getState()).Entry(context);
+		ctxt.deleteSegment(segment );
+	} 
+}
 
 // ----------------------------------------------------
 void TCP_ClientOpening::ClientOpened(TcpConnectionContext<TcpConnection>& context, const sockaddr_in* address) {
 	TcpConnection& ctxt = context.getOwner();
 	
-	(context.getState()).Exit(context);
-	context.setState(context.SYN_SENT);
-	(context.getState()).Entry(context);
-	ctxt.sendOpenSyn(address );
-	return;
-};
+	if (true) {
+		(context.getState()).Exit(context);
+		context.setState(context.SYN_SENT);
+		(context.getState()).Entry(context);
+		ctxt.sendOpenSyn(address );
+	} 
+}
 
 // ----------------------------------------------------
 void TCP_ClientOpening::OpenFailed(TcpConnectionContext<TcpConnection>& context, const char* reason) {
 	TcpConnection& ctxt = context.getOwner();
 	
-	(context.getState()).Exit(context);
-	context.setState(context.CLOSED);
-	(context.getState()).Entry(context);
-	ctxt.closeSocket();
-	ctxt.openFailed(reason );
-	return;
-};
+	if (true) {
+		(context.getState()).Exit(context);
+		context.setState(context.CLOSED);
+		(context.getState()).Entry(context);
+		ctxt.closeSocket();
+		ctxt.openFailed(reason );
+	} 
+}
 
 // ----------------------------------------------------
 void TCP_Default::PassiveOpen(TcpConnectionContext<TcpConnection>& context, unsigned short port) {
 	TcpConnection& ctxt = context.getOwner();
 	
-	ctxt.openFailed("already open" );
-	return;
-};
+	if (true) {
+		(context.getState()).Exit(context);
+		(context.getState()).Entry(context);
+		ctxt.openFailed("already open" );
+	} 
+}
 
 // ----------------------------------------------------
 void TCP_Default::ActiveOpen(TcpConnectionContext<TcpConnection>& context, const sockaddr_in* address) {
 	TcpConnection& ctxt = context.getOwner();
 	
-	ctxt.openFailed("already open" );
-	return;
-};
+	if (true) {
+		(context.getState()).Exit(context);
+		(context.getState()).Entry(context);
+		ctxt.openFailed("already open" );
+	} 
+}
 
 // ----------------------------------------------------
 void TCP_Default::Transmit(TcpConnectionContext<TcpConnection>& context, const char* data, int offset, int size) {
 	TcpConnection& ctxt = context.getOwner();
 	
-	ctxt.transmitFailed("connection not established" );
-	return;
-};
+	if (true) {
+		(context.getState()).Exit(context);
+		(context.getState()).Entry(context);
+		ctxt.transmitFailed("connection not established" );
+	} 
+}
 
 // ----------------------------------------------------
 void TCP_Default::FIN(TcpConnectionContext<TcpConnection>& context, const TcpSegment& segment) {
 	TcpConnection& ctxt = context.getOwner();
 	
-	ctxt.doSend(TcpSegment :: RST , NULL , 0 , 0 , & segment );
-	ctxt.closed("connection reset" );
-	ctxt.deleteSegment(segment );
-	(context.getState()).Exit(context);
-	context.setState(context.CLOSED);
-	(context.getState()).Entry(context);
-	ctxt.doSend(TcpSegment :: RST , NULL , 0 , 0 , & segment );
-	ctxt.closed("connection reset" );
-	ctxt.deleteSegment(segment );
-	{
-	     TCP_Default::FIN(context, segment);
-	}
-	return;
-};
+	if (((segment.getSrcAddress() != ctxt.getFarAddress()) || (segment.getSrcPort() != ctxt.getFarPort()))) {
+		(context.getState()).Exit(context);
+		(context.getState()).Entry(context);
+		ctxt.doSend(TcpSegment :: RST , NULL , 0 , 0 , & segment );
+		ctxt.closed("connection reset" );
+		ctxt.deleteSegment(segment );
+	} else 
+	if (true) {
+		(context.getState()).Exit(context);
+		context.setState(context.CLOSED);
+		(context.getState()).Entry(context);
+		ctxt.doSend(TcpSegment :: RST , NULL , 0 , 0 , & segment );
+		ctxt.closed("connection reset" );
+		ctxt.deleteSegment(segment );
+	} 
+}
 
 // ----------------------------------------------------
 void TCP_Default::SYN(TcpConnectionContext<TcpConnection>& context, const TcpSegment& segment) {
 	TcpConnection& ctxt = context.getOwner();
 	
-	ctxt.doSend(TcpSegment :: RST , NULL , 0 , 0 , & segment );
-	ctxt.closed("connection reset" );
-	ctxt.deleteSegment(segment );
-	(context.getState()).Exit(context);
-	context.setState(context.CLOSED);
-	(context.getState()).Entry(context);
-	ctxt.doSend(TcpSegment :: RST , NULL , 0 , 0 , & segment );
-	ctxt.closed("connection reset" );
-	ctxt.deleteSegment(segment );
-	{
-	     TCP_Default::SYN(context, segment);
-	}
-	return;
-};
+	if (((segment.getSrcAddress() != ctxt.getFarAddress()) || (segment.getSrcPort() != ctxt.getFarPort()))) {
+		(context.getState()).Exit(context);
+		(context.getState()).Entry(context);
+		ctxt.doSend(TcpSegment :: RST , NULL , 0 , 0 , & segment );
+		ctxt.closed("connection reset" );
+		ctxt.deleteSegment(segment );
+	} else 
+	if (true) {
+		(context.getState()).Exit(context);
+		context.setState(context.CLOSED);
+		(context.getState()).Entry(context);
+		ctxt.doSend(TcpSegment :: RST , NULL , 0 , 0 , & segment );
+		ctxt.closed("connection reset" );
+		ctxt.deleteSegment(segment );
+	} 
+}
 
 // ----------------------------------------------------
 void TCP_Default::PSH(TcpConnectionContext<TcpConnection>& context, const TcpSegment& segment) {
 	TcpConnection& ctxt = context.getOwner();
 	
-	ctxt.doSend(TcpSegment :: RST , NULL , 0 , 0 , & segment );
-	ctxt.closed("connection reset" );
-	ctxt.deleteSegment(segment );
-	(context.getState()).Exit(context);
-	context.setState(context.CLOSED);
-	(context.getState()).Entry(context);
-	ctxt.doSend(TcpSegment :: RST , NULL , 0 , 0 , & segment );
-	ctxt.closed("connection reset" );
-	ctxt.deleteSegment(segment );
-	{
-	     TCP_Default::PSH(context, segment);
-	}
-	return;
-};
+	if (((segment.getSrcAddress() != ctxt.getFarAddress()) || (segment.getSrcPort() != ctxt.getFarPort()))) {
+		(context.getState()).Exit(context);
+		(context.getState()).Entry(context);
+		ctxt.doSend(TcpSegment :: RST , NULL , 0 , 0 , & segment );
+		ctxt.closed("connection reset" );
+		ctxt.deleteSegment(segment );
+	} else 
+	if (true) {
+		(context.getState()).Exit(context);
+		context.setState(context.CLOSED);
+		(context.getState()).Entry(context);
+		ctxt.doSend(TcpSegment :: RST , NULL , 0 , 0 , & segment );
+		ctxt.closed("connection reset" );
+		ctxt.deleteSegment(segment );
+	} 
+}
 
 // ----------------------------------------------------
 void TCP_Default::ACK(TcpConnectionContext<TcpConnection>& context, const TcpSegment& segment) {
 	TcpConnection& ctxt = context.getOwner();
 	
-	ctxt.doSend(TcpSegment :: RST , NULL , 0 , 0 , & segment );
-	ctxt.closed("connection reset" );
-	ctxt.deleteSegment(segment );
-	(context.getState()).Exit(context);
-	context.setState(context.CLOSED);
-	(context.getState()).Entry(context);
-	ctxt.doSend(TcpSegment :: RST , NULL , 0 , 0 , & segment );
-	ctxt.closed("connection reset" );
-	ctxt.deleteSegment(segment );
-	{
-	     TCP_Default::ACK(context, segment);
-	}
-	return;
-};
+	if (((segment.getSrcAddress() != ctxt.getFarAddress()) || (segment.getSrcPort() != ctxt.getFarPort()))) {
+		(context.getState()).Exit(context);
+		(context.getState()).Entry(context);
+		ctxt.doSend(TcpSegment :: RST , NULL , 0 , 0 , & segment );
+		ctxt.closed("connection reset" );
+		ctxt.deleteSegment(segment );
+	} else 
+	if (true) {
+		(context.getState()).Exit(context);
+		context.setState(context.CLOSED);
+		(context.getState()).Entry(context);
+		ctxt.doSend(TcpSegment :: RST , NULL , 0 , 0 , & segment );
+		ctxt.closed("connection reset" );
+		ctxt.deleteSegment(segment );
+	} 
+}
 
 // ----------------------------------------------------
 void TCP_Default::URG(TcpConnectionContext<TcpConnection>& context, const TcpSegment& segment) {
 	TcpConnection& ctxt = context.getOwner();
 	
-	ctxt.doSend(TcpSegment :: RST , NULL , 0 , 0 , & segment );
-	ctxt.closed("connection reset" );
-	ctxt.deleteSegment(segment );
-	(context.getState()).Exit(context);
-	context.setState(context.CLOSED);
-	(context.getState()).Entry(context);
-	ctxt.doSend(TcpSegment :: RST , NULL , 0 , 0 , & segment );
-	ctxt.closed("connection reset" );
-	ctxt.deleteSegment(segment );
-	{
-	     TCP_Default::URG(context, segment);
-	}
-	return;
-};
+	if (((segment.getSrcAddress() != ctxt.getFarAddress()) || (segment.getSrcPort() != ctxt.getFarPort()))) {
+		(context.getState()).Exit(context);
+		(context.getState()).Entry(context);
+		ctxt.doSend(TcpSegment :: RST , NULL , 0 , 0 , & segment );
+		ctxt.closed("connection reset" );
+		ctxt.deleteSegment(segment );
+	} else 
+	if (true) {
+		(context.getState()).Exit(context);
+		context.setState(context.CLOSED);
+		(context.getState()).Entry(context);
+		ctxt.doSend(TcpSegment :: RST , NULL , 0 , 0 , & segment );
+		ctxt.closed("connection reset" );
+		ctxt.deleteSegment(segment );
+	} 
+}
 
 // ----------------------------------------------------
 void TCP_Default::FIN_ACK(TcpConnectionContext<TcpConnection>& context, const TcpSegment& segment) {
 	TcpConnection& ctxt = context.getOwner();
 	
-	ctxt.doSend(TcpSegment :: RST , NULL , 0 , 0 , & segment );
-	ctxt.closed("connection reset" );
-	ctxt.deleteSegment(segment );
-	(context.getState()).Exit(context);
-	context.setState(context.CLOSED);
-	(context.getState()).Entry(context);
-	ctxt.doSend(TcpSegment :: RST , NULL , 0 , 0 , & segment );
-	ctxt.closed("connection reset" );
-	ctxt.deleteSegment(segment );
-	{
-	     TCP_Default::FIN_ACK(context, segment);
-	}
-	return;
-};
+	if (((segment.getSrcAddress() != ctxt.getFarAddress()) || (segment.getSrcPort() != ctxt.getFarPort()))) {
+		(context.getState()).Exit(context);
+		(context.getState()).Entry(context);
+		ctxt.doSend(TcpSegment :: RST , NULL , 0 , 0 , & segment );
+		ctxt.closed("connection reset" );
+		ctxt.deleteSegment(segment );
+	} else 
+	if (true) {
+		(context.getState()).Exit(context);
+		context.setState(context.CLOSED);
+		(context.getState()).Entry(context);
+		ctxt.doSend(TcpSegment :: RST , NULL , 0 , 0 , & segment );
+		ctxt.closed("connection reset" );
+		ctxt.deleteSegment(segment );
+	} 
+}
 
 // ----------------------------------------------------
 void TCP_Default::SYN_ACK(TcpConnectionContext<TcpConnection>& context, const TcpSegment& segment) {
 	TcpConnection& ctxt = context.getOwner();
 	
-	ctxt.doSend(TcpSegment :: RST , NULL , 0 , 0 , & segment );
-	ctxt.closed("connection reset" );
-	ctxt.deleteSegment(segment );
-	(context.getState()).Exit(context);
-	context.setState(context.CLOSED);
-	(context.getState()).Entry(context);
-	ctxt.doSend(TcpSegment :: RST , NULL , 0 , 0 , & segment );
-	ctxt.closed("connection reset" );
-	ctxt.deleteSegment(segment );
-	{
-	     TCP_Default::SYN_ACK(context, segment);
-	}
-	return;
-};
+	if (((segment.getSrcAddress() != ctxt.getFarAddress()) || (segment.getSrcPort() != ctxt.getFarPort()))) {
+		(context.getState()).Exit(context);
+		(context.getState()).Entry(context);
+		ctxt.doSend(TcpSegment :: RST , NULL , 0 , 0 , & segment );
+		ctxt.closed("connection reset" );
+		ctxt.deleteSegment(segment );
+	} else 
+	if (true) {
+		(context.getState()).Exit(context);
+		context.setState(context.CLOSED);
+		(context.getState()).Entry(context);
+		ctxt.doSend(TcpSegment :: RST , NULL , 0 , 0 , & segment );
+		ctxt.closed("connection reset" );
+		ctxt.deleteSegment(segment );
+	} 
+}
 
 // ----------------------------------------------------
 void TCP_Default::PSH_ACK(TcpConnectionContext<TcpConnection>& context, const TcpSegment& segment) {
 	TcpConnection& ctxt = context.getOwner();
 	
-	ctxt.doSend(TcpSegment :: RST , NULL , 0 , 0 , & segment );
-	ctxt.closed("connection reset" );
-	ctxt.deleteSegment(segment );
-	(context.getState()).Exit(context);
-	context.setState(context.CLOSED);
-	(context.getState()).Entry(context);
-	ctxt.doSend(TcpSegment :: RST , NULL , 0 , 0 , & segment );
-	ctxt.closed("connection reset" );
-	ctxt.deleteSegment(segment );
-	{
-	     TCP_Default::PSH_ACK(context, segment);
-	}
-	return;
-};
+	if (((segment.getSrcAddress() != ctxt.getFarAddress()) || (segment.getSrcPort() != ctxt.getFarPort()))) {
+		(context.getState()).Exit(context);
+		(context.getState()).Entry(context);
+		ctxt.doSend(TcpSegment :: RST , NULL , 0 , 0 , & segment );
+		ctxt.closed("connection reset" );
+		ctxt.deleteSegment(segment );
+	} else 
+	if (true) {
+		(context.getState()).Exit(context);
+		context.setState(context.CLOSED);
+		(context.getState()).Entry(context);
+		ctxt.doSend(TcpSegment :: RST , NULL , 0 , 0 , & segment );
+		ctxt.closed("connection reset" );
+		ctxt.deleteSegment(segment );
+	} 
+}
 
 // ----------------------------------------------------
 void TCP_Default::UNDEF(TcpConnectionContext<TcpConnection>& context, const TcpSegment& segment) {
 	TcpConnection& ctxt = context.getOwner();
 	
-	ctxt.doSend(TcpSegment :: RST , NULL , 0 , 0 , & segment );
-	ctxt.closed("connection reset" );
-	ctxt.deleteSegment(segment );
-	ctxt.doSend(TcpSegment :: RST , NULL , 0 , 0 , & segment );
-	ctxt.closed("connection reset" );
-	ctxt.deleteSegment(segment );
-	{
-	     TCP_Default::UNDEF(context, segment);
-	}
-	return;
-};
+	if (((segment.getSrcAddress() != ctxt.getFarAddress()) || (segment.getSrcPort() != ctxt.getFarPort()))) {
+		(context.getState()).Exit(context);
+		(context.getState()).Entry(context);
+		ctxt.doSend(TcpSegment :: RST , NULL , 0 , 0 , & segment );
+		ctxt.closed("connection reset" );
+		ctxt.deleteSegment(segment );
+	} else 
+	if (true) {
+		(context.getState()).Exit(context);
+		(context.getState()).Entry(context);
+		ctxt.doSend(TcpSegment :: RST , NULL , 0 , 0 , & segment );
+		ctxt.closed("connection reset" );
+		ctxt.deleteSegment(segment );
+	} 
+}
 
 // ----------------------------------------------------
 void TCP_Default::RST(TcpConnectionContext<TcpConnection>& context, const TcpSegment& segment) {
 	TcpConnection& ctxt = context.getOwner();
 	
-	(context.getState()).Exit(context);
-	context.setState(context.CLOSED);
-	(context.getState()).Entry(context);
-	ctxt.closed("connection reset by peer" );
-	ctxt.deleteSegment(segment );
-	return;
-};
+	if (true) {
+		(context.getState()).Exit(context);
+		context.setState(context.CLOSED);
+		(context.getState()).Entry(context);
+		ctxt.closed("connection reset by peer" );
+		ctxt.deleteSegment(segment );
+	} 
+}
 
 // ----------------------------------------------------
 void TCP_Default::RST_ACK(TcpConnectionContext<TcpConnection>& context, const TcpSegment& segment) {
 	TcpConnection& ctxt = context.getOwner();
 	
-	(context.getState()).Exit(context);
-	context.setState(context.CLOSED);
-	(context.getState()).Entry(context);
-	ctxt.closed("connection reset by peer" );
-	ctxt.deleteSegment(segment );
-	return;
-};
+	if (true) {
+		(context.getState()).Exit(context);
+		context.setState(context.CLOSED);
+		(context.getState()).Entry(context);
+		ctxt.closed("connection reset by peer" );
+		ctxt.deleteSegment(segment );
+	} 
+}
 
 // ----------------------------------------------------
 void TCP_Default::ConnAckTimeout(TcpConnectionContext<TcpConnection>& context) {
 	TcpConnection& ctxt = context.getOwner();
 	
-	return;
-};
+	if (true) {
+		(context.getState()).Exit(context);
+		(context.getState()).Entry(context);
+	} 
+}
 
 // ----------------------------------------------------
 void TCP_Default::TransAckTimeout(TcpConnectionContext<TcpConnection>& context) {
 	TcpConnection& ctxt = context.getOwner();
 	
-	return;
-};
+	if (true) {
+		(context.getState()).Exit(context);
+		(context.getState()).Entry(context);
+	} 
+}
 
 // ----------------------------------------------------
 void TCP_Default::CloseAckTimeout(TcpConnectionContext<TcpConnection>& context) {
 	TcpConnection& ctxt = context.getOwner();
 	
-	return;
-};
+	if (true) {
+		(context.getState()).Exit(context);
+		(context.getState()).Entry(context);
+	} 
+}
 
 // ----------------------------------------------------
 void TCP_Default::CloseTimeout(TcpConnectionContext<TcpConnection>& context) {
 	TcpConnection& ctxt = context.getOwner();
 	
-	return;
-};
+	if (true) {
+		(context.getState()).Exit(context);
+		(context.getState()).Entry(context);
+	} 
+}
 
 // ----------------------------------------------------
 void TCP_ESTABLISHED::FIN(TcpConnectionContext<TcpConnection>& context, const TcpSegment& segment) {
 	TcpConnection& ctxt = context.getOwner();
 	
-	if (ctxt.getSrcAddress()==ctxt.getFarAddress()&&ctxt.getSrcPort()==ctxt.getFarPort()) {
+	if (((segment.getSrcAddress() == ctxt.getFarAddress()) && (segment.getSrcPort() == ctxt.getFarPort()))) {
 		(context.getState()).Exit(context);
 		context.setState(context.CLOSE_WAIT);
 		(context.getState()).Entry(context);
@@ -474,46 +530,50 @@ void TCP_ESTABLISHED::FIN(TcpConnectionContext<TcpConnection>& context, const Tc
 		ctxt.halfClosed();
 		ctxt.deleteSegment(segment );
 	} else 
-	{
-	     TCP_Default::FIN(context, segment);
+	if (true) {
+		TCP_Default::FIN(context, segment);
 	}
-	return;
-};
+}
 
 // ----------------------------------------------------
 void TCP_ESTABLISHED::PSH(TcpConnectionContext<TcpConnection>& context, const TcpSegment& segment) {
 	TcpConnection& ctxt = context.getOwner();
 	
-	ctxt.doSend(TcpSegment :: ACK , NULL , 0 , 0 , & segment );
-	ctxt.receive(segment );
-	ctxt.deleteSegment(segment );
-	{
-	     TCP_Default::PSH(context, segment);
+	if (((segment.getSrcAddress() == ctxt.getFarAddress()) && (segment.getSrcPort() == ctxt.getFarPort()))) {
+		(context.getState()).Exit(context);
+		(context.getState()).Entry(context);
+		ctxt.doSend(TcpSegment :: ACK , NULL , 0 , 0 , & segment );
+		ctxt.receive(segment );
+		ctxt.deleteSegment(segment );
+	} else 
+	if (true) {
+		TCP_Default::PSH(context, segment);
 	}
-	return;
-};
+}
 
 // ----------------------------------------------------
 void TCP_ESTABLISHED::Transmit(TcpConnectionContext<TcpConnection>& context, const char* data, int offset, int size) {
 	TcpConnection& ctxt = context.getOwner();
 	
-	(context.getState()).Exit(context);
-	context.setState(context.Transmitting);
-	(context.getState()).Entry(context);
-	ctxt.doSend(TcpSegment :: PSH , data , offset , size , NULL );
-	return;
-};
+	if (true) {
+		(context.getState()).Exit(context);
+		context.setState(context.Transmitting);
+		(context.getState()).Entry(context);
+		ctxt.doSend(TcpSegment :: PSH , data , offset , size , NULL );
+	} 
+}
 
 // ----------------------------------------------------
 void TCP_ESTABLISHED::Close(TcpConnectionContext<TcpConnection>& context) {
 	TcpConnection& ctxt = context.getOwner();
 	
-	(context.getState()).Exit(context);
-	context.setState(context.FIN_WAIT_1);
-	(context.getState()).Entry(context);
-	ctxt.doSend(TcpSegment :: FIN , NULL , 0 , 0 , NULL );
-	return;
-};
+	if (true) {
+		(context.getState()).Exit(context);
+		context.setState(context.FIN_WAIT_1);
+		(context.getState()).Entry(context);
+		ctxt.doSend(TcpSegment :: FIN , NULL , 0 , 0 , NULL );
+	} 
+}
 void TCP_FIN_WAIT_1::Entry(TcpConnectionContext<TcpConnection>& context) {
     TcpConnection& ctxt = context.getOwner();
 	ctxt.startTimer("CLOSE_ACK_TIMER" , TcpConnection :: ACK_TIMEOUT );
@@ -527,63 +587,61 @@ void TCP_FIN_WAIT_1::Exit(TcpConnectionContext<TcpConnection>& context) {
 void TCP_FIN_WAIT_1::ACK(TcpConnectionContext<TcpConnection>& context, const TcpSegment& segment) {
 	TcpConnection& ctxt = context.getOwner();
 	
-	if (ctxt.getSrcAddress()==ctxt.getFarAddress()&&ctxt.getSrcPort()==ctxt.getFarPort()&&ctxt.getAcknowledgeNumber()==ctxt.getSequenceNumber()) {
+	if ((((segment.getSrcAddress() == ctxt.getFarAddress()) && (segment.getSrcPort() == ctxt.getFarPort())) && (segment.getAcknowledgeNumber() == ctxt.getSequenceNumber()))) {
 		(context.getState()).Exit(context);
 		context.setState(context.FIN_WAIT_2);
 		(context.getState()).Entry(context);
 		ctxt.deleteSegment(segment );
 	} else 
-	{
-	     TCP_Default::ACK(context, segment);
+	if (true) {
+		TCP_Default::ACK(context, segment);
 	}
-	return;
-};
+}
 
 // ----------------------------------------------------
 void TCP_FIN_WAIT_1::FIN(TcpConnectionContext<TcpConnection>& context, const TcpSegment& segment) {
 	TcpConnection& ctxt = context.getOwner();
 	
-	if (ctxt.getSrcAddress()==ctxt.getFarAddress()&&ctxt.getSrcPort()==ctxt.getFarPort()) {
+	if (((segment.getSrcAddress() == ctxt.getFarAddress()) && (segment.getSrcPort() == ctxt.getFarPort()))) {
 		(context.getState()).Exit(context);
 		context.setState(context.CLOSING);
 		(context.getState()).Entry(context);
 		ctxt.doSend(TcpSegment :: ACK , NULL , 0 , 0 , & segment );
 		ctxt.deleteSegment(segment );
 	} else 
-	{
-	     TCP_Default::FIN(context, segment);
+	if (true) {
+		TCP_Default::FIN(context, segment);
 	}
-	return;
-};
+}
 
 // ----------------------------------------------------
 void TCP_FIN_WAIT_1::FIN_ACK(TcpConnectionContext<TcpConnection>& context, const TcpSegment& segment) {
 	TcpConnection& ctxt = context.getOwner();
 	
-	if (ctxt.getSrcAddress()==ctxt.getFarAddress()&&ctxt.getSrcPort()==ctxt.getFarPort()&&ctxt.getAcknowledgeNumber()==ctxt.getSequenceNumber()) {
+	if ((((segment.getSrcAddress() == ctxt.getFarAddress()) && (segment.getSrcPort() == ctxt.getFarPort())) && (segment.getAcknowledgeNumber() == ctxt.getSequenceNumber()))) {
 		(context.getState()).Exit(context);
 		context.setState(context.TIME_WAIT);
 		(context.getState()).Entry(context);
 		ctxt.doSend(TcpSegment :: ACK , NULL , 0 , 0 , & segment );
 		ctxt.deleteSegment(segment );
 	} else 
-	{
-	     TCP_Default::FIN_ACK(context, segment);
+	if (true) {
+		TCP_Default::FIN_ACK(context, segment);
 	}
-	return;
-};
+}
 
 // ----------------------------------------------------
 void TCP_FIN_WAIT_1::CloseAckTimeout(TcpConnectionContext<TcpConnection>& context) {
 	TcpConnection& ctxt = context.getOwner();
 	
-	(context.getState()).Exit(context);
-	context.setState(context.FIN_WAIT_2);
-	(context.getState()).Entry(context);
-	ctxt.closeSocket();
-	ctxt.closed("" );
-	return;
-};
+	if (true) {
+		(context.getState()).Exit(context);
+		context.setState(context.FIN_WAIT_2);
+		(context.getState()).Entry(context);
+		ctxt.closeSocket();
+		ctxt.closed("" );
+	} 
+}
 void TCP_FIN_WAIT_2::Entry(TcpConnectionContext<TcpConnection>& context) {
     TcpConnection& ctxt = context.getOwner();
 	ctxt.startTimer("CLOSE_ACK_TIMER" , TcpConnection :: ACK_TIMEOUT );
@@ -597,37 +655,40 @@ void TCP_FIN_WAIT_2::Exit(TcpConnectionContext<TcpConnection>& context) {
 void TCP_FIN_WAIT_2::FIN(TcpConnectionContext<TcpConnection>& context, const TcpSegment& segment) {
 	TcpConnection& ctxt = context.getOwner();
 	
-	if (ctxt.getSrcAddress()==ctxt.getFarAddress()&&ctxt.getSrcPort()==ctxt.getFarPort()) {
+	if (((segment.getSrcAddress() == ctxt.getFarAddress()) && (segment.getSrcPort() == ctxt.getFarPort()))) {
 		(context.getState()).Exit(context);
 		context.setState(context.TIME_WAIT);
 		(context.getState()).Entry(context);
 		ctxt.doSend(TcpSegment :: ACK , NULL , 0 , 0 , & segment );
 		ctxt.deleteSegment(segment );
 	} else 
-	{
-	     TCP_Default::FIN(context, segment);
+	if (true) {
+		TCP_Default::FIN(context, segment);
 	}
-	return;
-};
+}
 
 // ----------------------------------------------------
 void TCP_FIN_WAIT_2::CloseAckTimeout(TcpConnectionContext<TcpConnection>& context) {
 	TcpConnection& ctxt = context.getOwner();
 	
-	(context.getState()).Exit(context);
-	context.setState(context.CLOSED);
-	(context.getState()).Entry(context);
-	ctxt.closeSocket();
-	return;
-};
+	if (true) {
+		(context.getState()).Exit(context);
+		context.setState(context.CLOSED);
+		(context.getState()).Entry(context);
+		ctxt.closeSocket();
+	} 
+}
 
 // ----------------------------------------------------
 void TCP_FIN_WAIT_2::UNDEF(TcpConnectionContext<TcpConnection>& context, const TcpSegment& segment) {
 	TcpConnection& ctxt = context.getOwner();
 	
-	ctxt.deleteSegment(segment );
-	return;
-};
+	if (true) {
+		(context.getState()).Exit(context);
+		(context.getState()).Entry(context);
+		ctxt.deleteSegment(segment );
+	} 
+}
 void TCP_LAST_ACK::Entry(TcpConnectionContext<TcpConnection>& context) {
     TcpConnection& ctxt = context.getOwner();
 	ctxt.startTimer("CLOSE_ACK_TIMER" , TcpConnection :: ACK_TIMEOUT );
@@ -641,7 +702,7 @@ void TCP_LAST_ACK::Exit(TcpConnectionContext<TcpConnection>& context) {
 void TCP_LAST_ACK::ACK(TcpConnectionContext<TcpConnection>& context, const TcpSegment& segment) {
 	TcpConnection& ctxt = context.getOwner();
 	
-	if (ctxt.getSrcAddress()==ctxt.getFarAddress()&&ctxt.getSrcPort()==ctxt.getFarPort()&&ctxt.getAcknowledgeNumber()==ctxt.getSequenceNumber()) {
+	if ((((segment.getSrcAddress() == ctxt.getFarAddress()) && (segment.getSrcPort() == ctxt.getFarPort())) && (segment.getAcknowledgeNumber() == ctxt.getSequenceNumber()))) {
 		(context.getState()).Exit(context);
 		context.setState(context.CLOSED);
 		(context.getState()).Entry(context);
@@ -650,61 +711,71 @@ void TCP_LAST_ACK::ACK(TcpConnectionContext<TcpConnection>& context, const TcpSe
 		ctxt.closed("" );
 		ctxt.deleteSegment(segment );
 	} else 
-	{
-	     TCP_Default::ACK(context, segment);
+	if (true) {
+		TCP_Default::ACK(context, segment);
 	}
-	return;
-};
+}
 
 // ----------------------------------------------------
 void TCP_LAST_ACK::CloseAckTimeout(TcpConnectionContext<TcpConnection>& context) {
 	TcpConnection& ctxt = context.getOwner();
 	
-	(context.getState()).Exit(context);
-	context.setState(context.CLOSED);
-	(context.getState()).Entry(context);
-	ctxt.closeSocket();
-	ctxt.closed("" );
-	return;
-};
+	if (true) {
+		(context.getState()).Exit(context);
+		context.setState(context.CLOSED);
+		(context.getState()).Entry(context);
+		ctxt.closeSocket();
+		ctxt.closed("" );
+	} 
+}
 
 // ----------------------------------------------------
 void TCP_LISTEN::SYN(TcpConnectionContext<TcpConnection>& context, const TcpSegment& segment) {
 	TcpConnection& ctxt = context.getOwner();
 	
-	ctxt.accept(segment );
-	ctxt.deleteSegment(segment );
-	return;
-};
+	if (true) {
+		(context.getState()).Exit(context);
+		(context.getState()).Entry(context);
+		ctxt.accept(segment );
+		ctxt.deleteSegment(segment );
+	} 
+}
 
 // ----------------------------------------------------
 void TCP_LISTEN::Close(TcpConnectionContext<TcpConnection>& context) {
 	TcpConnection& ctxt = context.getOwner();
 	
-	(context.getState()).Exit(context);
-	context.setState(context.CLOSED);
-	(context.getState()).Entry(context);
-	ctxt.closeSocket();
-	ctxt.closed("" );
-	return;
-};
+	if (true) {
+		(context.getState()).Exit(context);
+		context.setState(context.CLOSED);
+		(context.getState()).Entry(context);
+		ctxt.closeSocket();
+		ctxt.closed("" );
+	} 
+}
 
 // ----------------------------------------------------
 void TCP_LISTEN::RST(TcpConnectionContext<TcpConnection>& context, const TcpSegment& segment) {
 	TcpConnection& ctxt = context.getOwner();
 	
-	ctxt.deleteSegment(segment );
-	return;
-};
+	if (true) {
+		(context.getState()).Exit(context);
+		(context.getState()).Entry(context);
+		ctxt.deleteSegment(segment );
+	} 
+}
 
 // ----------------------------------------------------
 void TCP_LISTEN::UNDEF(TcpConnectionContext<TcpConnection>& context, const TcpSegment& segment) {
 	TcpConnection& ctxt = context.getOwner();
 	
-	ctxt.doSend(TcpSegment :: RST , NULL , 0 , 0 , & segment );
-	ctxt.deleteSegment(segment );
-	return;
-};
+	if (true) {
+		(context.getState()).Exit(context);
+		(context.getState()).Entry(context);
+		ctxt.doSend(TcpSegment :: RST , NULL , 0 , 0 , & segment );
+		ctxt.deleteSegment(segment );
+	} 
+}
 void TCP_SYN_RCVD::Entry(TcpConnectionContext<TcpConnection>& context) {
     TcpConnection& ctxt = context.getOwner();
 	ctxt.startTimer("ACK_TIMER" , TcpConnection :: ACK_TIMEOUT );
@@ -718,54 +789,56 @@ void TCP_SYN_RCVD::Exit(TcpConnectionContext<TcpConnection>& context) {
 void TCP_SYN_RCVD::RST(TcpConnectionContext<TcpConnection>& context, const TcpSegment& segment) {
 	TcpConnection& ctxt = context.getOwner();
 	
-	(context.getState()).Exit(context);
-	context.setState(context.CLOSED);
-	(context.getState()).Entry(context);
-	ctxt.closeSocket();
-	ctxt.clearListener();
-	ctxt.deleteSegment(segment );
-	return;
-};
+	if (true) {
+		(context.getState()).Exit(context);
+		context.setState(context.CLOSED);
+		(context.getState()).Entry(context);
+		ctxt.closeSocket();
+		ctxt.clearListener();
+		ctxt.deleteSegment(segment );
+	} 
+}
 
 // ----------------------------------------------------
 void TCP_SYN_RCVD::ACK(TcpConnectionContext<TcpConnection>& context, const TcpSegment& segment) {
 	TcpConnection& ctxt = context.getOwner();
 	
-	if (ctxt.getSrcAddress()==ctxt.getFarAddress()&&ctxt.getSrcPort()==ctxt.getFarPort()&&ctxt.getAcknowledgeNumber()==ctxt.getSequenceNumber()) {
+	if ((((segment.getSrcAddress() == ctxt.getFarAddress()) && (segment.getSrcPort() == ctxt.getFarPort())) && (segment.getAcknowledgeNumber() == ctxt.getSequenceNumber()))) {
 		(context.getState()).Exit(context);
 		context.setState(context.ESTABLISHED);
 		(context.getState()).Entry(context);
 		ctxt.accepted();
 		ctxt.deleteSegment(segment );
 	} else 
-	{
-	     TCP_Default::ACK(context, segment);
+	if (true) {
+		TCP_Default::ACK(context, segment);
 	}
-	return;
-};
+}
 
 // ----------------------------------------------------
 void TCP_SYN_RCVD::Close(TcpConnectionContext<TcpConnection>& context) {
 	TcpConnection& ctxt = context.getOwner();
 	
-	(context.getState()).Exit(context);
-	context.setState(context.FIN_WAIT_1);
-	(context.getState()).Entry(context);
-	ctxt.doSend(TcpSegment :: FIN , NULL , 0 , 0 , NULL );
-	return;
-};
+	if (true) {
+		(context.getState()).Exit(context);
+		context.setState(context.FIN_WAIT_1);
+		(context.getState()).Entry(context);
+		ctxt.doSend(TcpSegment :: FIN , NULL , 0 , 0 , NULL );
+	} 
+}
 
 // ----------------------------------------------------
 void TCP_SYN_RCVD::AckTimeout(TcpConnectionContext<TcpConnection>& context) {
 	TcpConnection& ctxt = context.getOwner();
 	
-	(context.getState()).Exit(context);
-	context.setState(context.CLOSED);
-	(context.getState()).Entry(context);
-	ctxt.doSend(TcpSegment :: RST , NULL , 0 , 0 , NULL );
-	ctxt.closeSocket();
-	return;
-};
+	if (true) {
+		(context.getState()).Exit(context);
+		context.setState(context.CLOSED);
+		(context.getState()).Entry(context);
+		ctxt.doSend(TcpSegment :: RST , NULL , 0 , 0 , NULL );
+		ctxt.closeSocket();
+	} 
+}
 void TCP_SYN_SENT::Entry(TcpConnectionContext<TcpConnection>& context) {
     TcpConnection& ctxt = context.getOwner();
 	ctxt.startTimer("CONN_ACK_TIMER" , TcpConnection :: ACK_TIMEOUT );
@@ -779,7 +852,7 @@ void TCP_SYN_SENT::Exit(TcpConnectionContext<TcpConnection>& context) {
 void TCP_SYN_SENT::SYN_ACK(TcpConnectionContext<TcpConnection>& context, const TcpSegment& segment) {
 	TcpConnection& ctxt = context.getOwner();
 	
-	if (ctxt.getSrcAddress()==ctxt.getFarAddress()&&ctxt.getSrcPort()==ctxt.getFarPort()&&ctxt.getAcknowledgeNumber()==ctxt.getSequenceNumber()) {
+	if ((((segment.getSrcAddress() == ctxt.getFarAddress()) && (segment.getSrcPort() == ctxt.getFarPort())) && (segment.getAcknowledgeNumber() == ctxt.getSequenceNumber()))) {
 		(context.getState()).Exit(context);
 		context.setState(context.ESTABLISHED);
 		(context.getState()).Entry(context);
@@ -788,58 +861,61 @@ void TCP_SYN_SENT::SYN_ACK(TcpConnectionContext<TcpConnection>& context, const T
 		ctxt.openSuccess();
 		ctxt.deleteSegment(segment );
 	} else 
-	{
-	     TCP_Default::SYN_ACK(context, segment);
+	if (true) {
+		TCP_Default::SYN_ACK(context, segment);
 	}
-	return;
-};
+}
 
 // ----------------------------------------------------
 void TCP_SYN_SENT::Close(TcpConnectionContext<TcpConnection>& context) {
 	TcpConnection& ctxt = context.getOwner();
 	
-	(context.getState()).Exit(context);
-	context.setState(context.CLOSED);
-	(context.getState()).Entry(context);
-	ctxt.closeSocket();
-	ctxt.closed("" );
-	return;
-};
+	if (true) {
+		(context.getState()).Exit(context);
+		context.setState(context.CLOSED);
+		(context.getState()).Entry(context);
+		ctxt.closeSocket();
+		ctxt.closed("" );
+	} 
+}
 
 // ----------------------------------------------------
 void TCP_SYN_SENT::ConnAckTimeout(TcpConnectionContext<TcpConnection>& context) {
 	TcpConnection& ctxt = context.getOwner();
 	
-	(context.getState()).Exit(context);
-	context.setState(context.CLOSED);
-	(context.getState()).Entry(context);
-	ctxt.closeSocket();
-	ctxt.openFailed("acknowledge timeout" );
-	return;
-};
+	if (true) {
+		(context.getState()).Exit(context);
+		context.setState(context.CLOSED);
+		(context.getState()).Entry(context);
+		ctxt.closeSocket();
+		ctxt.openFailed("acknowledge timeout" );
+	} 
+}
 
 // ----------------------------------------------------
 void TCP_ServiceOpening::ServerOpened(TcpConnectionContext<TcpConnection>& context) {
 	TcpConnection& ctxt = context.getOwner();
 	
-	(context.getState()).Exit(context);
-	context.setState(context.LISTEN);
-	(context.getState()).Entry(context);
-	ctxt.openSuccess();
-	return;
-};
+	if (true) {
+		(context.getState()).Exit(context);
+		context.setState(context.LISTEN);
+		(context.getState()).Entry(context);
+		ctxt.openSuccess();
+	} 
+}
 
 // ----------------------------------------------------
 void TCP_ServiceOpening::OpenFailed(TcpConnectionContext<TcpConnection>& context, const char* reason) {
 	TcpConnection& ctxt = context.getOwner();
 	
-	(context.getState()).Exit(context);
-	context.setState(context.CLOSED);
-	(context.getState()).Entry(context);
-	ctxt.closeSocket();
-	ctxt.openFailed(reason );
-	return;
-};
+	if (true) {
+		(context.getState()).Exit(context);
+		context.setState(context.CLOSED);
+		(context.getState()).Entry(context);
+		ctxt.closeSocket();
+		ctxt.openFailed(reason );
+	} 
+}
 void TCP_TIME_WAIT::Entry(TcpConnectionContext<TcpConnection>& context) {
     TcpConnection& ctxt = context.getOwner();
 	ctxt.startTimer("CLOSE_TIMER" , TcpConnection :: CLOSE_TIMEOUT );
@@ -853,38 +929,41 @@ void TCP_TIME_WAIT::Exit(TcpConnectionContext<TcpConnection>& context) {
 void TCP_TIME_WAIT::FIN_ACK(TcpConnectionContext<TcpConnection>& context, const TcpSegment& segment) {
 	TcpConnection& ctxt = context.getOwner();
 	
-	if (ctxt.getSrcAddress()==ctxt.getFarAddress()&&ctxt.getSrcPort()==ctxt.getFarPort()&&ctxt.getAcknowledgeNumber()==ctxt.getSequenceNumber()) {
+	if ((((segment.getSrcAddress() == ctxt.getFarAddress()) && (segment.getSrcPort() == ctxt.getFarPort())) && (segment.getAcknowledgeNumber() == ctxt.getSequenceNumber()))) {
 		(context.getState()).Exit(context);
 		context.setState(context.CLOSED);
 		(context.getState()).Entry(context);
 		ctxt.closeSocket();
 		ctxt.deleteSegment(segment );
 	} else 
-	{
-	     TCP_Default::FIN_ACK(context, segment);
+	if (true) {
+		TCP_Default::FIN_ACK(context, segment);
 	}
-	return;
-};
+}
 
 // ----------------------------------------------------
 void TCP_TIME_WAIT::CloseTimeout(TcpConnectionContext<TcpConnection>& context) {
 	TcpConnection& ctxt = context.getOwner();
 	
-	(context.getState()).Exit(context);
-	context.setState(context.CLOSED);
-	(context.getState()).Entry(context);
-	ctxt.closeSocket();
-	ctxt.closed("" );
-	return;
-};
+	if (true) {
+		(context.getState()).Exit(context);
+		context.setState(context.CLOSED);
+		(context.getState()).Entry(context);
+		ctxt.closeSocket();
+		ctxt.closed("" );
+	} 
+}
 
 // ----------------------------------------------------
 void TCP_TIME_WAIT::UNDEF(TcpConnectionContext<TcpConnection>& context, const TcpSegment& segment) {
 	TcpConnection& ctxt = context.getOwner();
 	
-	ctxt.deleteSegment(segment );
-	return;
-};
+	if (true) {
+		(context.getState()).Exit(context);
+		(context.getState()).Entry(context);
+		ctxt.deleteSegment(segment );
+	} 
+}
 void TCP_Transmitting::Entry(TcpConnectionContext<TcpConnection>& context) {
     TcpConnection& ctxt = context.getOwner();
 	ctxt.startTimer("TRANS_ACK_TIMER" , TcpConnection :: ACK_TIMEOUT );
@@ -898,24 +977,23 @@ void TCP_Transmitting::Exit(TcpConnectionContext<TcpConnection>& context) {
 void TCP_Transmitting::ACK(TcpConnectionContext<TcpConnection>& context, const TcpSegment& segment) {
 	TcpConnection& ctxt = context.getOwner();
 	
-	if (ctxt.getSrcAddress()==ctxt.getFarAddress()&&ctxt.getSrcPort()==ctxt.getFarPort()&&ctxt.getAcknowledgeNumber()==ctxt.getSequenceNumber()) {
+	if ((((segment.getSrcAddress() == ctxt.getFarAddress()) && (segment.getSrcPort() == ctxt.getFarPort())) && (segment.getAcknowledgeNumber() == ctxt.getSequenceNumber()))) {
 		(context.getState()).Exit(context);
 		context.setState(context.ESTABLISHED);
 		(context.getState()).Entry(context);
 		ctxt.transmitted();
 		ctxt.deleteSegment(segment );
 	} else 
-	{
-	     TCP_Default::ACK(context, segment);
+	if (true) {
+		TCP_Default::ACK(context, segment);
 	}
-	return;
-};
+}
 
 // ----------------------------------------------------
 void TCP_Transmitting::PSH_ACK(TcpConnectionContext<TcpConnection>& context, const TcpSegment& segment) {
 	TcpConnection& ctxt = context.getOwner();
 	
-	if (ctxt.getSrcAddress()==ctxt.getFarAddress()&&ctxt.getSrcPort()==ctxt.getFarPort()&&ctxt.getAcknowledgeNumber()==ctxt.getSequenceNumber()) {
+	if ((((segment.getSrcAddress() == ctxt.getFarAddress()) && (segment.getSrcPort() == ctxt.getFarPort())) && (segment.getAcknowledgeNumber() == ctxt.getSequenceNumber()))) {
 		(context.getState()).Exit(context);
 		context.setState(context.ESTABLISHED);
 		(context.getState()).Entry(context);
@@ -924,30 +1002,32 @@ void TCP_Transmitting::PSH_ACK(TcpConnectionContext<TcpConnection>& context, con
 		ctxt.receive(segment );
 		ctxt.deleteSegment(segment );
 	} else 
-	{
-	     TCP_Default::PSH_ACK(context, segment);
+	if (true) {
+		TCP_Default::PSH_ACK(context, segment);
 	}
-	return;
-};
+}
 
 // ----------------------------------------------------
 void TCP_Transmitting::PSH(TcpConnectionContext<TcpConnection>& context, const TcpSegment& segment) {
 	TcpConnection& ctxt = context.getOwner();
 	
-	ctxt.doSend(TcpSegment :: ACK , NULL , 0 , 0 , & segment );
-	ctxt.receive(segment );
-	ctxt.deleteSegment(segment );
-	{
-	     TCP_Default::PSH(context, segment);
+	if (((segment.getSrcAddress() == ctxt.getFarAddress()) && (segment.getSrcPort() == ctxt.getFarPort()))) {
+		(context.getState()).Exit(context);
+		(context.getState()).Entry(context);
+		ctxt.doSend(TcpSegment :: ACK , NULL , 0 , 0 , & segment );
+		ctxt.receive(segment );
+		ctxt.deleteSegment(segment );
+	} else 
+	if (true) {
+		TCP_Default::PSH(context, segment);
 	}
-	return;
-};
+}
 
 // ----------------------------------------------------
 void TCP_Transmitting::FIN(TcpConnectionContext<TcpConnection>& context, const TcpSegment& segment) {
 	TcpConnection& ctxt = context.getOwner();
 	
-	if (ctxt.getSrcAddress()==ctxt.getFarAddress()&&ctxt.getSrcPort()==ctxt.getFarPort()) {
+	if (((segment.getSrcAddress() == ctxt.getFarAddress()) && (segment.getSrcPort() == ctxt.getFarPort()))) {
 		(context.getState()).Exit(context);
 		context.setState(context.CLOSE_WAIT);
 		(context.getState()).Entry(context);
@@ -955,31 +1035,32 @@ void TCP_Transmitting::FIN(TcpConnectionContext<TcpConnection>& context, const T
 		ctxt.halfClosed();
 		ctxt.deleteSegment(segment );
 	} else 
-	{
-	     TCP_Default::FIN(context, segment);
+	if (true) {
+		TCP_Default::FIN(context, segment);
 	}
-	return;
-};
+}
 
 // ----------------------------------------------------
 void TCP_Transmitting::Close(TcpConnectionContext<TcpConnection>& context) {
 	TcpConnection& ctxt = context.getOwner();
 	
-	(context.getState()).Exit(context);
-	context.setState(context.FIN_WAIT_1);
-	(context.getState()).Entry(context);
-	ctxt.doSend(TcpSegment :: FIN , NULL , 0 , 0 , NULL );
-	return;
-};
+	if (true) {
+		(context.getState()).Exit(context);
+		context.setState(context.FIN_WAIT_1);
+		(context.getState()).Entry(context);
+		ctxt.doSend(TcpSegment :: FIN , NULL , 0 , 0 , NULL );
+	} 
+}
 
 // ----------------------------------------------------
 void TCP_Transmitting::TransAckTimeout(TcpConnectionContext<TcpConnection>& context) {
 	TcpConnection& ctxt = context.getOwner();
 	
-	(context.getState()).Exit(context);
-	context.setState(context.CLOSED);
-	(context.getState()).Entry(context);
-	ctxt.transmitFailed("peer did not acknowledge" );
-	ctxt.closed("connection lost" );
-	return;
-};
+	if (true) {
+		(context.getState()).Exit(context);
+		context.setState(context.CLOSED);
+		(context.getState()).Entry(context);
+		ctxt.transmitFailed("peer did not acknowledge" );
+		ctxt.closed("connection lost" );
+	} 
+}
