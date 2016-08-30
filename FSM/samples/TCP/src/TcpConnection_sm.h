@@ -87,7 +87,7 @@ public:
 };
 
 // FSM map states class.--------------------------
-// --------------------------------------------------
+// ------------------------------------------------
 class TCP_CLOSED:  public TCP_Default { 
 public:
 	TCP_CLOSED(const char* name, int no) : TCP_Default(name, no) {}
@@ -99,7 +99,7 @@ public:
 	virtual void Close(TcpConnectionContext<TcpConnection>& context);
 };
 
-// --------------------------------------------------
+// ------------------------------------------------
 class TCP_CLOSE_WAIT:  public TCP_Default { 
 public:
 	TCP_CLOSE_WAIT(const char* name, int no) : TCP_Default(name, no) {}
@@ -108,7 +108,7 @@ public:
 	virtual void Close(TcpConnectionContext<TcpConnection>& context);
 };
 
-// --------------------------------------------------
+// ------------------------------------------------
 class TCP_CLOSING:  public TCP_Default { 
 public:
 	TCP_CLOSING(const char* name, int no) : TCP_Default(name, no) {}
@@ -121,7 +121,7 @@ public:
 	virtual void UNDEF(TcpConnectionContext<TcpConnection>& context, const TcpSegment& segment);
 };
 
-// --------------------------------------------------
+// ------------------------------------------------
 class TCP_ClientOpening:  public TCP_Default { 
 public:
 	TCP_ClientOpening(const char* name, int no) : TCP_Default(name, no) {}
@@ -131,7 +131,7 @@ public:
 	virtual void OpenFailed(TcpConnectionContext<TcpConnection>& context, const char* reason);
 };
 
-// --------------------------------------------------
+// ------------------------------------------------
 class TCP_ESTABLISHED:  public TCP_Default { 
 public:
 	TCP_ESTABLISHED(const char* name, int no) : TCP_Default(name, no) {}
@@ -143,7 +143,7 @@ public:
 	virtual void Close(TcpConnectionContext<TcpConnection>& context);
 };
 
-// --------------------------------------------------
+// ------------------------------------------------
 class TCP_FIN_WAIT_1:  public TCP_Default { 
 public:
 	TCP_FIN_WAIT_1(const char* name, int no) : TCP_Default(name, no) {}
@@ -157,7 +157,7 @@ public:
 	virtual void CloseAckTimeout(TcpConnectionContext<TcpConnection>& context);
 };
 
-// --------------------------------------------------
+// ------------------------------------------------
 class TCP_FIN_WAIT_2:  public TCP_Default { 
 public:
 	TCP_FIN_WAIT_2(const char* name, int no) : TCP_Default(name, no) {}
@@ -170,7 +170,7 @@ public:
 	virtual void UNDEF(TcpConnectionContext<TcpConnection>& context, const TcpSegment& segment);
 };
 
-// --------------------------------------------------
+// ------------------------------------------------
 class TCP_LAST_ACK:  public TCP_Default { 
 public:
 	TCP_LAST_ACK(const char* name, int no) : TCP_Default(name, no) {}
@@ -182,7 +182,7 @@ public:
 	virtual void CloseAckTimeout(TcpConnectionContext<TcpConnection>& context);
 };
 
-// --------------------------------------------------
+// ------------------------------------------------
 class TCP_LISTEN:  public TCP_Default { 
 public:
 	TCP_LISTEN(const char* name, int no) : TCP_Default(name, no) {}
@@ -194,7 +194,7 @@ public:
 	virtual void UNDEF(TcpConnectionContext<TcpConnection>& context, const TcpSegment& segment);
 };
 
-// --------------------------------------------------
+// ------------------------------------------------
 class TCP_SYN_RCVD:  public TCP_Default { 
 public:
 	TCP_SYN_RCVD(const char* name, int no) : TCP_Default(name, no) {}
@@ -208,7 +208,7 @@ public:
 	virtual void AckTimeout(TcpConnectionContext<TcpConnection>& context);
 };
 
-// --------------------------------------------------
+// ------------------------------------------------
 class TCP_SYN_SENT:  public TCP_Default { 
 public:
 	TCP_SYN_SENT(const char* name, int no) : TCP_Default(name, no) {}
@@ -221,7 +221,7 @@ public:
 	virtual void ConnAckTimeout(TcpConnectionContext<TcpConnection>& context);
 };
 
-// --------------------------------------------------
+// ------------------------------------------------
 class TCP_ServiceOpening:  public TCP_Default { 
 public:
 	TCP_ServiceOpening(const char* name, int no) : TCP_Default(name, no) {}
@@ -231,7 +231,7 @@ public:
 	virtual void OpenFailed(TcpConnectionContext<TcpConnection>& context, const char* reason);
 };
 
-// --------------------------------------------------
+// ------------------------------------------------
 class TCP_TIME_WAIT:  public TCP_Default { 
 public:
 	TCP_TIME_WAIT(const char* name, int no) : TCP_Default(name, no) {}
@@ -244,7 +244,7 @@ public:
 	virtual void UNDEF(TcpConnectionContext<TcpConnection>& context, const TcpSegment& segment);
 };
 
-// --------------------------------------------------
+// ------------------------------------------------
 class TCP_Transmitting:  public TCP_Default { 
 public:
 	TCP_Transmitting(const char* name, int no) : TCP_Default(name, no) {}
