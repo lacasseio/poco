@@ -27,11 +27,7 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="src\AppClient.cpp" />
-    <ClCompile Include="src\AppServer.cpp" />
-    <ClCompile Include="src\client.cpp" />
     <ClCompile Include="src\Eventloop.cpp" />
-    <ClCompile Include="src\server.cpp" />
     <ClCompile Include="src\TcpClient.cpp" />
     <ClCompile Include="src\TcpConnection.cpp" />
     <ClCompile Include="src\TcpConnection_sm.cpp" />
@@ -40,8 +36,6 @@
     <ClCompile Include="src\winsock_strerror.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="src\AppClient.h" />
-    <ClInclude Include="src\AppServer.h" />
     <ClInclude Include="src\Eventloop.h" />
     <ClInclude Include="src\InputListener.h" />
     <ClInclude Include="src\TcpClient.h" />
@@ -90,7 +84,7 @@
     <CharacterSet>Unicode</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='debug_shared|Win32'" Label="Configuration">
-    <ConfigurationType>Application</ConfigurationType>
+    <ConfigurationType>DynamicLibrary</ConfigurationType>
     <UseDebugLibraries>true</UseDebugLibraries>
     <PlatformToolset>v140</PlatformToolset>
     <CharacterSet>Unicode</CharacterSet>

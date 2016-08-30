@@ -15,19 +15,7 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="src\AppClient.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="src\AppServer.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="src\client.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="src\Eventloop.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="src\server.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="src\TcpClient.cpp">
@@ -50,12 +38,6 @@
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="src\AppClient.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="src\AppServer.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="src\Eventloop.h">
       <Filter>Header Files</Filter>
     </ClInclude>
