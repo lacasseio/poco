@@ -5,10 +5,11 @@ using namespace statemap;
 namespace cpp_ex4 {
 	// FSM Map constructor.
 	StopMap::StopMap() :
-		EastWestGreen("EastWestGreen", 0),
-		EastWestYellow("EastWestYellow", 1),
-		NorthSouthGreen("NorthSouthGreen", 2),
-		NorthSouthYellow("NorthSouthYellow", 3)
+		Default("Default", 0),
+		EastWestGreen("EastWestGreen", 1),
+		EastWestYellow("EastWestYellow", 2),
+		NorthSouthGreen("NorthSouthGreen", 3),
+		NorthSouthYellow("NorthSouthYellow", 4)
 	{}
 	
 	// Class state -----------------------------------

@@ -4,6 +4,7 @@
 namespace cpp_ex4 {
 	// Forward declarations.--------------------------
 	class StopMap;
+	class StopMap_Default;
 	class StopMap_EastWestGreen;
 	class StopMap_EastWestYellow;
 	class StopMap_NorthSouthGreen;
@@ -27,10 +28,10 @@ namespace cpp_ex4 {
 		virtual void Default(StoplightContext<Stoplight>& context);
 	};
 	
-	// ------------------------------------------------
-	class StopMap_Default:  public StopMap_Default { 
+	// FSM map default state class.-------------------
+	class StopMap_Default:  public StoplightState { 
 	public:
-		StopMap_Default(const char* name, int no) : StopMap_Default(name, no) {}
+		StopMap_Default(const char* name, int no) : StoplightState(name, no) {}
 		
 		
 	};
@@ -80,6 +81,7 @@ namespace cpp_ex4 {
 	class StopMap {
 	public:
 		StopMap();
+		StopMap_Default Default;
 		StopMap_EastWestGreen EastWestGreen;
 		StopMap_EastWestYellow EastWestYellow;
 		StopMap_NorthSouthGreen NorthSouthGreen;
