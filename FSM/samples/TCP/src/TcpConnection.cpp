@@ -85,7 +85,7 @@ typedef int socklen_t;
 #endif
 
 // External variable declarations.
-extern Eventloop *Gevent_loop;
+Eventloop *Gevent_loop;
 
 // Const member declarations.
 const unsigned long TcpConnection::ISN = 1415531521;
