@@ -76,13 +76,13 @@ Eventloop::Eventloop()
     // out the max file descriptor value.
 #if defined(WIN32)
     _fdTable = new InputListener*[WIN32_MAX_SOCKET];
-    (void) memset(_fdTable,
+    memset(_fdTable,
                   0,
                   (FD_SETSIZE * sizeof(InputListener*)));
 #else
-    (void) getrlimit(RLIMIT_NOFILE, &limit);
+    getrlimit(RLIMIT_NOFILE, &limit);
     _fdTable = new InputListener*[limit.rlim_cur];
-    (void) memset(_fdTable,
+    memset(_fdTable,
                   0,
                   (limit.rlim_cur * sizeof(InputListener*)));
 #endif
@@ -452,8 +452,8 @@ Eventloop::Timer::Timer(const char *name,
   _next(NULL)
 {
     _name = new char[strlen(name) + 1];
-    (void) strcpy(_name, name);
-    (void) memcpy(&_expiration, &expiration, sizeof(_expiration));
+    strcpy(_name, name);
+    memcpy(&_expiration, &expiration, sizeof(_expiration));
 } // end of Eventloop::Timer::Timer(...)
 
 //---------------------------------------------------------------
@@ -569,7 +569,7 @@ const timeval& Eventloop::Timer::getExpiration() const
 //
 void Eventloop::Timer::setExpiration(const timeval& expiration)
 {
-    (void) memcpy(&_expiration, &expiration, sizeof(_expiration));
+    memcpy(&_expiration, &expiration, sizeof(_expiration));
     return;
 } // end of Eventloop::Timer::setExpiration(const timeval&)
 
@@ -614,7 +614,7 @@ void Eventloop::gettime(timeval& timeval) const
     timeval.tv_sec = currTime.time;
     timeval.tv_usec = currTime.millitm * USECS_PER_MSEC;
 #else
-    (void) gettimeofday(&timeval, NULL);
+    gettimeofday(&timeval, NULL);
 #endif
 
     return;

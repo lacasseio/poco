@@ -46,11 +46,13 @@
 //
 
 #include <sys/types.h>
-#if defined(WIN32)
-#include <winsock2.h>
-#else
-#include <netinet/in.h>
-#endif
+#include <iostream>
+
+#include "Poco/Net/SocketAddress.h"
+#include "Poco/Net/DatagramSocket.h"
+using Poco::Net::DatagramSocket;
+using Poco::Net::SocketAddress;
+
 #include "TcpSegment.h"
 #include "TcpConnection_sm.h"
 #include "TcpConnectionListener.h"
@@ -60,9 +62,7 @@
 class TcpConnection :
     /* implements */ public InputListener,
     /* implements */ public TimerListener
-#ifdef CRTP
     /* extends */ , public TcpConnectionContext<TcpConnection>
-#endif
 {
 // Member functions.
  public:
@@ -79,9 +79,7 @@ class TcpConnection :
     unsigned long getSequenceNumber() const;
 
     // Send the raw bytes to the far end client socket.
-    void transmit(const char *data,
-                  int offset,
-                  int size);
+    void transmit(const char *data, int offset, int size);
 
     // Start closing this connection.
     void doClose();
@@ -97,7 +95,7 @@ class TcpConnection :
     // State Machine Actions
     //
     void openServerSocket(unsigned short port);
-    void openClientSocket(const sockaddr_in *address);
+    void openClientSocket(const SocketAddress *address);
     void openSuccess();
     void openFailed(const char *reason);
     void closeSocket();
@@ -107,16 +105,12 @@ class TcpConnection :
     void transmitted();
     void transmitFailed(const char *reason);
     void receive(const TcpSegment& segment);
-    void sendOpenSyn(const sockaddr_in *address);
+    void sendOpenSyn(const SocketAddress *address);
     void accept(const TcpSegment& segment);
     void accepted();
     void sendSynAck(const TcpSegment& segment);
     void sendSynAckAck(const TcpSegment& segment);
-    void doSend(unsigned short flags,
-                const char *data,
-                int offset,
-                int size,
-                const TcpSegment *recv_segment);
+    void doSend(unsigned short flags, const char *data, int offset, int size, const TcpSegment *recv_segment);
     void startTimer(const char *name, time_t time);
     void stopTimer(const char *name);
     void setNearAddress();
@@ -129,15 +123,10 @@ class TcpConnection :
     TcpConnection(TcpConnectionListener& listener);
 
     // "Accepted" socket constructor.
-    TcpConnection(const sockaddr_in& near_address,
-                  const sockaddr_in& far_address,
-#if defined(WIN32)
+    TcpConnection(const SocketAddress& near_address,
+                  const SocketAddress& far_address,
                   unsigned short actual_port,
-                  SOCKET udp_socket,
-                  HANDLE udp_handle,
-#else
-                  int udp_socket,
-#endif
+                  DatagramSocket udp_socket,
                   int sequence_number,
                   TcpServer& server,
                   TcpConnectionListener& listener);
@@ -146,7 +135,7 @@ class TcpConnection :
     void passiveOpen(unsigned short port);
 
     // Open a client socket.
-    void activeOpen(const sockaddr_in& address);
+    void activeOpen(const SocketAddress& address);
 
     // An accepted client socket.
     void acceptOpen(const TcpSegment& segment);
@@ -200,10 +189,10 @@ class TcpConnection :
     TcpConnectionListener *_listener;
 
     // Connected to this address.
-    sockaddr_in _farAddress;
+    SocketAddress _farAddress;
 
     // This socket's address.
-    sockaddr_in _nearAddress;
+	SocketAddress _nearAddress;
 
 #if defined(WIN32)
     // This socket's actual port number.
@@ -212,10 +201,7 @@ class TcpConnection :
 
  private:
 
-#if defined(WIN32)
-    SOCKET _udp_win_socket;
-#endif
-    int _udp_socket;
+	DatagramSocket _udp_socket;
     unsigned long _sequence_number;
 
     // Read data into the following buffer.
@@ -229,9 +215,6 @@ class TcpConnection :
     // Store failure messages here.
     char *_errorMessage;
 
-#ifndef CRTP
-    TcpConnectionContext<TcpConnection> _fsm;
-#endif
 };
 
 #endif

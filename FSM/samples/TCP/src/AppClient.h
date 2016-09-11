@@ -75,7 +75,7 @@ public:
     // Create a TCP client object and open a connection to the
     // specified service.
     void open(const std::string& host,
-              const sockaddr_in& address);
+              const SocketAddress& address);
 
     // Close the TCP service.
     void close();

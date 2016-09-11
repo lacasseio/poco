@@ -124,6 +124,7 @@
     <ClInclude Include="src\model\Guard.h" />
     <ClInclude Include="src\model\Literal.h" />
     <ClInclude Include="src\model\Map.h" />
+    <ClInclude Include="src\model\Mode.h" />
     <ClInclude Include="src\model\Operation.h" />
     <ClInclude Include="src\model\Operator.h" />
     <ClInclude Include="src\model\Parameter.h" />

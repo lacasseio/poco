@@ -96,7 +96,7 @@ int main(int argc, char *argv[])
 {
     int longPort;
     unsigned long ip_address = INADDR_ANY;
-    sockaddr_in address;
+    SocketAddress address;
     int retcode;
 #if defined(WIN32)
     WORD winsockVersion;
@@ -135,18 +135,6 @@ int main(int argc, char *argv[])
     }
 #endif
 
-#if defined(WIN32)
-    // Initialize winsock.
-    winsockVersion = MAKEWORD(2, 0);
-    if ((errorCode = WSAStartup(winsockVersion, &winsockData)) != 0)
-    {
-        cout << "Unable to initialize Win32 sockets - "
-            << winsock_strerror(errorCode)
-            << "."
-            << endl;
-        exit(2);
-    }
-#endif
 
     if (argc != 3)
     {
@@ -209,10 +197,6 @@ int main(int argc, char *argv[])
         // Delete the event loop.
         delete Gevent_loop;
         Gevent_loop = NULL;
-
-#if defined(WIN32)
-        WSACleanup();
-#endif
 
         retcode = 0;
     }

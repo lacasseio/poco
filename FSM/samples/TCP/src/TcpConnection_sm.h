@@ -35,8 +35,8 @@ public:
 	virtual void ACK(TcpConnectionContext<TcpConnection>& context, const TcpSegment& segment);
 	virtual void AcceptOpen(TcpConnectionContext<TcpConnection>& context, const TcpSegment& segment);
 	virtual void AckTimeout(TcpConnectionContext<TcpConnection>& context);
-	virtual void ActiveOpen(TcpConnectionContext<TcpConnection>& context, const sockaddr_in* address);
-	virtual void ClientOpened(TcpConnectionContext<TcpConnection>& context, const sockaddr_in* address);
+	virtual void ActiveOpen(TcpConnectionContext<TcpConnection>& context, const SocketAddress* address);
+	virtual void ClientOpened(TcpConnectionContext<TcpConnection>& context, const SocketAddress* address);
 	virtual void Close(TcpConnectionContext<TcpConnection>& context);
 	virtual void CloseAckTimeout(TcpConnectionContext<TcpConnection>& context);
 	virtual void CloseTimeout(TcpConnectionContext<TcpConnection>& context);
@@ -67,7 +67,7 @@ public:
 	
 	
 	virtual void PassiveOpen(TcpConnectionContext<TcpConnection>& context, unsigned short port);
-	virtual void ActiveOpen(TcpConnectionContext<TcpConnection>& context, const sockaddr_in* address);
+	virtual void ActiveOpen(TcpConnectionContext<TcpConnection>& context, const SocketAddress* address);
 	virtual void Transmit(TcpConnectionContext<TcpConnection>& context, const char* data, int offset, int size);
 	virtual void FIN(TcpConnectionContext<TcpConnection>& context, const TcpSegment& segment);
 	virtual void SYN(TcpConnectionContext<TcpConnection>& context, const TcpSegment& segment);
@@ -94,7 +94,7 @@ public:
 	
 	
 	virtual void PassiveOpen(TcpConnectionContext<TcpConnection>& context, unsigned short port);
-	virtual void ActiveOpen(TcpConnectionContext<TcpConnection>& context, const sockaddr_in* address);
+	virtual void ActiveOpen(TcpConnectionContext<TcpConnection>& context, const SocketAddress* address);
 	virtual void AcceptOpen(TcpConnectionContext<TcpConnection>& context, const TcpSegment& segment);
 	virtual void Close(TcpConnectionContext<TcpConnection>& context);
 };
@@ -127,7 +127,7 @@ public:
 	TCP_ClientOpening(const char* name, int no) : TCP_Default(name, no) {}
 	
 	
-	virtual void ClientOpened(TcpConnectionContext<TcpConnection>& context, const sockaddr_in* address);
+	virtual void ClientOpened(TcpConnectionContext<TcpConnection>& context, const SocketAddress* address);
 	virtual void OpenFailed(TcpConnectionContext<TcpConnection>& context, const char* reason);
 };
 
@@ -328,12 +328,12 @@ public:
 	    getState().AckTimeout(*this);
 	    setTransition(NULL);
 	};
-	void ActiveOpen(const sockaddr_in* address) {
+	void ActiveOpen(const SocketAddress* address) {
 	    setTransition("ActiveOpen");
 	    getState().ActiveOpen(*this, address);
 	    setTransition(NULL);
 	};
-	void ClientOpened(const sockaddr_in* address) {
+	void ClientOpened(const SocketAddress* address) {
 	    setTransition("ClientOpened");
 	    getState().ClientOpened(*this, address);
 	    setTransition(NULL);

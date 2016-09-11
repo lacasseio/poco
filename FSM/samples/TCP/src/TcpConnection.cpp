@@ -52,6 +52,9 @@
 // Initial revision
 //
 
+#include <iostream>
+using namespace std;
+
 #ifdef _MSC_VER
 #pragma warning(disable: 4355)
 #endif
@@ -113,7 +116,8 @@ char* winsock_strerror(int);
 //
 unsigned long TcpConnection::getFarAddress() const
 {
-    return (_farAddress.sin_addr.s_addr);
+	return *(long*)(_farAddress.addr()->sa_data);
+//	return (_farAddress.sin_addr.s_addr);
 } // end of TcpConnection::getFarAddress() const
 
 //---------------------------------------------------------------
@@ -122,7 +126,7 @@ unsigned long TcpConnection::getFarAddress() const
 //
 unsigned short TcpConnection::getFarPort() const
 {
-    return (_farAddress.sin_port);
+    return (_farAddress.port());
 } // end of TcpConnection::getFarPort() const
 
 //---------------------------------------------------------------
@@ -142,11 +146,7 @@ void TcpConnection::transmit(const char *data,
                              int offset,
                              int size)
 {
-#ifdef CRTP
     Transmit(data, offset, size);
-#else
-    _fsm.Transmit(data, offset, size);
-#endif
     return;
 } // end of TcpConnection::transmit(const unsigned char*, int, int)
 
@@ -156,11 +156,7 @@ void TcpConnection::transmit(const char *data,
 //
 void TcpConnection::doClose()
 {
-#ifdef CRTP
     Close();
-#else
-    _fsm.Close();
-#endif
     return;
 } // end of TcpConnection::doClose()
 
@@ -180,7 +176,7 @@ void TcpConnection::setListener(TcpConnectionListener& listener)
 //
 void TcpConnection::handleReceive(int)
 {
-    sockaddr sourceAddress;
+    SocketAddress sourceAddress;
     TcpSegment *segment;
     socklen_t addressSize;
     int flags,
@@ -198,12 +194,10 @@ void TcpConnection::handleReceive(int)
     {
         // Be certain to offset properly into the input buffer.
         addressSize = sizeof(sourceAddress);
-        bytesRead = recvfrom(_udp_socket,
+        bytesRead = _udp_socket.receiveFrom(
                              (_buffer + totalBytesRead),
                              _bufferSize,
-                             MSG_READ,
-                             &sourceAddress,
-                             &addressSize);
+                             &sourceAddress);
 
 #if defined(WIN32)
         if (bytesRead == SOCKET_ERROR)
@@ -241,7 +235,7 @@ void TcpConnection::handleReceive(int)
 
     if (errorFlag == 0 && bytesRead > 0)
     {
-        segment = new TcpSegment(reinterpret_cast<sockaddr_in&>(sourceAddress),
+        segment = new TcpSegment(reinterpret_cast<SocketAddress&>(sourceAddress),
                                  _nearAddress,
                                  _buffer,
                                  totalBytesRead);
@@ -259,91 +253,47 @@ void TcpConnection::handleReceive(int)
         switch(flags)
         {
             case TcpSegment::FIN:
-#ifdef CRTP
                 FIN(*segment);
-#else
-                _fsm.FIN(*segment);
-#endif
                 break;
 
             case TcpSegment::SYN:
-#ifdef CRTP
                 SYN(*segment);
-#else
-                _fsm.SYN(*segment);
-#endif
                 break;
 
             case TcpSegment::RST:
-#ifdef CRTP
                 RST(*segment);
-#else
-                _fsm.RST(*segment);
-#endif
                 break;
 
             case TcpSegment::PSH:
-#ifdef CRTP
                 PSH(*segment);
-#else
-                _fsm.PSH(*segment);
-#endif
                 break;
 
             case TcpSegment::ACK:
-#ifdef CRTP
                 ACK(*segment);
-#else
-                _fsm.ACK(*segment);
-#endif
                 break;
 
             case TcpSegment::URG:
-#ifdef CRTP
                 URG(*segment);
-#else
-                _fsm.URG(*segment);
-#endif
                 break;
 
             case TcpSegment::FIN_ACK:
-#ifdef CRTP
                 FIN_ACK(*segment);
-#else
-                _fsm.FIN_ACK(*segment);
-#endif
                 break;
 
             case TcpSegment::SYN_ACK:
-#ifdef CRTP
                 SYN_ACK(*segment);
-#else
-                _fsm.SYN_ACK(*segment);
-#endif
                 break;
 
             case TcpSegment::RST_ACK:
-#ifdef CRTP
                 RST_ACK(*segment);
-#else
-                _fsm.RST_ACK(*segment);
-#endif
                 break;
 
             case TcpSegment::PSH_ACK:
-#ifdef CRTP
                 PSH_ACK(*segment);
-#else
-                _fsm.PSH_ACK(*segment);
-#endif
                 break;
 
             default:
-#ifdef CRTP
                 UNDEF(*segment);
-#else
-                _fsm.UNDEF(*segment);
-#endif
                 break;
         }
     }
@@ -363,67 +313,35 @@ void TcpConnection::handleTimeout(const char *name)
 
     if (strcmp(name, "ACK_TIMER") == 0)
     {
-#ifdef CRTP
         AckTimeout();
-#else
-        _fsm.AckTimeout();
-#endif
     }
     else if (strcmp(name, "CONN_ACK_TIMER") == 0)
     {
-#ifdef CRTP
         ConnAckTimeout();
-#else
-        _fsm.ConnAckTimeout();
-#endif
     }
     else if (strcmp(name, "TRANS_ACK_TIMER") == 0)
     {
-#ifdef CRTP
         TransAckTimeout();
-#else
-        _fsm.TransAckTimeout();
-#endif
     }
     else if (strcmp(name, "CLOSE_ACK_TIMER") == 0)
     {
-#ifdef CRTP
         CloseAckTimeout();
-#else
-        _fsm.CloseAckTimeout();
-#endif
     }
     else if (strcmp(name, "CLOSE_TIMER") == 0)
     {
-#ifdef CRTP
         CloseTimeout();
-#else
-        _fsm.CloseTimeout();
-#endif
     }
     else if (strcmp(name, "SERVER_OPENED") == 0)
     {
-#ifdef CRTP
         ServerOpened();
-#else
-        _fsm.ServerOpened();
-#endif
     }
     else if (strcmp(name, "CLIENT_OPENED") == 0)
     {
-#ifdef CRTP
         ClientOpened(&_farAddress);
-#else
-        _fsm.ClientOpened(&_farAddress);
-#endif
     }
     else if (strcmp(name, "OPEN_FAILED") == 0)
     {
-#ifdef CRTP
         OpenFailed(_errorMessage);
-#else
-        _fsm.OpenFailed(_errorMessage);
-#endif
         if (_errorMessage != NULL)
         {
             delete[] _errorMessage;
@@ -446,9 +364,9 @@ void TcpConnection::openServerSocket(unsigned short port)
 #endif
 
     // Set up this server's address.
-    (void) memset(&_nearAddress, 0, sizeof(_nearAddress));
+    memset(&_nearAddress, 0, sizeof(_nearAddress));
     _nearAddress.sin_family = AF_INET;
-    _nearAddress.sin_port = port;
+    _nearAddress.port() = port;
     _nearAddress.sin_addr.s_addr = INADDR_ANY;
 
     // Tell the UDP socket to route data bound for port to this
@@ -490,7 +408,7 @@ void TcpConnection::openServerSocket(unsigned short port)
         error = strerror(errno);
 #endif
         _errorMessage = new char[strlen(error) + 1];
-        (void) strcpy(_errorMessage, error);
+        strcpy(_errorMessage, error);
         Gevent_loop->startTimer("OPEN_FAILED",
                                 MIN_TIMEOUT,
                                 *this);
@@ -505,9 +423,9 @@ void TcpConnection::openServerSocket(unsigned short port)
         // the event loop.
 #if defined(WIN32)
         _udp_socket = (unsigned int) newHandle;
-        (void) ioctlsocket(_udp_socket, FIONBIO, &blockingFlag);
+        ioctlsocket(_udp_socket, FIONBIO, &blockingFlag);
 #else
-        (void) fcntl(_udp_socket, F_SETFL, O_NDELAY);
+        fcntl(_udp_socket, F_SETFL, O_NDELAY);
 #endif
         Gevent_loop->addFD(_udp_socket, *this);
 
@@ -520,10 +438,10 @@ void TcpConnection::openServerSocket(unsigned short port)
 } // end of TcpConnection::openServerSocket(int)
 
 //---------------------------------------------------------------
-// openClientSocket(const sockaddr_in*) (Public)
+// openClientSocket(const SocketAddress*) (Public)
 // Connect to the specified address.
 //
-void TcpConnection::openClientSocket(const sockaddr_in *address)
+void TcpConnection::openClientSocket(const SocketAddress *address)
 {
 #if defined(WIN32)
     unsigned long blockingFlag = 1;
@@ -532,9 +450,9 @@ void TcpConnection::openClientSocket(const sockaddr_in *address)
 #endif
 
     // Set up this client's address.
-    (void) memset(&_nearAddress, 0, sizeof(_nearAddress));
+    memset(&_nearAddress, 0, sizeof(_nearAddress));
     _nearAddress.sin_family = AF_INET;
-    _nearAddress.sin_port = 0;
+    _nearAddress.port() = 0;
     _nearAddress.sin_addr.s_addr = INADDR_ANY;
 
 #if defined(WIN32)
@@ -571,7 +489,7 @@ void TcpConnection::openClientSocket(const sockaddr_in *address)
         error = strerror(errno);
 #endif
         _errorMessage = new char[strlen(error) + 1];
-        (void) strcpy(_errorMessage, error);
+        strcpy(_errorMessage, error);
         Gevent_loop->startTimer("OPEN_FAILED",
                                 MIN_TIMEOUT,
                                 *this);
@@ -581,9 +499,9 @@ void TcpConnection::openClientSocket(const sockaddr_in *address)
         // Get the UDP socket's address.
         _nearAddress.sin_family = AF_INET;
 #if defined(WIN32)
-        _nearAddress.sin_port = (unsigned short) new_port;
+        _nearAddress.port() = (unsigned short) new_port;
 #else
-        _nearAddress.sin_port = getLocalPort(_udp_socket);
+        _nearAddress.port() = getLocalPort(_udp_socket);
 #endif
         _nearAddress.sin_addr.s_addr = getLocalAddress();
 
@@ -591,14 +509,14 @@ void TcpConnection::openClientSocket(const sockaddr_in *address)
         // the event loop.
 #if defined(WIN32)
         _udp_socket = (unsigned int) newHandle;
-        (void) ioctlsocket(_udp_socket, FIONBIO, &blockingFlag);
+        ioctlsocket(_udp_socket, FIONBIO, &blockingFlag);
 #else
-        (void) fcntl(_udp_socket, F_SETFL, O_NDELAY);
+        fcntl(_udp_socket, F_SETFL, O_NDELAY);
 #endif
         Gevent_loop->addFD(_udp_socket, *this);
 
         // Save the far-end address for later use.
-        (void) memcpy(&_farAddress, address, sizeof(_farAddress));
+        memcpy(&_farAddress, address, sizeof(_farAddress));
 
         _sequence_number = ISN;
 
@@ -608,7 +526,7 @@ void TcpConnection::openClientSocket(const sockaddr_in *address)
     }
 
     return;
-} // end of TcpConnection::openClientSocket(const sockaddr_in*)
+} // end of TcpConnection::openClientSocket(const SocketAddress*)
 
 //---------------------------------------------------------------
 // openSuccess() (Public)
@@ -731,11 +649,11 @@ void TcpConnection::receive(const TcpSegment& segment)
 } // end of TcpConnection::receive(const TcpSegment&)
 
 //---------------------------------------------------------------
-// sendOpenSyn(const sockaddr_in*) (Public)
+// sendOpenSyn(const SocketAddress*) (Public)
 // Send the opening SYN message which requests connection to a
 // service.
 //
-void TcpConnection::sendOpenSyn(const sockaddr_in *address)
+void TcpConnection::sendOpenSyn(const SocketAddress *address)
 {
     TcpSegment segment(*address,
                        _nearAddress,
@@ -748,7 +666,7 @@ void TcpConnection::sendOpenSyn(const sockaddr_in *address)
 
     doSend(TcpSegment::SYN, NULL, 0, 0, &segment);
     return;
-} // end of TcpConnection::sendOpenSyn(const sockaddr_in*)
+} // end of TcpConnection::sendOpenSyn(const SocketAddress*)
 
 //---------------------------------------------------------------
 // accept(const TcpSegment&) (Public)
@@ -763,7 +681,7 @@ void TcpConnection::accept(const TcpSegment& segment)
     HANDLE newHandle;
     int new_port;
 #else
-    sockaddr_in clientAddress;
+    SocketAddress clientAddress;
 #endif
 
     // Create a new UDP socket to handle this connection.
@@ -794,7 +712,7 @@ void TcpConnection::accept(const TcpSegment& segment)
     else
     {
         // Set the socket to non-blocking.
-        (void) ioctlsocket(
+        ioctlsocket(
             (unsigned int) newHandle, FIONBIO, &blockingFlag);
 
         // Have the new client socket use this server
@@ -809,9 +727,9 @@ void TcpConnection::accept(const TcpSegment& segment)
                                       *_listener);
 #else
     // Set up this client's address.
-    (void) memset(&clientAddress, 0, sizeof(clientAddress));
+    memset(&clientAddress, 0, sizeof(clientAddress));
     clientAddress.sin_family = AF_INET;
-    clientAddress.sin_port = 0;
+    clientAddress.port() = 0;
     clientAddress.sin_addr.s_addr = INADDR_ANY;
 
     if ((new_socket = socket(AF_INET, SOCK_DGRAM, 0)) < 0 ||
@@ -829,7 +747,7 @@ void TcpConnection::accept(const TcpSegment& segment)
     else
     {
         // Set the socket to non-blocking.
-        (void) fcntl(new_socket, F_SETFL, O_NDELAY);
+        fcntl(new_socket, F_SETFL, O_NDELAY);
 
         // Have the new client socket use this server
         // socket's near address for now.
@@ -925,19 +843,19 @@ void TcpConnection::doSend(unsigned short flags,
                            int size,
                            const TcpSegment *recv_segment)
 {
-    sockaddr_in to_address;
+    SocketAddress to_address;
     unsigned long ack_number;
     TcpSegment *send_segment;
     char *packet;
     int packet_size;
 
-    (void) memset(&to_address, 0, sizeof(to_address));
+    memset(&to_address, 0, sizeof(to_address));
 
     // First, use the received segment.
     // Else, use the connection's far end.
     if (recv_segment != NULL)
     {
-        (void) memcpy(&to_address,
+        memcpy(&to_address,
                       &(recv_segment->getSource()),
                       sizeof(to_address));
     }
@@ -945,7 +863,7 @@ void TcpConnection::doSend(unsigned short flags,
     // to whatever client socket we are currently speaking.
     else
     {
-        (void) memcpy(&to_address, &_farAddress, sizeof(to_address));
+        memcpy(&to_address, &_farAddress, sizeof(to_address));
     }
 
     // Send the ack number only if the ack flag is set.
@@ -973,7 +891,7 @@ void TcpConnection::doSend(unsigned short flags,
     // Advance the sequence number depending on the message sent.
     // Don't do this if the message came from an interloper.
     if (recv_segment == NULL ||
-        ((recv_segment->getSource()).sin_port == _farAddress.sin_port &&
+        ((recv_segment->getSource()).port() == _farAddress.port() &&
          (recv_segment->getSource()).sin_addr.s_addr == _farAddress.sin_addr.s_addr))
     {
         _sequence_number = getAck(*send_segment);
@@ -1060,11 +978,11 @@ void TcpConnection::stopTimer(const char* name)
 void TcpConnection::setNearAddress()
 {
     // Get the UDP socket's address.
-    _nearAddress.sin_port = AF_INET;
+    _nearAddress.port() = AF_INET;
 #if defined(WIN32)
-    _nearAddress.sin_port = _actualPort;
+    _nearAddress.port() = _actualPort;
 #else
-    _nearAddress.sin_port = getLocalPort(_udp_socket);
+    _nearAddress.port() = getLocalPort(_udp_socket);
 #endif
     _nearAddress.sin_addr.s_addr = getLocalAddress();
 
@@ -1083,7 +1001,7 @@ void TcpConnection::setFarAddress(const TcpSegment& segment)
     _farAddress.sin_family = AF_INET;
     port = ((((unsigned short) data[0]) & 0x00ff) |
             ((((unsigned short) data[1]) & 0x00ff) << 8));
-    _farAddress.sin_port = port;
+    _farAddress.port() = port;
     _farAddress.sin_addr.s_addr =
         segment.getSource().sin_addr.s_addr;
 
@@ -1116,33 +1034,25 @@ TcpConnection::TcpConnection(TcpConnectionListener& listener)
   _bufferSize(0),
   _server(NULL),
   _errorMessage(NULL)
-#ifdef CRTP
-#else
-  , _fsm(*this)
-#endif
 {
-    (void) memset(&_nearAddress, 0, sizeof(_nearAddress));
-    (void) memset(&_farAddress, 0, sizeof(_farAddress));
+    memset(&_nearAddress, 0, sizeof(_nearAddress));
+    memset(&_farAddress, 0, sizeof(_farAddress));
     expandBuffer();
 
 #if defined(FSM_DEBUG)
     // Turn on state map debug printout.
-#ifdef CRTP
     setDebugFlag(true);
-#else
-    _fsm.setDebugFlag(true);
-#endif
 #endif
 
     return;
 } // end of TcpConnection::TcpConnection(TcpConnectionListener&)
 
 //---------------------------------------------------------------
-// TcpConnection(const sockaddr_in&, ...) (Protected)
+// TcpConnection(const SocketAddress&, ...) (Protected)
 // "Accepted" client connection.
 //
-TcpConnection::TcpConnection(const sockaddr_in& far_address,
-                             const sockaddr_in& near_address,
+TcpConnection::TcpConnection(const SocketAddress& far_address,
+                             const SocketAddress& near_address,
 #if defined(WIN32)
                              unsigned short actual_port,
                              SOCKET udp_socket,
@@ -1166,27 +1076,19 @@ TcpConnection::TcpConnection(const sockaddr_in& far_address,
   _bufferSize(0),
   _server(&server),
   _errorMessage(NULL)
-#ifdef CRTP
-#else
-  , _fsm(*this)
-#endif
 {
     // Register the UDP socket with the event loop.
     Gevent_loop->addFD(_udp_socket, *this);
 
-    (void) memcpy(&_nearAddress, &near_address, sizeof(_nearAddress));
-    (void) memcpy(&_farAddress, &far_address, sizeof(_farAddress));
+    memcpy(&_nearAddress, &near_address, sizeof(_nearAddress));
+    memcpy(&_farAddress, &far_address, sizeof(_farAddress));
 
     // Set up the input buffer.
     expandBuffer();
 
 #if defined(FSM_DEBUG)
     // Turn on state map debug printout.
-#ifdef CRTP
     setDebugFlag(true);
-#else
-    _fsm.setDebugFlag(true);
-#endif
 #endif
 
     return;
@@ -1223,27 +1125,19 @@ TcpConnection::~TcpConnection()
 //
 void TcpConnection::passiveOpen(unsigned short port)
 {
-#ifdef CRTP
     PassiveOpen(port);
-#else
-    _fsm.PassiveOpen(port);
-#endif
     return;
 } // end of TcpConnection::passiveOpen(unsigned short)
 
 //---------------------------------------------------------------
-// activeOpen(const sockaddr_in&) (Protected)
+// activeOpen(const SocketAddress&) (Protected)
 // Open a client socket.
 //
-void TcpConnection::activeOpen(const sockaddr_in& address)
+void TcpConnection::activeOpen(const SocketAddress& address)
 {
-#ifdef CRTP
     ActiveOpen(&address);
-#else
-    _fsm.ActiveOpen(&address);
-#endif
     return;
-} // end of TcpConnection::activeOpen(const sockaddr_in&)
+} // end of TcpConnection::activeOpen(const SocketAddress&)
 
 //---------------------------------------------------------------
 // acceptOpen(const TcpSegment&) (Protected)
@@ -1251,11 +1145,7 @@ void TcpConnection::activeOpen(const sockaddr_in& address)
 //
 void TcpConnection::acceptOpen(const TcpSegment& segment)
 {
-#ifdef CRTP
     AcceptOpen(segment);
-#else
-    _fsm.AcceptOpen(segment);
-#endif
     return;
 } // end of TcpConnection::acceptOpen(const TcpSegment&)
 
@@ -1277,7 +1167,7 @@ void TcpConnection::expandBuffer()
     // new buffer before deleting the current buffer.
     if (_buffer != NULL)
     {
-        (void) memcpy(newBuffer, _buffer, _bufferSize);
+        memcpy(newBuffer, _buffer, _bufferSize);
         delete[] _buffer;
     }
 
@@ -1294,22 +1184,22 @@ void TcpConnection::expandBuffer()
 //
 int TcpConnection::doBind(int handle) const
 {
-    sockaddr_in address;
+    SocketAddress address;
     unsigned short portIt;
     int socket_error,
         retval;
 
     // Set up this client's address.
-    (void) memset(&address, 0, sizeof(address));
+    memset(&address, 0, sizeof(address));
     address.sin_family = AF_INET;
-    address.sin_port = 0;
+    address.port() = 0;
     address.sin_addr.s_addr = INADDR_ANY;
 
     // Start at the largest number and work down.
     for (portIt = MIN_PORT; portIt <= MAX_PORT; ++portIt)
     {
-        address.sin_port = htons(portIt);
-        if (bind(handle, (sockaddr *) &address, sizeof(sockaddr_in))
+        address.port() = htons(portIt);
+        if (bind(handle, (sockaddr *) &address, sizeof(SocketAddress))
                 == SOCKET_ERROR)
         {
             socket_error = WSAGetLastError();
@@ -1323,7 +1213,7 @@ int TcpConnection::doBind(int handle) const
         else
         {
             // The bind worked. Return the port number.
-            retval = address.sin_port;
+            retval = address.port();
             break;
         }
     }
@@ -1338,7 +1228,7 @@ int TcpConnection::doBind(int handle) const
 unsigned short TcpConnection::getLocalPort(int fd) const
 {
     socklen_t size;
-    sockaddr_in address;
+    SocketAddress address;
     unsigned short retval;
 
     size = sizeof(address);
@@ -1350,7 +1240,7 @@ unsigned short TcpConnection::getLocalPort(int fd) const
     }
     else
     {
-        retval = address.sin_port;
+        retval = address.port();
     }
 
     return(retval);
@@ -1371,15 +1261,15 @@ unsigned long TcpConnection::getLocalAddress() const
 
     // 1. Get this machine's network host name.
 #if defined(__sun)
-    (void) sysinfo(SI_HOSTNAME, hostname, MAX_HOSTNAME_LEN);
+    sysinfo(SI_HOSTNAME, hostname, MAX_HOSTNAME_LEN);
 #else
-    (void) gethostname(hostname, MAX_HOSTNAME_LEN);
+    gethostname(hostname, MAX_HOSTNAME_LEN);
 #endif
 
     // 2. Get this host name's address.
     if ((hostEntry = gethostbyname(hostname)) != NULL)
     {
-        (void) memcpy(&retval,
+        memcpy(&retval,
                       hostEntry->h_addr,
                       hostEntry->h_length);
     }

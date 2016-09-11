@@ -31,10 +31,10 @@ void TcpConnectionState::AcceptOpen(TcpConnectionContext<TcpConnection>& context
 void TcpConnectionState::AckTimeout(TcpConnectionContext<TcpConnection>& context) {
      Default(context);
 }
-void TcpConnectionState::ActiveOpen(TcpConnectionContext<TcpConnection>& context, const sockaddr_in* address) {
+void TcpConnectionState::ActiveOpen(TcpConnectionContext<TcpConnection>& context, const SocketAddress* address) {
      Default(context);
 }
-void TcpConnectionState::ClientOpened(TcpConnectionContext<TcpConnection>& context, const sockaddr_in* address) {
+void TcpConnectionState::ClientOpened(TcpConnectionContext<TcpConnection>& context, const SocketAddress* address) {
      Default(context);
 }
 void TcpConnectionState::Close(TcpConnectionContext<TcpConnection>& context) {
@@ -113,7 +113,7 @@ void TCP_CLOSED::PassiveOpen(TcpConnectionContext<TcpConnection>& context, unsig
 }
 
 // ----------------------------------------------------
-void TCP_CLOSED::ActiveOpen(TcpConnectionContext<TcpConnection>& context, const sockaddr_in* address) {
+void TCP_CLOSED::ActiveOpen(TcpConnectionContext<TcpConnection>& context, const SocketAddress* address) {
 	TcpConnection& ctxt = context.getOwner();
 	
 	if (true) {
@@ -207,7 +207,7 @@ void TCP_CLOSING::UNDEF(TcpConnectionContext<TcpConnection>& context, const TcpS
 }
 
 // ----------------------------------------------------
-void TCP_ClientOpening::ClientOpened(TcpConnectionContext<TcpConnection>& context, const sockaddr_in* address) {
+void TCP_ClientOpening::ClientOpened(TcpConnectionContext<TcpConnection>& context, const SocketAddress* address) {
 	TcpConnection& ctxt = context.getOwner();
 	
 	if (true) {
@@ -243,7 +243,7 @@ void TCP_Default::PassiveOpen(TcpConnectionContext<TcpConnection>& context, unsi
 }
 
 // ----------------------------------------------------
-void TCP_Default::ActiveOpen(TcpConnectionContext<TcpConnection>& context, const sockaddr_in* address) {
+void TCP_Default::ActiveOpen(TcpConnectionContext<TcpConnection>& context, const SocketAddress* address) {
 	TcpConnection& ctxt = context.getOwner();
 	
 	if (true) {

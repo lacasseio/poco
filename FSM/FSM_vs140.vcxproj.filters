@@ -251,5 +251,8 @@
     <ClInclude Include="src\parser\Glyphe.h">
       <Filter>parser</Filter>
     </ClInclude>
+    <ClInclude Include="src\model\Mode.h">
+      <Filter>model</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

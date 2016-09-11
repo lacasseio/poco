@@ -59,7 +59,7 @@ public:
     ~TcpClient();
 
     // This client is connected to this TCP service.
-    const sockaddr_in& getServerAddress() const;
+    const SocketAddress& getServerAddress() const;
 
     // This client's TCP port.
     unsigned short getClientPort() const;
@@ -68,22 +68,17 @@ public:
     void open(unsigned short port);
 
     // Open a client connection to a remote TCP service.
-    void open(const sockaddr_in& address);
+    void open(const SocketAddress& address);
 
 protected:
 private:
 
     // Create an "accepted" client connection. This constructor
     // may only be called by TcpConnection.
-    TcpClient(const sockaddr_in& far_address,
-              const sockaddr_in& near_address,
-#if defined(WIN32)
+    TcpClient(const SocketAddress& far_address,
+              const SocketAddress& near_address,
               unsigned short actual_port,
-              SOCKET udp_socket,
-              HANDLE udp_handle,
-#else
-              int udp_socket,
-#endif
+			  DatagramSocket udp_socket,
               unsigned long sequence_number,
               TcpServer& server,
               TcpConnectionListener& listener);

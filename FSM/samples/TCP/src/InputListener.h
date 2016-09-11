@@ -44,25 +44,11 @@
 
 class InputListener
 {
-// Member functions.
 public:
-
-    // Default constructor.
     InputListener() {};
-
-    // Destructor.
     virtual ~InputListener() {};
-
-    // Input callback method.
     virtual void handleReceive(int fd)=0;
 
-protected:
-private:
-
-// Member data.
-public:
-protected:
-private:
 };
 
 #endif

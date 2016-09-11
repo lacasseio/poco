@@ -73,7 +73,7 @@ TcpClient::~TcpClient()
 // getServerAddress() const (Public)
 // This client is connected to this TCP service.
 //
-const sockaddr_in& TcpClient::getServerAddress() const
+const SocketAddress& TcpClient::getServerAddress() const
 {
     return(_farAddress);
 } // end of TcpClient::getServerAddress() const
@@ -84,7 +84,7 @@ const sockaddr_in& TcpClient::getServerAddress() const
 //
 unsigned short TcpClient::getClientPort() const
 {
-    return(_nearAddress.sin_port);
+    return(_nearAddress.port());
 } // end of TcpClient::getClientPort() const
 
 //---------------------------------------------------------------
@@ -93,23 +93,21 @@ unsigned short TcpClient::getClientPort() const
 //
 void TcpClient::open(unsigned short port)
 {
-    sockaddr_in address;
+    SocketAddress address;
     char hostname[MAX_HOSTNAME_LEN];
     hostent *hostentry;
 
     // Get the local address.
 #if defined(__sun)
-    (void) sysinfo(SI_HOSTNAME, hostname, MAX_HOSTNAME_LEN);
+    sysinfo(SI_HOSTNAME, hostname, MAX_HOSTNAME_LEN);
 #else
-    (void) gethostname(hostname, MAX_HOSTNAME_LEN);
+    gethostname(hostname, MAX_HOSTNAME_LEN);
 #endif
     hostentry = gethostbyname(hostname);
 
     // Fill in the destination address.
-    address.sin_port = port;
-    (void) memcpy(&(address.sin_addr.s_addr),
-                  hostentry->h_addr_list[0],
-                  4);
+//    address.port() = port;
+//    memcpy(&(address.sin_addr.s_addr),  hostentry->h_addr_list[0], 4);
 
     activeOpen(address);
 
@@ -117,40 +115,30 @@ void TcpClient::open(unsigned short port)
 } // end of TcpClient::open(unsigned short)
 
 //---------------------------------------------------------------
-// open(const sockaddr_in&) (Public)
+// open(const SocketAddress&) (Public)
 // Open a client connection to a remove TCP service.
 //
-void TcpClient::open(const sockaddr_in& address)
+void TcpClient::open(const SocketAddress& address)
 {
     activeOpen(address);
     return;
-} // end of TcpClient::open(const sockaddr_in&)
+} // end of TcpClient::open(const SocketAddress&)
 
 //---------------------------------------------------------------
-// TcpClient(const sockaddr_in&, ...) (Private)
+// TcpClient(const SocketAddress&, ...) (Private)
 // Create an "accepted" client connection.
 //
-TcpClient::TcpClient(const sockaddr_in& far_address,
-                     const sockaddr_in& near_address,
-#if defined(WIN32)
+TcpClient::TcpClient(const SocketAddress& far_address,
+                     const SocketAddress& near_address,
                      unsigned short actual_port,
-                     SOCKET udp_socket,
-                     HANDLE udp_handle,
-#else
-                     int udp_socket,
-#endif
+                     DatagramSocket udp_socket,
                      unsigned long sequence_number,
                      TcpServer& server,
                      TcpConnectionListener& listener)
 : TcpConnection(far_address,
                 near_address,
-#if defined(WIN32)
                 actual_port,
                 udp_socket,
-                udp_handle,
-#else
-                udp_socket,
-#endif
                 sequence_number,
                 server,
                 listener)

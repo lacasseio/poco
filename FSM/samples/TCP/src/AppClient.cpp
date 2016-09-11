@@ -39,16 +39,11 @@
 // Initial revision
 //
 
+#include <iostream>
 #include "AppClient.h"
 #include "AppServer.h"
 #include "Eventloop.h"
-#if defined(WIN32)
-#include <winsock2.h>
-#include <iostream>
 #include <time.h>
-#else
-#include <arpa/inet.h>
-#endif
 #include <stdlib.h>
 #include <memory.h>
 
@@ -119,11 +114,11 @@ const string& AppClient::getHost() const
 } // end of AppClient::getHost() const
 
 //---------------------------------------------------------------
-// open(const string&, const sockaddr_in&) (Public)
+// open(const string&, const SocketAddress&) (Public)
 // Open a connection to the named TCP service.
 //
 void AppClient::open(const string& host,
-                     const sockaddr_in& address)
+                     const SocketAddress& address)
 {
     if (_client_socket == NULL)
     {
@@ -133,7 +128,7 @@ void AppClient::open(const string& host,
         cout << "Opening connection to "
              << host
              << ":"
-             << ntohs(address.sin_port)
+             << ntohs(address.port())
              << " ... ";
 
         // Create the client object and open it.
@@ -142,7 +137,7 @@ void AppClient::open(const string& host,
     }
 
     return;
-} // end of AppClient::open(const string&, const sockaddr_in&)
+} // end of AppClient::open(const string&, const SocketAddress&)
 
 //---------------------------------------------------------------
 // close() (Public)
@@ -155,7 +150,7 @@ void AppClient::close()
         cout << "Closing connection to "
              << _host
              << ":"
-             << ntohs((_client_socket->getServerAddress()).sin_port)
+             << ntohs((_client_socket->getServerAddress()).port())
              << " ... ";
 
         _client_socket->doClose();
@@ -235,17 +230,17 @@ void AppClient::receive(const char *data,
                         int size,
                         TcpConnection&)
 {
-    const sockaddr_in& address = _client_socket->getServerAddress();
+    const SocketAddress& address = _client_socket->getServerAddress();
     char *string = new char[size + 1];
 
     // Turn the data into a string.
-    (void) memcpy(string, data, size);
+    memcpy(string, data, size);
     string[size] = '\0';
 
     cout << "Received data from "
 //         << inet_ntop(address.sin_addr)
          << ":"
-         << ntohs(address.sin_port)
+         << ntohs(address.port())
          << ": \""
          << string
          << "\""
@@ -262,18 +257,18 @@ void AppClient::receive(const char *data,
 //
 void AppClient::halfClosed(TcpConnection&)
 {
-    const sockaddr_in& address = _client_socket->getServerAddress();
+    const SocketAddress& address = _client_socket->getServerAddress();
 
     cout << "Connection from "
          << _host
          << ":"
-         << address.sin_port
+         << address.port()
          << " has closed its side."
          << endl
          << "Closing connection to "
          << _host
          << ":"
-         << ntohs(address.sin_port)
+         << ntohs(address.port())
          << " ... ";
 
     // Stop the transmit timer if running.
@@ -324,16 +319,16 @@ void AppClient::handleTimeout(const char *name)
     if (strcmp(name, "TRANSMIT_TIMER") == 0)
     {
         char message[30];
-        const sockaddr_in& address = _client_socket->getServerAddress();
+        const SocketAddress& address = _client_socket->getServerAddress();
 
-        (void) sprintf(message,
+        sprintf(message,
                        "This is message #%d.",
                        ++_messageCount);
 
         cout << "Transmitting to "
              << _host
              << ":"
-             << ntohs(address.sin_port)
+             << ntohs(address.port())
              << ": \""
              << message
              << "\" ... ";

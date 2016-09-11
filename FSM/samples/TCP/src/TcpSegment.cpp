@@ -54,11 +54,11 @@ using namespace std;
 const int TcpSegment::TCP_HEADER_SIZE = 16;
 
 //---------------------------------------------------------------
-// TcpSegment(const sockaddr_in&, ...) (Public)
+// TcpSegment(const SocketAddress&, ...) (Public)
 // Create an outbound segment.
 //
-TcpSegment::TcpSegment(const sockaddr_in& source_address,
-                       const sockaddr_in& destination_address,
+TcpSegment::TcpSegment(const SocketAddress& source_address,
+                       const SocketAddress& destination_address,
                        unsigned long sequence_number,
                        unsigned long ack_number,
                        unsigned short flags,
@@ -66,10 +66,10 @@ TcpSegment::TcpSegment(const sockaddr_in& source_address,
                        int offset,
                        int size)
 {
-    (void) memcpy(&_src_address,
+    memcpy(&_src_address,
                   &source_address,
                   sizeof(source_address));
-    (void) memcpy(&_dest_address,
+    memcpy(&_dest_address,
                   &destination_address,
                   sizeof(destination_address));
     _sequence_number = sequence_number;
@@ -79,17 +79,17 @@ TcpSegment::TcpSegment(const sockaddr_in& source_address,
     // Copy the data.
     _data = new char[size];
     _data_size = size;
-    (void) memcpy(_data, (data + offset), size);
+    memcpy(_data, (data + offset), size);
 
     return;
-} // end of TcpSegment::TcpSegment(const sockaddr_in&, ...)
+} // end of TcpSegment::TcpSegment(const SocketAddress&, ...)
 
 //---------------------------------------------------------------
-// TcpSegment(const sockaddr_in&, ...) (Public)
+// TcpSegment(const SocketAddress&, ...) (Public)
 // Create an inbound segment.
 //
-TcpSegment::TcpSegment(const sockaddr_in& source_address,
-                       const sockaddr_in& dest_address,
+TcpSegment::TcpSegment(const SocketAddress& source_address,
+                       const SocketAddress& dest_address,
                        const char *data,
                        int)
 {
@@ -119,12 +119,12 @@ TcpSegment::TcpSegment(const sockaddr_in& source_address,
 
     // Set the source address.
     _src_address.sin_family = AF_INET;
-    _src_address.sin_port = ntohs(srcPort);
+    _src_address.port() = ntohs(srcPort);
     _src_address.sin_addr.s_addr = source_address.sin_addr.s_addr;
 
     // Set the destination address.
     _dest_address.sin_family = AF_INET;
-    _dest_address.sin_port = ntohs(destPort);
+    _dest_address.port() = ntohs(destPort);
     _dest_address.sin_addr.s_addr = dest_address.sin_addr.s_addr;
 
     _sequence_number = sequence;
@@ -140,7 +140,7 @@ TcpSegment::TcpSegment(const sockaddr_in& source_address,
     else
     {
         _data = new char[_data_size];
-        (void) memcpy(_data,
+        memcpy(_data,
                       &(data[TCP_HEADER_SIZE]),
                       _data_size);
     }
@@ -166,7 +166,7 @@ TcpSegment::~TcpSegment()
 // getSource() const (Public)
 // Return segment's source address.
 //
-const sockaddr_in& TcpSegment::getSource() const
+const SocketAddress& TcpSegment::getSource() const
 {
     return(_src_address);
 } // end of TcpSegment::getSource() const
@@ -175,7 +175,7 @@ const sockaddr_in& TcpSegment::getSource() const
 // getDestination() const (Public)
 // Return segment's destination address.
 //
-const sockaddr_in& TcpSegment::getDestination() const
+const SocketAddress& TcpSegment::getDestination() const
 {
     return(_dest_address);
 } // end of TcpSegment::getDestination() const
@@ -195,7 +195,7 @@ unsigned long TcpSegment::getSrcAddress() const
 //
 unsigned short TcpSegment::getSrcPort() const
 {
-    return (_src_address.sin_port);
+    return (_src_address.port());
 } // end of TcpSegment::getSrcPort() const
 
 //---------------------------------------------------------------
@@ -213,7 +213,7 @@ unsigned long TcpSegment::getDestAddress() const
 //
 unsigned short TcpSegment::getDestPort() const
 {
-    return (_dest_address.sin_port);
+    return (_dest_address.port());
 } // end of TcpSegment::getDestPort() const
 
 //---------------------------------------------------------------
@@ -281,8 +281,8 @@ void TcpSegment::packetize(char*& data, int& size)
     data = new char[size];
 
     // Get data in network byte order.
-    srcPort = htons(_src_address.sin_port);
-    destPort = htons(_dest_address.sin_port);
+    srcPort = htons(_src_address.port());
+    destPort = htons(_dest_address.port());
     sequence = _sequence_number;
     ack = _ack_number;
     flags = _flags;
@@ -309,7 +309,7 @@ void TcpSegment::packetize(char*& data, int& size)
     // Copy in the data.
     if (_data_size > 0)
     {
-        (void) memcpy((data + TCP_HEADER_SIZE),
+        memcpy((data + TCP_HEADER_SIZE),
                       _data,
                       _data_size);
     }
@@ -327,68 +327,68 @@ char* TcpSegment::flagsToString(unsigned short flags)
     char *retval;
     char *cptr;
 
-    (void) strcpy(separator, "{");
+    strcpy(separator, "{");
     retval = new char[31];
-    (void) memset(retval, 0, 31);
+    memset(retval, 0, 31);
     cptr = retval;
     if ((flags & FIN) == FIN)
     {
-        (void) strcpy(cptr, separator);
+        strcpy(cptr, separator);
         cptr += strlen(separator);
-        (void) strcpy(cptr, "FIN");
+        strcpy(cptr, "FIN");
         cptr += 3;
-        (void) strcpy(separator, ", ");
+        strcpy(separator, ", ");
     }
 
     if ((flags & SYN) == SYN)
     {
-        (void) strcpy(cptr, separator);
+        strcpy(cptr, separator);
         cptr += strlen(separator);
-        (void) strcpy(cptr, "SYN");
+        strcpy(cptr, "SYN");
         cptr += 3;
-        (void) strcpy(separator, ", ");
+        strcpy(separator, ", ");
     }
 
     if ((flags & RST) == RST)
     {
-        (void) strcpy(cptr, separator);
+        strcpy(cptr, separator);
         cptr += strlen(separator);
-        (void) strcpy(cptr, "RST");
+        strcpy(cptr, "RST");
         cptr += 3;
-        (void) strcpy(separator, ", ");
+        strcpy(separator, ", ");
     }
 
     if ((flags & PSH) == PSH)
     {
-        (void) strcpy(cptr, separator);
+        strcpy(cptr, separator);
         cptr += strlen(separator);
-        (void) strcpy(cptr, "PSH");
+        strcpy(cptr, "PSH");
         cptr += 3;
-        (void) strcpy(separator, ", ");
+        strcpy(separator, ", ");
     }
 
     if ((flags & ACK) == ACK)
     {
-        (void) strcpy(cptr, separator);
+        strcpy(cptr, separator);
         cptr += strlen(separator);
-        (void) strcpy(cptr, "ACK");
+        strcpy(cptr, "ACK");
         cptr += 3;
-        (void) strcpy(separator, ", ");
+        strcpy(separator, ", ");
     }
 
     if ((flags & URG) == URG)
     {
-        (void) strcpy(cptr, separator);
+        strcpy(cptr, separator);
         cptr += strlen(separator);
-        (void) strcpy(cptr, "URG");
+        strcpy(cptr, "URG");
         cptr += 3;
     }
 
     if ((flags & FLAG_MASK) == 0)
     {
-        (void) strcpy(cptr, separator);
+        strcpy(cptr, separator);
         cptr += strlen(separator);
-        (void) strcpy(cptr, "UNK");
+        strcpy(cptr, "UNK");
         cptr += 3;
     }
 
@@ -398,10 +398,10 @@ char* TcpSegment::flagsToString(unsigned short flags)
 } // end of TcpSegment::flagsToString(unsigned short)
 
 //---------------------------------------------------------------
-// addressToString(const sockaddr_in&) (Static Private)
+// addressToString(const SocketAddress&) (Static Private)
 // Generate a string representation of an IP address.
 //
-char* TcpSegment::addressToString(const sockaddr_in& address)
+char* TcpSegment::addressToString(const SocketAddress& address)
 {
     struct hostent *hostEntry;
     char *dotted_addr;
@@ -411,28 +411,28 @@ char* TcpSegment::addressToString(const sockaddr_in& address)
     unsigned short udp_port;
 
     retval = new char[512];
-    (void) memset(retval, 0, 512);
+    memset(retval, 0, 512);
     cptr = retval;
     hostEntry = gethostbyaddr((char *) &(address.sin_addr),
                               sizeof(address.sin_addr),
                               AF_INET);
-    (void) strcpy(cptr,
+    strcpy(cptr,
                   (hostEntry == NULL ?
                    "<no hostname>" :
                    hostEntry->h_name));
     cptr += strlen(cptr);
     *cptr++ = '(';
     dotted_addr = inet_ntoa(address.sin_addr);
-    (void) strcpy(cptr, dotted_addr);
+    strcpy(cptr, dotted_addr);
     cptr += strlen(dotted_addr);
-    (void) strcpy(cptr, "):");
+    strcpy(cptr, "):");
     cptr += 2;
-    udp_port = ntohs(address.sin_port);
+    udp_port = ntohs(address.port());
     sprintf(port, "%d", udp_port);
-    (void) strcpy(cptr, port);
+    strcpy(cptr, port);
 
     return(retval);
-} // end of TcpSegment::addressToString(const sockaddr_in&)
+} // end of TcpSegment::addressToString(const SocketAddress&)
 
 //---------------------------------------------------------------
 // operator<<(ostream&, const TcpSegment&) (Routine)

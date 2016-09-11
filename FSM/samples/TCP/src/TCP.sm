@@ -39,7 +39,7 @@
 CLOSED
 {
 	PassiveOpen(port: unsigned short)		ServiceOpening			{ openServerSocket(port); }
-	ActiveOpen(address: const sockaddr_in*)	ClientOpening			{ openClientSocket(address); }
+	ActiveOpen(address: const SocketAddress*)	ClientOpening			{ openClientSocket(address); }
 	AcceptOpen(segment: const TcpSegment&)	SYN_RCVD				{ sendSynAck(segment);setNearAddress(); }
 	// Ignore close requests when closed.
 	Close									nil						{}
@@ -55,7 +55,7 @@ ServiceOpening
 // Wait here until client open has either succeeded or failed.
 ClientOpening	
 {
-	ClientOpened(address: const sockaddr_in*)SYN_SENT				{ sendOpenSyn(address); }
+	ClientOpened(address: const SocketAddress*)SYN_SENT				{ sendOpenSyn(address); }
 
 	OpenFailed(reason: const char*)			CLOSED					{ closeSocket();openFailed(reason); }
 }
@@ -414,7 +414,7 @@ Default
 			openFailed("already open");
 		}
 
-	ActiveOpen(address: const sockaddr_in*)
+	ActiveOpen(address: const SocketAddress*)
 		nil
 		{
 			openFailed("already open");

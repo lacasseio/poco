@@ -177,16 +177,16 @@ void AppServer::clientClosed(const AppClient& client)
 //
 void AppServer::opened(TcpConnection&)
 {
-    sockaddr_in address;
+    SocketAddress address;
 
     address.sin_family = AF_INET;
-    address.sin_port = _server->getPort();
+    address.port() = _server->getPort();
     address.sin_addr.s_addr = _server->getAddress();
 
     cout << "Service opened on "
          << inet_ntoa(address.sin_addr)
          << ":"
-         << ntohs(address.sin_port)
+         << ntohs(address.port())
          << "."
          << endl;
 
@@ -239,7 +239,7 @@ void AppServer::accepted(TcpClient& client, TcpServer&)
 {
     AppClient *new_client;
     ClientEntry *new_entry;
-    const sockaddr_in& address = client.getServerAddress();
+    const SocketAddress& address = client.getServerAddress();
     string host;
 
     host = inet_ntoa(address.sin_addr);
@@ -247,7 +247,7 @@ void AppServer::accepted(TcpClient& client, TcpServer&)
     cout << "Accepted new connection from "
          << host
          << ":"
-         << ntohs(address.sin_port)
+         << ntohs(address.port())
          << "."
          << endl;
 

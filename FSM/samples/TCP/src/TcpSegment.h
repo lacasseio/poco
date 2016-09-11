@@ -49,26 +49,16 @@
 // Initial revision
 //
 
-#if (__GNUC__ > 3 || (__GNUC__ == 3 && __GNUC_MINOR__ >= 1))
-#include <iostream>
-#include <sys/socket.h>
-#include <netinet/in.h>
-#elif defined(WIN32)
-#include <iostream>
-#include <winsock2.h>
-#else
-#include <iostream.h>
-#include <sys/socket.h>
-#include <netinet/in.h>
-#endif
+#include "Poco/Net/SocketAddress.h"
+using Poco::Net::SocketAddress;
 
 class TcpSegment
 {
 // Member functions.
 public:
 
-    TcpSegment(const sockaddr_in& source_address,
-               const sockaddr_in& destination_address,
+    TcpSegment(const SocketAddress& source_address,
+               const SocketAddress& destination_address,
                unsigned long sequence_number,
                unsigned long ack_number,
                unsigned short flags,
@@ -77,16 +67,16 @@ public:
                int size);
 
     // Convert the raw bytes into a segment.
-    TcpSegment(const sockaddr_in& source_address,
-               const sockaddr_in& dest_address,
+    TcpSegment(const SocketAddress& source_address,
+               const SocketAddress& dest_address,
                const char *data,
                int size);
 
     // Destructor.
     ~TcpSegment();
 
-    const sockaddr_in& getSource() const;
-    const sockaddr_in& getDestination() const;
+    const SocketAddress& getSource() const;
+    const SocketAddress& getDestination() const;
     unsigned long getSrcAddress() const;
     unsigned short getSrcPort() const;
     unsigned long getDestAddress() const;
@@ -107,7 +97,7 @@ public:
  private:
 
     static char* flagsToString(unsigned short flags);
-    static char* addressToString(const sockaddr_in& address);
+    static char* addressToString(const SocketAddress& address);
 
 // Member data.
  public:
@@ -133,8 +123,8 @@ public:
  protected:
  private:
 
-    sockaddr_in _src_address;
-    sockaddr_in _dest_address;
+    SocketAddress _src_address;
+    SocketAddress _dest_address;
     unsigned long _sequence_number;
     unsigned long _ack_number;
     unsigned short _flags;

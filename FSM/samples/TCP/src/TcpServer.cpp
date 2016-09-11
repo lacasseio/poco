@@ -62,7 +62,7 @@ TcpServer::~TcpServer()
 //
 unsigned short TcpServer::getPort() const
 {
-    return(_nearAddress.sin_port);
+    return(_nearAddress.port());
 } // end of TcpServer::getPort() const
 
 //---------------------------------------------------------------
@@ -71,7 +71,8 @@ unsigned short TcpServer::getPort() const
 //
 unsigned long TcpServer::getAddress() const
 {
-    return(_nearAddress.sin_addr.s_addr);
+	return  *(long*)_nearAddress.addr()->sa_data;
+//    return(_nearAddress.sin_addr.s_addr);
 } // end of TcpServer::getAddress() const
 
 //---------------------------------------------------------------
