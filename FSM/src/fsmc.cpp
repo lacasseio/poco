@@ -28,6 +28,7 @@ using std::endl;
 #include "Poco/File.h"
 #include "Poco/FileStream.h"
 #include "model/SMC.h"
+#include "model/Mode.h"
 #include "model/FSM.h"
 #include "model/Print.h"
 #include "parser/Parser.h"
@@ -47,6 +48,7 @@ using Poco::FileInputStream;
 using Poco::FileOutputStream;
 
 using Poco::FSM::PARSER::Parser;
+using Poco::FSM::MODEL::Mode;
 using Poco::FSM::MODEL::Print;
 
 const static string NL = "\n";
@@ -84,14 +86,21 @@ protected:
             .repeatable(false)
             .callback(OptionCallback<FSMCompiler>(this, &FSMCompiler::handleHelp)));
 
-        options.addOption(
-            Option("out", "o", "the out directory where to generate the c++ code, defaulted to the fsm file directory")
-            .required(false)
-            .repeatable(false)
-            .argument("file")
-            .callback(OptionCallback<FSMCompiler>(this, &FSMCompiler::handleOutdir)));
+		options.addOption(
+			Option("out", "o", "the out directory where to generate the c++ code, defaulted to the fsm file directory")
+			.required(false)
+			.repeatable(false)
+			.argument("file")
+			.callback(OptionCallback<FSMCompiler>(this, &FSMCompiler::handleOutdir)));
 
-        options.addOption(
+		options.addOption(
+			Option("mode", "m", "either SMC, either ITU, defaulted to SMC")
+			.required(false)
+			.repeatable(false)
+			.argument("mode", false)
+			.callback(OptionCallback<FSMCompiler>(this, &FSMCompiler::hanldeMode)));
+
+		options.addOption(
             Option("verbose", "v", "output the parsed FSM file on the console")
             .required(false)
             .repeatable(false)
@@ -116,10 +125,24 @@ protected:
     {
         out = Path(value);
     }
-    void handleVerbose(const std::string& name, const std::string& value)
-    {
-        verbose = true;
-    }
+
+	void handleVerbose(const std::string& name, const std::string& value)
+	{
+		verbose = true;
+	}
+	
+	void hanldeMode(const std::string& name, const std::string& value)
+	{
+		if (value == "SMC")
+			mode = value;
+		else if (value == "ITU")
+			mode = value;
+		else {
+			Logger& logger = Application::instance().logger();
+			logger.information("invalid value for mode, defaulted to SMC");
+			mode = "SMC";
+		}
+	}
 
     void handleDebug(const std::string& name, const std::string& value)
     {
@@ -131,7 +154,7 @@ protected:
         HelpFormatter helpFormatter(options());
 		helpFormatter.setCommand(commandName());
 		helpFormatter.setUsage("<options> <fsm>.sm");
-		helpFormatter.setHeader("A FiniteStateMachine compiler for the ISODE++ stack.");
+		helpFormatter.setHeader("A Finite State Machine compiler for the Poco stack.");
 		helpFormatter.format(std::cout);
     }
 
@@ -145,16 +168,16 @@ protected:
                 logger.error("Missing FSM file");
                 return Application::EXIT_NOINPUT;
             }
-            smPath = args[0];
-            if (!smPath.isFile())
+            path = args[0];
+            if (!path.isFile())
             {
-                logger.error("file %s is not a file", smPath.toString());
+                logger.error("file %s is not a file", path.toString());
                 return Application::EXIT_USAGE;
             }
-			string extension = smPath.getExtension();
+			string extension = path.getExtension();
             if (!(extension == "sm" || extension == "smt" || extension == "smx"))
             {
-                logger.error("file %s is not a FSM file", smPath.toString());
+                logger.error("file %s is not a FSM file", path.toString());
                 return Application::EXIT_USAGE;
             }
             if (!out.isDirectory())
@@ -164,14 +187,14 @@ protected:
             }
             if (out.depth() <= 0)
             {
-                out = smPath;
+                out = path;
                 out = out.makeParent();
             }
-            smFile = File(smPath.makeAbsolute());
-            logger.information("fsmc %s", smPath.toString());
+            file = File(path.makeAbsolute());
+            logger.information("fsmc %s", path.toString());
 
-            FileInputStream fis(smPath.toString());
-            Parser parser(logger, smFile, fis);
+            FileInputStream fis(path.toString());
+            Parser parser(logger, file, fis, mode == "ITU" ? Mode::ITU : Mode::SMC);
             FSMPtr fsm;
 
             fsm = parser.parse(out);
@@ -191,7 +214,8 @@ private:
     bool	verbose;
     bool	debug;
     Path	out;
-    Path	smPath;
-    File	smFile;
+    Path	path;
+    File	file;
+	string	mode;
 };
 POCO_APP_MAIN(FSMCompiler)

@@ -6,6 +6,7 @@
 #include "Poco/Format.h"
 using Poco::format;
 
+#include "parser/Parser.h"
 #include "parser/Keyword.h"
 #include "model/FSM.h"
 #include "model/Map.h"
@@ -17,7 +18,8 @@ namespace FSM
 {
 namespace MODEL
 {
-FSM::FSM(PARSER::Parser* parser) : Compilable(), _parser(parser), _updated(false) {
+FSM::FSM(PARSER::Parser* parser) :
+	Compilable(), _parser(parser), _updated(false), _mode(parser->mode()) {
 }
 FSM::~FSM() {
 }

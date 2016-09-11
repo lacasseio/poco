@@ -59,6 +59,7 @@ namespace Poco {
 				const List<string>& declares()const		{ return _declares; }
 				const List<MapPtr>& maps()const			{ return _maps; }
 				bool updated() const					{ return _updated; }
+				const Mode& mode() const				{ return _mode; }
 
 				void add(MapPtr map);
 				void addPackage(const string& package);
@@ -120,6 +121,8 @@ namespace Poco {
 				string _return;
 
 				bool _updated;
+
+				Mode _mode;
 
 			};
 

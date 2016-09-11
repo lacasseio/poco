@@ -99,7 +99,7 @@ namespace FSM
 namespace PARSER
 {
 
-Parser::Parser(Logger& logger, const File& file, istream& istr) :
+Parser::Parser(Logger& logger, const File& file, istream& istr, Mode mode) :
     _logger(logger),
     _istr(istr),
     _tokenizer(_istr),
@@ -112,7 +112,8 @@ Parser::Parser(Logger& logger, const File& file, istream& istr) :
 	transition(NULL),
 	parameter(NULL),
 	entry (NULL),
-	exit (NULL)
+	exit (NULL),
+	_mode(mode)
 {
 }
 Parser:: ~Parser()

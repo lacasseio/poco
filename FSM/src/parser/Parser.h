@@ -19,8 +19,9 @@ using Poco::File;
 using Poco::CountingInputStream;
 
 #include "Tokenizer.h"
-#include "model/SMC.h"
 #include "parser/Token.h"
+#include "model/SMC.h"
+#include "model/Mode.h"
 #include "model/Operator.h"
 
 using Poco::FSM::MODEL::StatePtr;
@@ -36,6 +37,7 @@ using Poco::FSM::MODEL::ExpressionPtr;
 using Poco::FSM::MODEL::ArgumentPtr;
 using Poco::FSM::MODEL::ReferencePtr;
 using Poco::FSM::MODEL::Operator;
+using Poco::FSM::MODEL::Mode;
 
 namespace Poco {
 	namespace FSM {
@@ -43,7 +45,7 @@ namespace Poco {
 
 			class Parser {
 			public:
-				Parser(Logger& logger, const File& smfile, std::istream& istr);
+				Parser(Logger& logger, const File& smfile, std::istream& istr, Mode mode);
 				virtual ~Parser();
 				FSMPtr parse(const Path& out);
 
@@ -94,19 +96,16 @@ namespace Poco {
 				static bool isOperator(const Token* token, int kind);
 				static bool isKeyword(const Token* token, int kind);
 				static bool isEOF(const Token* token);
-//				static void expectOperator(const Token* token, int kind, const string& msg);
 				static void syntaxError(const string& msg);
-//				static void append(string& decl, const string& token);
-//				static void append(string& decl, const Token* token);
 				static bool isOperator(ExpressionPtr expression, Operator op);
 
 
 				const Token* nextToken();
 				const Token* nextParserToken();
-				void reduce();
 
 			public:
 				const File& file() const { return _file; }
+				const Mode& mode() const { return _mode; }
 
 			private:
 				CountingInputStream _istr;
@@ -131,7 +130,8 @@ namespace Poco {
 				EntryPtr			entry;
 				ExitPtr				exit;
 
-				Logger&					_logger;
+				Logger&				_logger;
+				Mode				_mode;
 			};
 
 		}

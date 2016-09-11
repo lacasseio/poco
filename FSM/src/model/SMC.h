@@ -14,6 +14,8 @@ using std::string;
 using std::vector;
 using std::stack;
 
+#include "Mode.h"
+
 #ifdef POCO_ENABLE_CPP11 
 	template<typename T>
 	using List = vector<T>;
