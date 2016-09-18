@@ -23,8 +23,7 @@ namespace cpp_ex4 {
 	}
 	void StopMap_EastWestGreen::Entry(StoplightContext<Stoplight>& context) {
 	    Stoplight& ctxt = context.getOwner();
-		ctxt.TurnLight(NSLIGHT , RED );
-		ctxt.TurnLight(EWLIGHT , GREEN );
+		ctxt.setTimer(Stoplight :: EWGreenTimer );
 	}
 	
 	// ----------------------------------------------------
@@ -32,15 +31,21 @@ namespace cpp_ex4 {
 		Stoplight& ctxt = context.getOwner();
 		
 		if (true) {
-			(context.getState()).Exit(context);
-			context.setState(context.EastWestYellow);
-			(context.getState()).Entry(context);
-			ctxt.setTimer(Stoplight :: YellowTimer );
+			context.getState().Exit(context);
+			context.clearState();
+			try {
+				ctxt.TurnLight(EWLIGHT , YELLOW );
+				context.setState(context.EastWestYellow);
+			} catch (...) {
+				context.setState(context.EastWestYellow);
+				throw;
+			}
+			context.getState().Entry(context);
 		} 
 	}
 	void StopMap_EastWestYellow::Entry(StoplightContext<Stoplight>& context) {
 	    Stoplight& ctxt = context.getOwner();
-		ctxt.TurnLight(EWLIGHT , YELLOW );
+		ctxt.setTimer(Stoplight :: YellowTimer );
 	}
 	
 	// ----------------------------------------------------
@@ -48,16 +53,22 @@ namespace cpp_ex4 {
 		Stoplight& ctxt = context.getOwner();
 		
 		if (true) {
-			(context.getState()).Exit(context);
-			context.setState(context.NorthSouthGreen);
-			(context.getState()).Entry(context);
-			ctxt.setTimer(Stoplight :: NSGreenTimer );
+			context.getState().Exit(context);
+			context.clearState();
+			try {
+				ctxt.TurnLight(EWLIGHT , RED );
+				ctxt.TurnLight(NSLIGHT , GREEN );
+				context.setState(context.NorthSouthGreen);
+			} catch (...) {
+				context.setState(context.NorthSouthGreen);
+				throw;
+			}
+			context.getState().Entry(context);
 		} 
 	}
 	void StopMap_NorthSouthGreen::Entry(StoplightContext<Stoplight>& context) {
 	    Stoplight& ctxt = context.getOwner();
-		ctxt.TurnLight(EWLIGHT , RED );
-		ctxt.TurnLight(NSLIGHT , GREEN );
+		ctxt.setTimer(Stoplight :: NSGreenTimer );
 	}
 	
 	// ----------------------------------------------------
@@ -65,15 +76,21 @@ namespace cpp_ex4 {
 		Stoplight& ctxt = context.getOwner();
 		
 		if (true) {
-			(context.getState()).Exit(context);
-			context.setState(context.NorthSouthYellow);
-			(context.getState()).Entry(context);
-			ctxt.setTimer(Stoplight :: YellowTimer );
+			context.getState().Exit(context);
+			context.clearState();
+			try {
+				ctxt.TurnLight(NSLIGHT , YELLOW );
+				context.setState(context.NorthSouthYellow);
+			} catch (...) {
+				context.setState(context.NorthSouthYellow);
+				throw;
+			}
+			context.getState().Entry(context);
 		} 
 	}
 	void StopMap_NorthSouthYellow::Entry(StoplightContext<Stoplight>& context) {
 	    Stoplight& ctxt = context.getOwner();
-		ctxt.TurnLight(NSLIGHT , YELLOW );
+		ctxt.setTimer(Stoplight :: YellowTimer );
 	}
 	
 	// ----------------------------------------------------
@@ -81,10 +98,17 @@ namespace cpp_ex4 {
 		Stoplight& ctxt = context.getOwner();
 		
 		if (true) {
-			(context.getState()).Exit(context);
-			context.setState(context.EastWestGreen);
-			(context.getState()).Entry(context);
-			ctxt.setTimer(Stoplight :: EWGreenTimer );
+			context.getState().Exit(context);
+			context.clearState();
+			try {
+				ctxt.TurnLight(NSLIGHT , RED );
+				ctxt.TurnLight(EWLIGHT , GREEN );
+				context.setState(context.EastWestGreen);
+			} catch (...) {
+				context.setState(context.EastWestGreen);
+				throw;
+			}
+			context.getState().Entry(context);
 		} 
 	}
 }

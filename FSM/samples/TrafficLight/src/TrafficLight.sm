@@ -39,6 +39,31 @@
 %map StopMap
 %%
 EastWestGreen
+	Entry    { setTimer(Stoplight::EWGreenTimer); }
+{
+    Timeout			EastWestYellow      { TurnLight(EWLIGHT, YELLOW);}
+}
+
+EastWestYellow
+    Entry    {        setTimer(Stoplight::YellowTimer);    }
+{
+    Timeout			NorthSouthGreen 	{ TurnLight(EWLIGHT, RED); TurnLight(NSLIGHT, GREEN); }
+}
+
+NorthSouthGreen
+    Entry    {        setTimer(Stoplight::NSGreenTimer);    }
+{
+    Timeout       	NorthSouthYellow     { TurnLight(NSLIGHT, YELLOW); }
+}
+
+NorthSouthYellow
+    Entry    {        setTimer(Stoplight::YellowTimer);    }
+{
+    Timeout        	EastWestGreen        { TurnLight(NSLIGHT, RED); TurnLight(EWLIGHT, GREEN); }
+}
+
+/*
+EastWestGreen
 	Entry	{ TurnLight(NSLIGHT, RED); TurnLight(EWLIGHT, GREEN);  }
 {
 	Timeout		EastWestYellow		{ setTimer(Stoplight::YellowTimer); }
@@ -61,4 +86,5 @@ NorthSouthYellow
 {
 	Timeout		EastWestGreen		{ setTimer(Stoplight::EWGreenTimer); }
 }
+*/
 %%
