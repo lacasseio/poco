@@ -73,6 +73,7 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <OutDir>$(ProjectDir)bin</OutDir>
     <TargetName>$(ProjectName)d</TargetName>
+    <CustomBuildBeforeTargets>ClCompile</CustomBuildBeforeTargets>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <OutDir>$(ProjectDir)bin</OutDir>
@@ -90,6 +91,12 @@
     <Link>
       <SubSystem>Windows</SubSystem>
     </Link>
+    <CustomBuildStep>
+      <Command>PATH=..\..\..\bin\;%PATH% &amp;&amp;  ..\..\bin\FSMcd /v src/TCP.sm</Command>
+    </CustomBuildStep>
+    <CustomBuildStep>
+      <Outputs>src\TCP_sm.cpp</Outputs>
+    </CustomBuildStep>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <ClCompile>
