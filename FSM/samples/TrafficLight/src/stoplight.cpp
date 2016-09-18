@@ -75,7 +75,7 @@ static Print print;
 	StoplightContext(&print),
 	callback(*this, &Stoplight::onTimer) {
 
-#define FSM_DEBUG
+//#define FSM_DEBUG
 #ifdef FSM_DEBUG
 	setDebugFlag(true);
 #endif

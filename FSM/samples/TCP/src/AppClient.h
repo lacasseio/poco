@@ -6,20 +6,20 @@
 // License Version 1.1 (the "License"); you may not use this file
 // except in compliance with the License. You may obtain a copy
 // of the License at http://www.mozilla.org/MPL/
-// 
+//
 // Software distributed under the License is distributed on an
 // "AS IS" basis, WITHOUT WARRANTY OF ANY KIND, either express or
 // implied. See the License for the specific language governing
 // rights and limitations under the License.
-// 
+//
 // The Original Code is State Machine Compiler (SMC).
-// 
+//
 // The Initial Developer of the Original Code is Charles W. Rapp.
 // Portions created by Charles W. Rapp are
 // Copyright (C) 2000 - 2007. Charles W. Rapp.
 // All Rights Reserved.
-// 
-// Contributor(s): 
+//
+// Contributor(s):
 //
 // Name
 //  AppClient.h
@@ -54,82 +54,76 @@
 class AppServer;
 
 class AppClient :
-    /* implements */ public TcpConnectionListener,
-    /* implements */ public TimerListener
-{
+/* implements */ public TcpConnectionListener,
+/* implements */ public TimerListener {
 // Member functions.
-public:
+  public:
 
-    // Default constructor.
-    AppClient();
+	// Default constructor.
+	AppClient();
 
-    // Create a client around an accepted connection.
-    AppClient(const std::string& host,
-              TcpClient& client,
-              AppServer& owner);
+	// Create a client around an accepted connection.
+	AppClient(const std::string& host,
+			  TcpClient& client,
+			  AppServer& owner);
 
-    virtual ~AppClient();
+	virtual ~AppClient();
 
-    const std::string& getHost() const;
+	const std::string& getHost() const;
 
-    // Create a TCP client object and open a connection to the
-    // specified service.
-    void open(const std::string& host,
-              const SocketAddress& address);
+	// Create a TCP client object and open a connection to the
+	// specified service.
+	void open(const std::string& host,
+			  const SocketAddress& address);
 
-    // Close the TCP service.
-    void close();
+	// Close the TCP service.
+	void close();
 
-    // TCP connection listener callback methods.
-    void opened(TcpConnection& connection);
-    void openFailed(const char *reason,
-                    TcpConnection& connection);
-    void transmitted(TcpConnection& connection);
-    void transmitFailed(const char *reason,
-                        TcpConnection& connection);
-    void receive(const char *data,
-                 int size,
-                 TcpConnection& connection);
-    void halfClosed(TcpConnection& connection);
-    void closed(const char *reason,
-                TcpConnection& connection);
+	// TCP connection listener callback methods.
+	void opened(TcpConnection& connection);
+	void openFailed(const char *reason,	TcpConnection& connection);
+	void transmitted(TcpConnection& connection);
+	void transmitFailed(const char *reason,	TcpConnection& connection);
+	void receive(const char *data, int size, TcpConnection& connection);
+	void halfClosed(TcpConnection& connection);
+	void closed(const char *reason,	TcpConnection& connection);
 
-    // Clients never receive this event.
-    void accepted(TcpClient&, TcpServer&) {};
+	// Clients never receive this event.
+	void accepted(TcpClient&, TcpServer&) {};
 
-    // Timer listener callback method.
-    void handleTimeout(const char *name);
+	// Timer listener callback method.
+	void handleTimeout(const char *name);
 
-protected:
-private:
+  protected:
+  private:
 
-    // Randomly set the transmit time.
-    void setTransmitTimer();
+	// Randomly set the transmit time.
+	void setTransmitTimer();
 
 // Member data.
-public:
-protected:
-private:
+  public:
+  protected:
+  private:
 
-    // The TCP service itself.
-    TcpClient *_client_socket;
+	// The TCP service itself.
+	TcpClient *_client_socket;
 
-    // If this was an accepted client connection, _owner points
-    // to the parent TCP service. This will be NULL otherwise.
-    AppServer *_owner;
+	// If this was an accepted client connection, _owner points
+	// to the parent TCP service. This will be NULL otherwise.
+	AppServer *_owner;
 
-    // The host to which we are connected.
-    std::string _host;
+	// The host to which we are connected.
+	std::string _host;
 
-    // Every time a message is sent, increment this counter.
-    int _messageCount;
+	// Every time a message is sent, increment this counter.
+	int _messageCount;
 
-    // Initialize the random number generator once per process.
-    static int _initFlag;
+	// Initialize the random number generator once per process.
+	static int _initFlag;
 
-    // Class constants. Minimum and Maximum transmit timeout.
-    const static long MIN_SLEEP_TIME;
-    const static long MAX_SLEEP_TIME;
+	// Class constants. Minimum and Maximum transmit timeout.
+	const static long MIN_SLEEP_TIME;
+	const static long MAX_SLEEP_TIME;
 };
 
 #endif

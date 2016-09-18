@@ -73,9 +73,7 @@ public:
     void removeFD(int fd);
 
     // Methods for starting and stopping timers.
-    void startTimer(const char *name,
-                    long duration,
-                    TimerListener& listener);
+    void startTimer(const char *name,  long duration, TimerListener& listener);
     void stopTimer(const char *name, const TimerListener& listener);
     bool doesTimerExist(const char *name) const;
 

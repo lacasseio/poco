@@ -109,33 +109,33 @@
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='debug_shared|Win32'">
     <OutDir>bin\</OutDir>
-    <IntDir>obj\TrafficLight\$(Configuration)\</IntDir>
+    <IntDir>obj\$(ProjectName)\$(Configuration)\</IntDir>
     <LinkIncremental>true</LinkIncremental>
     <CustomBuildBeforeTargets>ClCompile</CustomBuildBeforeTargets>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='release_shared|Win32'">
     <OutDir>bin\</OutDir>
-    <IntDir>obj\TrafficLight\$(Configuration)\</IntDir>
+    <IntDir>obj\$(ProjectName)\$(Configuration)\</IntDir>
     <LinkIncremental>false</LinkIncremental>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='debug_static_mt|Win32'">
     <OutDir>bin\static_mt\</OutDir>
-    <IntDir>obj\TrafficLight\$(Configuration)\</IntDir>
+    <IntDir>obj\$(ProjectName)\$(Configuration)\</IntDir>
     <LinkIncremental>true</LinkIncremental>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='release_static_mt|Win32'">
     <OutDir>bin\static_mt\</OutDir>
-    <IntDir>obj\TrafficLight\$(Configuration)\</IntDir>
+    <IntDir>obj\$(ProjectName)\$(Configuration)\</IntDir>
     <LinkIncremental>false</LinkIncremental>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='debug_static_md|Win32'">
     <OutDir>bin\static_md\</OutDir>
-    <IntDir>obj\TrafficLight\$(Configuration)\</IntDir>
+    <IntDir>obj\$(ProjectName)\$(Configuration)\</IntDir>
     <LinkIncremental>true</LinkIncremental>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='release_static_md|Win32'">
     <OutDir>bin\static_md\</OutDir>
-    <IntDir>obj\TrafficLight\$(Configuration)\</IntDir>
+    <IntDir>obj\$(ProjectName)\$(Configuration)\</IntDir>
     <LinkIncremental>false</LinkIncremental>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='debug_shared|Win32'">

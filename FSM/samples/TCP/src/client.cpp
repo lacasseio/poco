@@ -96,7 +96,6 @@ int main(int argc, char *argv[])
 {
     int longPort;
     unsigned long ip_address = INADDR_ANY;
-    SocketAddress address;
     int retcode;
 #if defined(WIN32)
     WORD winsockVersion;
@@ -115,7 +114,7 @@ int main(int argc, char *argv[])
 
 #ifdef WIN32
     // Windows kinda supports signals.
-    (void) signal(SIGINT, sigintHandler);
+    signal(SIGINT, sigintHandler);
 #else
     // Set up the SIGINT handler.
     signalAction.sa_handler = sigintHandler;
@@ -170,13 +169,10 @@ int main(int argc, char *argv[])
         unsigned short port;
 
         // Set up the service address.
-        (void) memset(&address, 0, sizeof(address));
-        address.sin_family = AF_INET;
-        port = static_cast<unsigned short>(longPort);
-        address.sin_port = htons(port);
-        address.sin_addr.s_addr = ip_address;
-
-        cout << "(Starting execution. Hit \"Cntl-c\" to stop.)" << endl;
+         port = static_cast<unsigned short>(longPort);
+  
+		SocketAddress address(host, port);
+		cout << "(Starting execution. Hit \"Cntl-c\" to stop.)" << endl;
         
         // 1. Create the event loop object.
         Gevent_loop = new Eventloop();
@@ -234,7 +230,7 @@ unsigned long getIPAddress(const char *host)
     }
     else if (host_entry != NULL)
     {
-        (void) memcpy(&retcode,
+        memcpy(&retcode,
                       host_entry->h_addr,
                       host_entry->h_length);
     }
@@ -254,7 +250,7 @@ void sigintHandler(int)
 #ifdef WIN32
     // Windows removes the SIGINT callback. So put
     // the callback back in place.
-    (void) signal(SIGINT, sigintHandler);
+    signal(SIGINT, sigintHandler);
 #endif
 
 	return;

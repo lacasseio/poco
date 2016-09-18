@@ -93,7 +93,7 @@ int main(int argc, char *argv[])
 
 #ifdef WIN32
     // Windows kinda supports signals.
-    (void) signal(SIGINT, sigintHandler);
+    signal(SIGINT, sigintHandler);
 #else
     // Set up the SIGINT handler.
     signalAction.sa_handler = sigintHandler;
@@ -189,7 +189,7 @@ void sigintHandler(int)
 #ifdef WIN32
     // Windows removes the SIGINT callback. So put
     // the callback back in place.
-    (void) signal(SIGINT, sigintHandler);
+    signal(SIGINT, sigintHandler);
 #endif
 
 	return;
