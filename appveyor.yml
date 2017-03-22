@@ -63,8 +63,6 @@ image:
   - Visual Studio 2017
   
 matrix:
-  fast_finish: true
-
 #  - builder: cygwin
       
   - builder: msbuild
