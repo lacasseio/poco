@@ -87,14 +87,14 @@ environment:
 
 install:
   - if "%APPVEYOR_BUILD_WORKER_IMAGE%"=="Visual Studio 2013" (
-      set vsver=120 & set image=VS2013
+      set vsver=120 && set image=VS2013
     )
   - if "%APPVEYOR_BUILD_WORKER_IMAGE%"=="Visual Studio 2015" (
-      set vsver=140 & set image=VS2015
+      set vsver=140 && set image=VS2015
     )
   - if "%APPVEYOR_BUILD_WORKER_IMAGE%"=="Visual Studio 2017" (
-      set vsver=150 & set image=VS2017
-      ""C:\PROGRA~2\MIB055~1\2017\Community\Common7\Tools\VsDevCmd.bat""
+      set vsver=150 && set image=VS2017 &&
+      "C:\PROGRA~2\MIB055~1\2017\Community\Common7\Tools\VsDevCmd.bat"
     )
   - if "%image%"=="VS2015" (
     if "%builder%"=="cygwin" (
