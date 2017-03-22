@@ -93,7 +93,7 @@ install:
       set vsver=140 && set image=VS2015
     )
   - if "%APPVEYOR_BUILD_WORKER_IMAGE%"=="Visual Studio 2017" (
-      set vsver=150 && set image=VS2017 &&
+      set vsver=150 && set image=VS2017
       C:\Program^ Files^ ^(x86^)\Microsoft^ Visual^ Studio\2017\Community\Common7\Tools\VsDevCmd.bat
     )
   - if "%image%"=="VS2015" (
