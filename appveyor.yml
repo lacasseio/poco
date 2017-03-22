@@ -63,11 +63,12 @@ image:
   - Visual Studio 2017
   
 matrix:
+  fast_finish: true
 
-#    - builder: cygwin
+#  - builder: cygwin
       
-    - builder: msbuild
-      linkmode: shared
+  - builder: msbuild
+    linkmode: shared
 
 #    - builder: msbuild
 #      vsver: 140
@@ -82,10 +83,6 @@ matrix:
 
 #    - builder: cmake
 #      vsver: 140
-
-
-matrix:
-  fast_finish: true
 
 
 install:
