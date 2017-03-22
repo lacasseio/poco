@@ -49,20 +49,20 @@ configuration:
 #  - debug
 # -------------------------------------------------------------------------------------------
 
+image:
+  - Visual Studio 2013
+  - Visual Studio 2015
+  - Visual Studio 2017
+
+
 environment:
   bundling: bundled
   MYSQL32:    C:\mysql-5.7.16-win32
   MYSQL64:    C:\Program Files\MySql\MySQL Server 5.7
   POSTGRES32: C:\Program Files (x86)\PostgreSQL\9.4
   POSTGRES64: C:\Program Files\PostgreSQL\9.4
-
-
-image:
-  - Visual Studio 2013
-  - Visual Studio 2015
-  - Visual Studio 2017
   
-matrix:
+  matrix:
 #  - builder: cygwin
       
   - builder: msbuild
