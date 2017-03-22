@@ -94,7 +94,7 @@ install:
     )
   - if "%APPVEYOR_BUILD_WORKER_IMAGE%"=="Visual Studio 2017" (
       set vsver=150 && set image=VS2017 &&
-      cmd /C "C:\Program Files (x86)\Microsoft Visual Studio\2017\Community\Common7\Tools\VsDevCmd.bat"
+      set VS150COMNTOOLS="C:\Program Files (x86)\Microsoft Visual Studio\2017\Community\Common7\Tools\"
     )
   - if "%image%"=="VS2015" (
     if "%builder%"=="cygwin" (
