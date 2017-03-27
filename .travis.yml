@@ -59,37 +59,32 @@ matrix:
       os: osx
       compiler: clang
       script:
-        - export CC="clang"
-        - export CXX="clang++"
+        - export CC="clang" && CXX="clang++"
         - clang++ -x c++ /dev/null -dM -E
         - ./configure --everything --omit=Data/ODBC,Data/MySQL,Data/PostgreSQL && make -s -j2 && sudo make install && ./travis/OSX/runtests.sh
 
     - env:    TEST_NAME="Linux gcc 4.6 (make) bundled"
       compiler: gcc
       script:
-        - export CC="gcc"
-        - export CXX="g++"
+        - export CC="gcc" && export CXX="g++" && g++ --version
         - ./configure --everything && make -s -j2 && ./travis/Linux/runtests.sh
     
     - env:    TEST_NAME="Linux gcc 4.8 (make) bundled"
       compiler: gcc
       script:
-        - export CC="gcc-4.8"
-        - export CXX="g++-4.8"
+        - export CC="gcc-4.8" && export CXX="g++-4.8" && g++-4.8 --version
         - ./configure --everything && make -s -j2 && ./travis/Linux/runtests.sh
     
     - env:    TEST_NAME="Linux gcc 5 (make) bundled"
       compiler: gcc
       script:
-        - export CC="gcc-5"
-        - export CXX="g++-5"
+        - export CC="gcc-5" && export CXX="g++-5" && g++-5 --version
         - ./configure --everything && make -s -j2 && ./travis/Linux/runtests.sh
     
     - env:    TEST_NAME="Linux gcc 4.6 (make) unbundled"
       compiler: gcc
       script:
-        - export CC="gcc"
-        - export CXX="g++"
+        - export CC="gcc" && export CXX="g++" && g++ --version
         - sudo apt-get install -qq -y libpcre3-dev libssl-dev libexpat1-dev
         - ./configure --everything --unbundled && make -s -j2 && ./travis/Linux/runtests.sh
 
@@ -97,16 +92,14 @@ matrix:
       compiler: gcc
       script:
         - sudo apt-get install -qq -y libpcre3-dev libssl-dev libexpat1-dev
-        - export CC="gcc-4.8"
-        - export CXX="g++-4.8"
+        - export CC="gcc-4.8" && export CXX="g++-4.8" && g++ --version
         - ./configure --everything --unbundled && make -s -j2 && ./travis/Linux/runtests.sh
     
     - env:    TEST_NAME="Linux gcc 5 (make) unbundled"
       compiler: gcc
       script:
         - sudo apt-get install -qq -y libpcre3-dev libssl-dev libexpat1-dev
-        - export CC="gcc-5"
-        - export CXX="g++-5"
+        - export CC="gcc-5" && export CXX="g++-5" && g++-5 --version
         - ./configure --everything --unbundled && make -s -j2 && ./travis/Linux/runtests.sh
     
     - env:    TEST_NAME="Linux clang 3.4 (make)"
@@ -122,8 +115,7 @@ matrix:
     - env:    TEST_NAME="Linux gcc 4.6 (CMake)"
       compiler: gcc
       script:
-        - export CC="gcc"
-        - export CXX="g++"
+        - export CC="gcc" && export CXX="g++"
         - source ./travis/ignored.sh
         - export POCO_BASE=`pwd`
         - mkdir cmake-build && cd cmake-build && cmake -DENABLE_TESTS=ON .. && make -s -j2 && ctest -VV -E Data && cd ..
@@ -131,8 +123,7 @@ matrix:
     - env:    TEST_NAME="Linux gcc 4.8 (CMake)"
       compiler: gcc
       script:
-        - export CC="gcc-4.8"
-        - export CXX="g++-4.8"
+        - export CC="gcc-4.8" && export CXX="g++-4.8"
         - source ./travis/ignored.sh
         - export POCO_BASE=`pwd`
         - mkdir cmake-build && cd cmake-build && cmake -DENABLE_TESTS=ON .. && make -s -j2 && ctest -VV -E Data && cd ..
