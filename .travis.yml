@@ -78,6 +78,13 @@ matrix:
         - export CXX="g++-4.8"
         - ./configure --everything && make -s -j2 && ./travis/Linux/runtests.sh
     
+    - env:    TEST_NAME="Linux gcc 5 (make) bundled"
+      compiler: gcc
+      script:
+        - export CC="gcc-5"
+        - export CXX="g++-5"
+        - ./configure --everything && make -s -j2 && ./travis/Linux/runtests.sh
+    
     - env:    TEST_NAME="Linux gcc 4.6 (make) unbundled"
       compiler: gcc
       script:
@@ -92,6 +99,14 @@ matrix:
         - sudo apt-get install -qq -y libpcre3-dev libssl-dev libexpat1-dev
         - export CC="gcc-4.8"
         - export CXX="g++-4.8"
+        - ./configure --everything --unbundled && make -s -j2 && ./travis/Linux/runtests.sh
+    
+    - env:    TEST_NAME="Linux gcc 5 (make) unbundled"
+      compiler: gcc
+      script:
+        - sudo apt-get install -qq -y libpcre3-dev libssl-dev libexpat1-dev
+        - export CC="gcc-5"
+        - export CXX="g++-5"
         - ./configure --everything --unbundled && make -s -j2 && ./travis/Linux/runtests.sh
     
     - env:    TEST_NAME="Linux clang 3.4 (make)"
